@@ -1,12 +1,17 @@
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var jshint = require('gulp-jshint');
-var concat = require('gulp-concat'); 
+var mocha = require('gulp-mocha');
 
 gulp.task('jshint', function() {
 	return gulp.src('js/*')
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'));
+});
+
+gulp.task('test', function() {
+	return gulp.src('tests/*')
+		.pipe(mocha({ reporter: 'dot' }));
 });
 
 gulp.task('browserify', function() {
