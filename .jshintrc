@@ -1,4 +1,9 @@
 {
+	"browser": true,
+	"globals": {
+		"THREE": true,
+		"THREEx": true
+	},
 	"camelcase": true,
 	"curly": true,
 	"latedef": true,
