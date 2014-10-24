@@ -5,7 +5,8 @@ var concat = require('gulp-concat');
 
 gulp.task('jshint', function() {
 	return gulp.src('js/*')
-		.pipe(jshint());
+		.pipe(jshint())
+		.pipe(jshint.reporter('default'));
 });
 
 gulp.task('browserify', function() {
