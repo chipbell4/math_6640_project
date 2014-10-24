@@ -1,26 +1,28 @@
-window.scene = window.camera = window.keyboard = null;
+(function() {
+	var renderer, scene, camera, keyboard;
 
-window.animate = function() {
-	window.renderer.render(window.scene, window.camera);
+	var animate = function() {
+		renderer.render(scene, camera);
 
-	requestAnimationFrame(window.animate.bind(this));
-};
+		requestAnimationFrame(animate.bind(this));
+	};
 
-window.setup = function() {
-	window.renderer;
-	if(window.WebGLRenderingContext) {
-		renderer = new THREE.WebGLRenderer();
-	}
-	else {
-		renderer = new THREE.CanvasRenderer();
-	}
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
+	window.setup = function() {
+		if(window.WebGLRenderingContext) {
+			renderer = new THREE.WebGLRenderer();
+		}
+		else {
+			renderer = new THREE.CanvasRenderer();
+		}
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
 
-	window.keyboard = new THREEx.KeyboardState();
+		eyboard = new THREEx.KeyboardState();
 
-	window.scene = new THREE.Scene();
-	window.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 
-	window.animate();
-};
+		animate();
+	};
+
+})(window);
