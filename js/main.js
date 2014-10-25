@@ -13,6 +13,15 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 		requestAnimationFrame(animate.bind(this));
 	};
 
+	var generateListener = function(eventName) {
+		return function(evt) {
+			console.log(eventName);
+			if(currentDrawingState[eventName]) {
+				currentDrawingState[eventName](evt);
+			}
+		};
+	};
+
 	window.setup = function() {
 		if(window.WebGLRenderingContext) {
 			renderer = new THREE.WebGLRenderer();
@@ -22,8 +31,13 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 		}
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
-
-		keyboard = new THREEx.KeyboardState();
+		
+		// Setup event listeners
+		var events = ['mousedown', 'mouseup', 'mousemove'];
+		for(var i in events) {
+			var eventName = events[i];
+			document.addEventListener(eventName, generateListener(eventName));
+		}
 
 		animate();
 	};
