@@ -2,17 +2,24 @@
  * A class representing drawing state during polygon draw mode
  */
 var PolygonDrawingState = function() {
+
+	var half = 1 / 2;
+
 	this.scene = new THREE.Scene();
-	this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+	this.camera = new THREE.OrthographicCamera(-half, half, -half, half, 1, 10000);
 	this.camera.up = new THREE.Vector3(0, 1, 0);
-	this.camera.position.z = 5;
-	this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+	this.camera.position.x = this.camera.position.y = half
+	this.camera.position.z = 50;
+	this.camera.lookAt(new THREE.Vector3(half, half, 0));
+
+	var quarter = 1/4;
+	var three_quarters = 3/4;
 
 	this.polygonPoints = [
-		new THREE.Vector3(0, 0, 0),
-		new THREE.Vector3(1, 0, 0),
-		new THREE.Vector3(1, 1, 0),
-		new THREE.Vector3(0, 1, 0),
+		new THREE.Vector3(quarter, quarter, 0),
+		new THREE.Vector3(three_quarters, quarter, 0),
+		new THREE.Vector3(three_quarters, three_quarters, 0),
+		new THREE.Vector3(quarter, three_quarters, 0),
 	];
 	
 	// now setup the meshes
