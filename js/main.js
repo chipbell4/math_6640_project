@@ -5,7 +5,7 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 
 	var currentDrawingState = polygonDrawingState;
 
-	var renderer, keyboard;
+	var renderer;
 
 	var animate = function() {
 		renderer.render(currentDrawingState.scene, currentDrawingState.camera);
@@ -15,7 +15,6 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 
 	var generateListener = function(eventName) {
 		return function(evt) {
-			console.log(eventName);
 			if(currentDrawingState[eventName]) {
 				currentDrawingState[eventName](evt);
 			}
