@@ -67,8 +67,7 @@ PolygonDrawingState.prototype.refreshGeometries = function() {
 			color: '#ffffff',
 			linewidth: 2
 		});
-		var lineGeometry = new THREE.Geometry();
-		this.lineMesh = new THREE.Line(lineGeometry, lineMaterial);
+		this.lineMesh = new THREE.Line(new THREE.Geometry(), lineMaterial);
 	}
 
 	this.lineMesh.geometry.vertices = this.polygonPoints;
@@ -77,13 +76,12 @@ PolygonDrawingState.prototype.refreshGeometries = function() {
 	this.lineMesh.material.needsUpdate = true;
 
 	if(!this.polygonMesh) {
-		var polygonGeometry = this.calculatePolygonGeometry();
 		var polygonMaterial = new THREE.MeshBasicMaterial({color:'#ffffff'});
-		this.polygonMesh = new THREE.Mesh(polygonGeometry, polygonMaterial);
+		polygonMaterial.side = THREE.DoubleSide;
+		this.polygonMesh = new THREE.Mesh(new THREE.Geometry(), polygonMaterial);
 	}
-	else {
-		this.polygonMesh.geometry = this.calculatePolygonGeometry();
-	}
+
+	this.polygonMesh.geometry = this.calculatePolygonGeometry();
 };
 
 // Switches to drawing only the polygon
