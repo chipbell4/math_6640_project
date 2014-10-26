@@ -112,7 +112,6 @@ PolygonDrawingState.prototype.mouseup = function() {
 
 // Handler for mouse down
 PolygonDrawingState.prototype.mousedown = function() {
-	// TODO: clear the list
 	this.showLine();
 	this.editingPolygon = true;
 	this.pointSkipIndex = 0;
@@ -138,8 +137,6 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	// push onto the mesh
 	this.polygonPoints.push(worldCoordinates);
 	this.refreshGeometries();
-	console.log(this.polygonPoints.length);
-	console.log('\t' + this.polygonMesh.geometry.vertices.length);
 };
 
 module.exports = PolygonDrawingState;
