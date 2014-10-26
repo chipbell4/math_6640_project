@@ -30,27 +30,14 @@ var PolygonDrawingState = function() {
 };
 
 /**
- * Calculates a geometry object for a line from the current polygonPoints
- */
-PolygonDrawingState.prototype.calculateLineGeometry = function() {
-	var geometry = new THREE.Geometry();
-
-	var N = this.polygonPoints.length;
-	for(var i=0; i<N; i++) {
-		geometry.vertices.push(this.polygonPoints[i]);
-	}
-
-	geometry.computeBoundingSphere();
-
-	return geometry;
-};
-
-/**
  * Calculates a geometry object for a filled polygon from the current polygonPoints
  */
 PolygonDrawingState.prototype.calculatePolygonGeometry = function() {
 	
-	var geometry = this.calculateLineGeometry();
+	var geometry = new THREE.Geometry();
+	geometry.vertices = this.polygonPoints;
+	geometry.verticesNeedUpdate = true;
+	geometry.computeBoundingSphere();
 
 	var N = this.polygonPoints.length;
 	
