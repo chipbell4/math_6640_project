@@ -70,22 +70,21 @@ PolygonDrawingState.prototype.calculatePolygonGeometry = function() {
  */
 PolygonDrawingState.prototype.refreshGeometries = function() {
 	if(!this.lineMesh) {
-		var lineMaterial = new THREE.LineBasicMaterial({
+		this.lineMesh = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
 			color: '#ffffff',
 			linewidth: 2
-		});
-		this.lineMesh = new THREE.Line(new THREE.Geometry(), lineMaterial);
+		}));
 	}
 
 	this.lineMesh.geometry.vertices = this.polygonPoints;
 	this.lineMesh.geometry.computeBoundingSphere();
 	this.lineMesh.geometry.verticesNeedUpdate = true;
-	this.lineMesh.material.needsUpdate = true;
 
 	if(!this.polygonMesh) {
-		var polygonMaterial = new THREE.MeshBasicMaterial({color:'#ffffff'});
-		polygonMaterial.side = THREE.DoubleSide;
-		this.polygonMesh = new THREE.Mesh(new THREE.Geometry(), polygonMaterial);
+		this.polygonMesh = new THREE.Mesh(new THREE.Geometry(), new THREE.MeshBasicMaterial({
+			color: '#ffffff'
+		}));
+		this.polygonMesh.material.side = THREE.DoubleSide;
 	}
 
 	this.polygonMesh.geometry = this.calculatePolygonGeometry();
