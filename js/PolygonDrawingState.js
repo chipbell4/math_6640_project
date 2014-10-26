@@ -19,7 +19,7 @@ var PolygonDrawingState = function() {
 	this.refreshGeometries();
 
 	// Add the meshes to the scene
-	this.showLine();
+	this.showPolygon();
 };
 
 /**
@@ -62,27 +62,27 @@ PolygonDrawingState.prototype.calculatePolygonGeometry = function() {
  * Refreshes all geometries for drawing
  */
 PolygonDrawingState.prototype.refreshGeometries = function() {
-
-	var lineGeometry = this.calculateLineGeometry();
-	var polygonGeometry = this.calculatePolygonGeometry();
-
 	if(!this.lineMesh) {
 		var lineMaterial = new THREE.LineBasicMaterial({
 			color: '#ffffff',
 			linewidth: 2
 		});
+		var lineGeometry = new THREE.Geometry();
 		this.lineMesh = new THREE.Line(lineGeometry, lineMaterial);
 	}
-	else {
-		this.lineMesh.setGeometry(lineGeometry);
-	}
+
+	this.lineMesh.geometry.vertices = this.polygonPoints;
+	this.lineMesh.geometry.computeBoundingSphere();
+	this.lineMesh.geometry.verticesNeedUpdate = true;
+	this.lineMesh.material.needsUpdate = true;
 
 	if(!this.polygonMesh) {
+		var polygonGeometry = this.calculatePolygonGeometry();
 		var polygonMaterial = new THREE.MeshBasicMaterial({color:'#ffffff'});
 		this.polygonMesh = new THREE.Mesh(polygonGeometry, polygonMaterial);
 	}
 	else {
-		this.polygonMesh.setGeometry(polygonGeometry);
+		this.polygonMesh.geometry = this.calculatePolygonGeometry();
 	}
 };
 
@@ -104,6 +104,44 @@ PolygonDrawingState.prototype.showLine = function() {
 
 	this.scene.add(this.lineMesh);
 	this.scene.remove(this.polygonMesh);
+};
+
+// Handler for mouse up
+PolygonDrawingState.prototype.mouseup = function() {
+	this.showPolygon();
+	this.editingPolygon = false;
+};
+
+// Handler for mouse down
+PolygonDrawingState.prototype.mousedown = function() {
+	// TODO: clear the list
+	this.showLine();
+	this.editingPolygon = true;
+	this.pointSkipIndex = 0;
+	this.polygonPoints = [];
+};
+
+PolygonDrawingState.prototype.mousemove = function(evt) {
+	if(!this.editingPolygon) {
+		return;
+	}
+
+	this.pointSkipIndex = (this.pointSkipIndex + 1) % 3;
+
+	// We'll skip every couple of points, since we don't want to store too many
+	if(this.pointSkipIndex !== 0) {
+		return;
+	}
+
+	// scale screen coordinates to world
+	var flippedScreenCoordinates = new THREE.Vector3(evt.offsetX, window.innerHeight - evt.offsetY, 0);
+	var worldCoordinates = flippedScreenCoordinates.divideScalar(window.innerHeight);
+
+	// push onto the mesh
+	this.polygonPoints.push(worldCoordinates);
+	this.refreshGeometries();
+	console.log(this.polygonPoints.length);
+	console.log('\t' + this.polygonMesh.geometry.vertices.length);
 };
 
 module.exports = PolygonDrawingState;
