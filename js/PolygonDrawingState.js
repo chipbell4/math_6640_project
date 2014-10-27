@@ -1,3 +1,5 @@
+var POLYGON_MAX_SIZE = 100;
+
 /**
  * A class representing drawing state during polygon draw mode
  */
@@ -12,15 +14,9 @@ var PolygonDrawingState = function() {
 	this.camera.position.z = 50;
 	this.camera.lookAt(new THREE.Vector3(half, half, 0));
 
-	var quarter = 1/4;
-	var threeQuarters = 3/4;
-
-	this.polygonPoints = [
-		new THREE.Vector3(quarter, quarter, 0),
-		new THREE.Vector3(threeQuarters, quarter, 0),
-		new THREE.Vector3(threeQuarters, threeQuarters, 0),
-		new THREE.Vector3(quarter, threeQuarters, 0),
-	];
+	// Seed with empties
+	this.polygonPoints = new Array(POLYGON_MAX_SIZE);
+	this.resetPolygonPoints();
 	
 	// now setup the meshes
 	this.refreshGeometries();
@@ -30,14 +26,21 @@ var PolygonDrawingState = function() {
 };
 
 /**
- * Calculates a geometry object for a filled polygon from the current polygonPoints
+ * Resets the polygon to size 0
  */
-PolygonDrawingState.prototype.calculatePolygonGeometry = function() {
-	
-	var geometry = new THREE.Geometry();
+PolygonDrawingState.prototype.resetPolygonPoints = function() {
+	for(var i = 0; i < POLYGON_MAX_SIZE; i++) {
+		this.polygonPoints[i] = new THREE.Vector3(0, 0, 0);
+	}
+	this.currentPolygonSize = 0;
+};
+
+/**
+ * Refreshes a geometry's vertices and faces with the current point set
+ */
+PolygonDrawingState.prototype.refreshGeometry = function(geometry) {
 	geometry.vertices = this.polygonPoints;
 	geometry.verticesNeedUpdate = true;
-	geometry.computeBoundingSphere();
 
 	var N = this.polygonPoints.length;
 	
@@ -48,8 +51,6 @@ PolygonDrawingState.prototype.calculatePolygonGeometry = function() {
 	}
 
 	geometry.computeBoundingSphere();
-
-	return geometry;
 };
 
 /**
@@ -63,10 +64,6 @@ PolygonDrawingState.prototype.refreshGeometries = function() {
 		}));
 	}
 
-	this.lineMesh.geometry.vertices = this.polygonPoints;
-	this.lineMesh.geometry.computeBoundingSphere();
-	this.lineMesh.geometry.verticesNeedUpdate = true;
-
 	if(!this.polygonMesh) {
 		this.polygonMesh = new THREE.Mesh(new THREE.Geometry(), new THREE.MeshBasicMaterial({
 			color: '#ffffff'
@@ -74,7 +71,9 @@ PolygonDrawingState.prototype.refreshGeometries = function() {
 		this.polygonMesh.material.side = THREE.DoubleSide;
 	}
 
-	this.polygonMesh.geometry = this.calculatePolygonGeometry();
+
+	this.refreshGeometry(this.lineMesh.geometry);
+	this.refreshGeometry(this.polygonMesh.geometry);
 };
 
 // Switches to drawing only the polygon
@@ -108,7 +107,7 @@ PolygonDrawingState.prototype.mousedown = function() {
 	this.showLine();
 	this.editingPolygon = true;
 	this.pointSkipIndex = 0;
-	this.polygonPoints = [];
+	this.resetPolygonPoints();
 };
 
 PolygonDrawingState.prototype.mousemove = function(evt) {
@@ -128,7 +127,8 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	var worldCoordinates = flippedScreenCoordinates.divideScalar(window.innerHeight);
 
 	// push onto the mesh
-	this.polygonPoints.push(worldCoordinates);
+	this.polygonPoints[this.currentPolygonSize] = worldCoordinates;
+	this.currentPolygonSize = (this.currentPolygonSize + 1) % POLYGON_MAX_SIZE;
 	this.refreshGeometries();
 };
 
