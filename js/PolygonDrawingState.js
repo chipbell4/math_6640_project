@@ -1,4 +1,4 @@
-var POLYGON_MAX_SIZE = 100;
+var PolygonBuffer = require('./PolygonUtils/PolygonBuffer.js');
 
 /**
  * A class representing drawing state during polygon draw mode
@@ -14,10 +14,9 @@ var PolygonDrawingState = function() {
 	this.camera.position.z = 50;
 	this.camera.lookAt(new THREE.Vector3(half, half, 0));
 
-	// Seed with empties
-	this.polygonPoints = new Array(POLYGON_MAX_SIZE);
-	this.resetPolygonPoints();
-	
+	// Create the buffer
+	this.buffer = new PolygonBuffer(100);
+
 	// now setup the meshes
 	this.refreshGeometries();
 
@@ -26,44 +25,13 @@ var PolygonDrawingState = function() {
 };
 
 /**
- * Resets the polygon to size 0
- */
-PolygonDrawingState.prototype.resetPolygonPoints = function() {
-	for(var i = 0; i < POLYGON_MAX_SIZE; i++) {
-		this.polygonPoints[i] = new THREE.Vector3(0, 0, 0);
-	}
-	this.currentPolygonSize = 0;
-};
-
-/**
- * Fills the tail of the vertex buffer so that we don't get lingering (0,0,0) points
- */
-PolygonDrawingState.prototype.fillTail = function() {
-	if(this.currentPolygonSize === 0) {
-		return;
-	}
-
-	// copy last point over the rest of the buffer, so we don't get lingering (0,0,0) points
-	for(var i = this.currentPolygonSize; i < POLYGON_MAX_SIZE; i++) {
-		this.polygonPoints[i] = this.polygonPoints[this.currentPolygonSize - 1].clone();
-	}
-};
-
-/**
  * Refreshes a geometry's vertices and faces with the current point set
  */
 PolygonDrawingState.prototype.refreshGeometry = function(geometry) {
-	geometry.vertices = this.polygonPoints;
+	geometry.vertices = this.buffer.vertices;
+	geometry.faces = this.buffer.faces;
 	geometry.verticesNeedUpdate = true;
-
-	var N = this.polygonPoints.length;
-	
-	// NOTE: This algorithm for forming faces assumes a convex polygon...
-	// TODO: Make this better
-	for(var i=0; i<N-2; i++) {
-		geometry.faces.push(new THREE.Face3(0, i+1, i+2));
-	}
-
+	geometry.elementsNeedUpdate = true;
 	geometry.computeBoundingSphere();
 };
 
@@ -71,8 +39,6 @@ PolygonDrawingState.prototype.refreshGeometry = function(geometry) {
  * Refreshes all geometries for drawing
  */
 PolygonDrawingState.prototype.refreshGeometries = function() {
-	this.fillTail();
-
 	if(!this.lineMesh) {
 		this.lineMesh = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
 			color: '#ffffff',
@@ -123,7 +89,7 @@ PolygonDrawingState.prototype.mousedown = function() {
 	this.showLine();
 	this.editingPolygon = true;
 	this.pointSkipIndex = 0;
-	this.resetPolygonPoints();
+	this.buffer.resetVertexBuffer();
 };
 
 PolygonDrawingState.prototype.mousemove = function(evt) {
@@ -143,8 +109,7 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	var worldCoordinates = flippedScreenCoordinates.divideScalar(window.innerHeight);
 
 	// push onto the mesh
-	this.polygonPoints[this.currentPolygonSize] = worldCoordinates;
-	this.currentPolygonSize = (this.currentPolygonSize + 1) % POLYGON_MAX_SIZE;
+	this.buffer.addPoint(worldCoordinates);
 	this.refreshGeometries();
 };
 
