@@ -9,10 +9,26 @@ var PolygonDrawingState = function() {
 
 	this.scene = new THREE.Scene();
 	this.camera = new THREE.OrthographicCamera(-half, half, -half, half, 1, 10000);
-	this.camera.up = new THREE.Vector3(0, 1, 0);
+	this.camera.up = new THREE.Vector3(0, -1, 0);
 	this.camera.position.x = this.camera.position.y = half;
-	this.camera.position.z = 50;
+	this.camera.position.z = -50;
 	this.camera.lookAt(new THREE.Vector3(half, half, 0));
+
+	//TODO: REMOVE
+	var xAxis = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+		color: '#0000ff',
+		linewidth: 2
+	}));
+	xAxis.geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+	xAxis.geometry.vertices.push(new THREE.Vector3(1, 0, 0));
+	this.scene.add(xAxis);
+	var yAxis = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+		color: '#ffff00',
+		linewidth: 2
+	}));
+	yAxis.geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+	yAxis.geometry.vertices.push(new THREE.Vector3(0, 1, 0));
+	this.scene.add(yAxis);
 
 	// Create the buffer
 	this.buffer = new PolygonBuffer(100);
@@ -105,8 +121,10 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	}
 
 	// scale screen coordinates to world
-	var flippedScreenCoordinates = new THREE.Vector3(evt.offsetX, window.innerHeight - evt.offsetY, 0);
-	var worldCoordinates = flippedScreenCoordinates.divideScalar(window.innerHeight);
+	var screenCoordinates = new THREE.Vector3(evt.offsetX, window.innerHeight - evt.offsetY, 0);
+	var worldCoordinates = screenCoordinates.clone();
+	worldCoordinates.x /= window.innerWidth;
+	worldCoordinates.y /= window.innerHeight;
 
 	// push onto the mesh
 	this.buffer.addPoint(worldCoordinates);
