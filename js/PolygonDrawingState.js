@@ -36,6 +36,20 @@ PolygonDrawingState.prototype.resetPolygonPoints = function() {
 };
 
 /**
+ * Fills the tail of the vertex buffer so that we don't get lingering (0,0,0) points
+ */
+PolygonDrawingState.prototype.fillTail = function() {
+	if(this.currentPolygonSize === 0) {
+		return;
+	}
+
+	// copy last point over the rest of the buffer, so we don't get lingering (0,0,0) points
+	for(var i = this.currentPolygonSize; i < POLYGON_MAX_SIZE; i++) {
+		this.polygonPoints[i] = this.polygonPoints[this.currentPolygonSize - 1].clone();
+	}
+};
+
+/**
  * Refreshes a geometry's vertices and faces with the current point set
  */
 PolygonDrawingState.prototype.refreshGeometry = function(geometry) {
@@ -57,6 +71,8 @@ PolygonDrawingState.prototype.refreshGeometry = function(geometry) {
  * Refreshes all geometries for drawing
  */
 PolygonDrawingState.prototype.refreshGeometries = function() {
+	this.fillTail();
+
 	if(!this.lineMesh) {
 		this.lineMesh = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
 			color: '#ffffff',
