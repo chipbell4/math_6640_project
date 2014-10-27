@@ -10,7 +10,7 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('test', function() {
-	return gulp.src('tests/*')
+	return gulp.src('tests/**/*.js')
 		.pipe(mocha({ reporter: 'dot' }));
 });
 

@@ -1,6 +1,8 @@
 {
 	"browser": true,
 	"globals": {
+		"module": true,
+		"require": true,
 		"THREE": true,
 		"THREEx": true
 	},

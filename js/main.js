@@ -1,10 +1,24 @@
+var PolygonDrawingState = require('./PolygonDrawingState.js');
+
 (function() {
-	var renderer, scene, camera, keyboard;
+	var polygonDrawingState = new PolygonDrawingState();
+
+	var currentDrawingState = polygonDrawingState;
+
+	var renderer;
 
 	var animate = function() {
-		renderer.render(scene, camera);
+		renderer.render(currentDrawingState.scene, currentDrawingState.camera);
 
 		requestAnimationFrame(animate.bind(this));
+	};
+
+	var generateListener = function(eventName) {
+		return function(evt) {
+			if(currentDrawingState[eventName]) {
+				currentDrawingState[eventName](evt);
+			}
+		};
 	};
 
 	window.setup = function() {
@@ -16,11 +30,13 @@
 		}
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
-
-		keyboard = new THREEx.KeyboardState();
-
-		scene = new THREE.Scene();
-		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+		
+		// Setup event listeners
+		var events = ['mousedown', 'mouseup', 'mousemove'];
+		for(var i in events) {
+			var eventName = events[i];
+			document.addEventListener(eventName, generateListener(eventName));
+		}
 
 		animate();
 	};
