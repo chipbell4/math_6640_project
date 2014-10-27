@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var PolygonVertexBuffer = require('../../js/PolygonVertexBuffer.js');
+var PolygonVertexBuffer = require('../../js/PolygonUtils/PolygonVertexBuffer.js');
 
 describe('PolygonVertexBuffer', function() {
 	it('Should exist', function() {
