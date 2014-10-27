@@ -14,24 +14,8 @@ var PolygonDrawingState = function() {
 	this.camera.position.z = -50;
 	this.camera.lookAt(new THREE.Vector3(half, half, 0));
 
-	//TODO: REMOVE
-	var xAxis = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
-		color: '#0000ff',
-		linewidth: 2
-	}));
-	xAxis.geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-	xAxis.geometry.vertices.push(new THREE.Vector3(1, 0, 0));
-	this.scene.add(xAxis);
-	var yAxis = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
-		color: '#ffff00',
-		linewidth: 2
-	}));
-	yAxis.geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-	yAxis.geometry.vertices.push(new THREE.Vector3(0, 1, 0));
-	this.scene.add(yAxis);
-
 	// Create the buffer
-	this.buffer = new PolygonBuffer(100);
+	this.buffer = new PolygonBuffer(1000);
 
 	// now setup the meshes
 	this.refreshGeometries();
