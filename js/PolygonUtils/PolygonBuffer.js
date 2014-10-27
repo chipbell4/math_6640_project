@@ -5,12 +5,17 @@ var PolygonBuffer = function(BUFFER_SIZE) {
 
 	// Allocate the full buffer
 	this.vertices = new Array(BUFFER_SIZE);
+	this.faces = new Array(BUFFER_SIZE - 2);
 
 	// However, the length is starting at 0
 	this.length = 0;
 
 	// now, fill up with points
-	this.resetBuffer();
+	this.resetVertexBuffer();
+
+	for(var i = 0; i < this.BUFFER_SIZE - 2; i++) {
+		this.faces[i] = new THREE.Face3(0, i + 1, i + 2);
+	}
 };
 
 PolygonBuffer.prototype.addPoint = function(newPoint) {
@@ -25,7 +30,7 @@ PolygonBuffer.prototype.addPoint = function(newPoint) {
 	}
 };
 
-PolygonBuffer.prototype.resetBuffer = function() {
+PolygonBuffer.prototype.resetVertexBuffer = function() {
 	// Wipe the vertices
 	for(var i = 0; i < this.BUFFER_SIZE; i++) {
 		this.vertices[i] = new THREE.Vector3(0, 0, 0);

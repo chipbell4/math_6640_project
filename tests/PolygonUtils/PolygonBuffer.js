@@ -24,7 +24,7 @@ describe('PolygonBuffer', function() {
 		buffer.addPoint(new THREE.Vector3(1, 2, 3));
 		expect(buffer.length).to.equal(1);
 
-		buffer.resetBuffer();
+		buffer.resetVertexBuffer();
 
 		expect(buffer.length).to.equal(0);
 	});
@@ -45,6 +45,16 @@ describe('PolygonBuffer', function() {
 			expect(buffer.vertices[i].x).to.equal(1);
 			expect(buffer.vertices[i].y).to.equal(2);
 			expect(buffer.vertices[i].z).to.equal(3);
+		}
+	});
+
+	it('Should keep an internal faces array', function() {
+		var buffer = new PolygonBuffer(10);
+
+		expect(buffer.faces.length).to.equal(8);
+
+		for(var i = 0; i < 8; i++) {
+			expect(buffer.faces[i] instanceof THREE.Face3).to.be.ok;
 		}
 	});
 });
