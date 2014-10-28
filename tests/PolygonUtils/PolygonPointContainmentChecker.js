@@ -4,7 +4,7 @@ var PolygonPointContainmentChecker = require('../../js/PolygonUtils/PolygonPoint
 
 describe('PolygonPointContainmentChecker', function() {
 	it('Should exist', function() {
-		expect(PolygonPointContainmentChecker).to.be.ok;
+		expect(PolygonPointContainmentChecker).to.be.instanceOf(Function);
 	});
 	
 	var pointSet = [
