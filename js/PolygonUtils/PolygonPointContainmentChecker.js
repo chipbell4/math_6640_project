@@ -23,7 +23,7 @@ PolygonPointContainmentChecker.prototype.calculateWindingForPointAtIndex = funct
 	}
 
 	return 1;
-}
+};
 
 PolygonPointContainmentChecker.prototype.containsPoint = function(point) {
 	var winding = 0;

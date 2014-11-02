@@ -1,5 +1,27 @@
 var THREE = require('three');
 
+/**
+ * Private function to pluck a particular key from an array and find the min of the list
+ */
+function minValueInArrayForKey(array, key) {
+	var pluckedValues = array.map(function(point) {
+		return point[key];
+	});
+
+	return Math.min.apply(Math, pluckedValues);
+}
+
+/**
+ * Private function to pluck a key from an array and find the max of that list
+ */
+function maxValueInArrayForKey(array, key) {
+	var pluckedValues = array.map(function(point) {
+		return point[key];
+	});
+
+	return Math.max.apply(Math, pluckedValues);
+}
+
 var PolygonRescaler = function(points) {
 
 	if(points.length < 2) {
@@ -23,7 +45,7 @@ var PolygonRescaler = function(points) {
 	var xScaleFactor = 1.0 / (maxX - minX);
 	var yScaleFactor = 1.0 / (maxY - minY);
 	this.translatedPoints = this.points.map(function(point) {
-		var centeredPoint = point.sub(translationVector)
+		var centeredPoint = point.sub(translationVector);
 
 		centeredPoint.x *= xScaleFactor;
 		centeredPoint.y *= yScaleFactor;
@@ -31,28 +53,6 @@ var PolygonRescaler = function(points) {
 		return centeredPoint;
 	});
 
-};
-
-/**
- * Private function to pluck a particular key from an array and find the min of the list
- */
-var minValueInArrayForKey = function(array, key) {
-	var pluckedValues = array.map(function(point) {
-		return point[key];
-	});
-
-	return Math.min.apply(Math, pluckedValues);
-};
-
-/**
- * Private function to pluck a key from an array and find the max of that list
- */
-var maxValueInArrayForKey = function(array, key) {
-	var pluckedValues = array.map(function(point) {
-		return point[key];
-	});
-
-	return Math.max.apply(Math, pluckedValues);
 };
 
 module.exports = PolygonRescaler;

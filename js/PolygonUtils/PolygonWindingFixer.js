@@ -1,15 +1,3 @@
-var THREE = require('three');
-
-var PolygonWindingFixer = function(points) {
-	// clone the array
-	this.correctedPoints = points.slice(0);
-
-	// fix if the windedness is wrong
-	if(calculateWindedness(points) < 0) {
-		this.correctedPoints = this.correctedPoints.reverse();
-	}
-};
-
 /**
  * Computes the winding of the polygon via the shoelace formula:
  * http://en.wikipedia.org/wiki/Shoelace_formula
@@ -29,5 +17,16 @@ var calculateWindedness = function(points) {
 
 	return windingFactor;
 };
+
+var PolygonWindingFixer = function(points) {
+	// clone the array
+	this.correctedPoints = points.slice(0);
+
+	// fix if the windedness is wrong
+	if(calculateWindedness(points) < 0) {
+		this.correctedPoints = this.correctedPoints.reverse();
+	}
+};
+
 
 module.exports = PolygonWindingFixer;
