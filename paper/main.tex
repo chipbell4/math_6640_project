@@ -4,6 +4,14 @@
 
 \begin{document}
 
+% some custom commands
+\newcommand{\innerproduct}[2]{\int\limits_{\Omega} #1 #2 d\Omega}
+\newcommand{\innerproductdot}[2]{\int\limits_{\Omega} \nabla #1 \cdot \nabla #2 d\Omega}
+\newcommand{\firstderivative}[2]{\frac{d #1}{d #2}}
+\newcommand{\secondderivative}[2]{\frac{d^2 #1}{d #2^2}}
+\newcommand{\firstpartial}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\secondpartial}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+
 \section{The main PDE}
 The partial differential equation models a damped membrane over a region $\Omega$ bounded by a closed curve $\Gamma$.
 \begin{equation} \label{eq:main_pde}
