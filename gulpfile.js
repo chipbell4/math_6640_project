@@ -21,7 +21,15 @@ gulp.task('browserify', ['jshint', 'test'], function() {
 		.pipe(gulp.dest('./build'));
 });
 
-gulp.task('paper', function(cb) {
+gulp.task('paper-lint', function(cb) {
+    exec('lacheck paper/main.tex', function(err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        cb(err);
+    });
+});
+
+gulp.task('paper', ['paper-lint'], function(cb) {
     exec('pdflatex -halt-on-error -output-directory paper paper/main.tex', function(err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
