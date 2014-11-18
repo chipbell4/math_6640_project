@@ -11,13 +11,14 @@
 \newcommand{\secondderivative}[2]{\frac{d^2 #1}{d #2^2}}
 \newcommand{\firstpartial}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\secondpartial}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\laplacian}[1]{\Delta #1}
 
 \section{The main PDE}
 The partial differential equation models a damped membrane over a region $\Omega$ bounded by a closed curve $\Gamma$.
 \begin{equation} \label{eq:main_pde}
-\frac{\partial^2u}{\partial t^2} + \gamma \frac{\partial u}{\partial t}
+\secondpartial{u}{t} + \gamma \firstpartial{u}{t}
 =
-\beta^2 \Delta u + F(x,y,t)
+\beta^2 \laplacian{u} + F(x,y,t)
 \end{equation}
 
 where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma$ is a damping factor for the wave,
@@ -35,46 +36,42 @@ u_h(x,y,t) = \sum\limits_{k=1}^N c_k(t) \phi_k(x,y)
 Note that at a particular time $t$, $c_k(t)$ will give the height of a wave at node $k$. So, by solving each of the values
 of $c_k(t)$ over time, we will obtain the values of $u_h$ at time $t$.
 
-The weak form of $u_h$ is given by
+The weak form of $u_h$ is given by taking the inner product 
 \begin{equation} \label{eq:u_h_weak_form}
-\int\limits_{\Omega} 
-    \left( 
-        \frac{\partial^2u_h}{\partial t^2} + \gamma \frac{\partial u_h}{\partial t}
-    \right)
-    v(x,y) d\Omega
-    =
-    \beta^2 \int\limits_{\Omega} \left( \Delta u \right) v(x,y) d\Omega
-    + \int\limits_{\Omega} F(x,y,t)v(x,y) d\Omega
+\innerproduct{ \left( \secondpartial{u_h}{t} + \gamma \firstpartial{u_h}{t} \right) } { v }
+=
+\beta^2 \innerproductdot{ \left( \laplacian{u} \right) }{v(x,y)}
++ \innerproduct{F}{v}
 \end{equation}
 for any $v \in H^1(\Omega)$. Since this works for any $v$, we can choose $v$ to be any of the basis functions $\phi$
 we chose for $H^1(\Omega)$. So, for any basis $\phi_j$, we can expand $u_h$ using (\ref{eq:u_h}) to obtain a new form:
 \begin{equation} \label{eq:u_h_weak_form_expanded}
-\sum\limits_{k=1}^N \left( \frac{d^2c_k}{dt^2} + \gamma\frac{dc_k}{dt} \right) \int\limits_{\Omega} \phi_k\phi_j d\Omega
+\sum\limits_{k=1}^N \left( \secondderivative{c_k}{t} + \gamma\firstderivative{c_k}{t} \right) \innerproduct{\phi_k}{\phi_j}
 =
-\beta^2\sum\limits_{k=1}^N c_k(t) \int\limits_{\Omega} \nabla \phi_k \cdot \nabla \phi_j d\Omega
+\beta^2\sum\limits_{k=1}^N c_k(t) \innerproductdot{\phi_k}{\phi_j}
 +
-\int\limits_{\Omega} F\phi_j d\Omega
+\innerproduct{F}{\phi_j}
 \end{equation}
 
 We now let $M$ be the matrix of pairwise inner products of the $\phi_k$'s, for example
 \begin{equation} \label{eq:m_definition}
-m_{ij} = \int\limits_{\Omega} \phi_i \phi_j d\Omega
+m_{ij} = \innerproduct{\phi_i}{\phi_j}
 \end{equation}
 
 And we let $A$ be the matrix of pairwise inner products of $\nabla \phi_k$, for example
 \begin{equation} \label{eq:a_definition}
-a_{ij} = \int\limits_{\Omega} \nabla \phi_i \cdot \nabla \phi_j d\Omega
+a_{ij} = \innerproductdot{\phi_i}{\phi_j}
 \end{equation}
 
 Also, let $\vec{c}(t)$ be the vector with each entry $c_k(t)$ for $k=1, 2, \ldots$. Lastly, define
 $\vec{F}(t)$ to be a vector, s.t. the $k$th entry is given as 
 \begin{equation} \label{eq:vec_F_definition}
-\int\limits_{\Omega} F(x,y,t) \phi_k(x,y) d\Omega
+\innerproduct{F}{\phi_k}
 \end{equation}
 
 We can now rewrite (\ref{eq:u_h_weak_form_expanded}) as
 \begin{equation} \label{eq:u_h_matrix}
-M\left( \frac{d^2\vec{c}}{dt^2} + \gamma\frac{d\vec{c}}{dt} \right) = \beta^2 A \vec{c} + \vec{F}
+M\left( \secondderivative{\vec{c}}{t} + \gamma\firstderivative{\vec{c}}{t} \right) = \beta^2 A \vec{c} + \vec{F}
 \end{equation}
 
 We now can build a finite difference scheme for $\vec{c}$ by using the following expansion for the second derivative:
