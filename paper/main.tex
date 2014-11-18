@@ -28,7 +28,8 @@ where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma$ is
 $\beta$ is the wave speed, and $F$ is a forcing function on the wave. Because this a drum head, (or ``membrane''), we choose
 $u$ along $\Gamma$ to be 0, giving us a Dirichet boundary condition.
 
-\section{Derivation of the Finite Element Solution}
+\section{Finite Element Analysis}
+\subsection{Derivation of the Finite Element Solution}
 We first consider the weak form of (\ref{eq:main_pde}) by approximating $u$ as $u_h \in H^1(\Omega)$. Assuming we have
 a triangulation of $\Omega$, consisting of $N$ triangles, we can choose 
 $\phi_1(x,y), \phi_2(x,y), \ldots, \phi_N(x,y)$ as basis functions for $H^1(\Omega)$, we can write $u_h$ as linear
@@ -105,5 +106,9 @@ c^{n+1} = \step{+}^{-1} M^{-1}
 
 Given this formulation, the only remaining challege is the numerical calculation of $M$, $A$ and potentially
 $M^{-1}$ (unless it is implicitly calculated every step via a banded matrix solver).
+
+\subsection{Formation of $A$}
+\subsection{Formation of $M$}
+\subsection{Formation of $M^{-1}$}
 
 \end{document}
