@@ -1,13 +1,18 @@
 \documentclass[a4paper,12pt]{article}
 
+\usepackage{amsmath, amsthm, amssymb}
+
 \begin{document}
 
+\section{The main PDE}
 Here is the main partial differential equation:
-\[
+
+\begin{equation}
 \frac{\partial^2u}{\partial t^2} + \gamma \frac{\partial u}{\partial t}
 =
 \beta^2 \nabla u + F(x,y,t)
-\]
+\end{equation}
+
 where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma$ is a damping factor for the wave,
 $\beta$ is the wave speed, and $F$ is a forcing function on the wave.
 
