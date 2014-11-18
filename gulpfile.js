@@ -22,7 +22,7 @@ gulp.task('browserify', ['jshint', 'test'], function() {
 });
 
 gulp.task('paper', function(cb) {
-    exec('pdflatex -halt-on-error -output-directory paper/main.tex', function(err, stdout, stderr) {
+    exec('pdflatex -halt-on-error -output-directory paper paper/main.tex', function(err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
         cb(err);
