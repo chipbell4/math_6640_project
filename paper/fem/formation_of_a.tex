@@ -1,0 +1,27 @@
+\subsection{Formation of $A$}
+The formula for each element of $A$ is given by (\ref{eq:a_definition}). This formulation requires the calculation
+of both $\nabla \phi_i$ and $\nabla \phi_j$. However, since every $\phi$ is piece-wise linear, the gradient
+is constant (and in most places zero). Within a particular triangle $T_{kji}$, applying the results from
+(\ref{eq:plane_solution}) gives
+\begin{equation} \label{eq:grad_phi_definition}
+\nabla \phi_k = \mat{a_{kji} \\ b_{kji}}
+\end{equation}
+
+For any $\phi_k$ and $\phi_j$, $j \ne k$, they will share either zero, one, or two triangular regions. If they share
+zero, the gradient of either $\phi_k$ or $\phi_j$ will be zero over the domain, forcing (\ref{eq:a_definition}) to
+be zero. If they share only a single region, it is because they lie on the domain boundary, which would imply that
+they are zero by the boundary conditions. The last case, sharing two triangular regions implies that they are interior
+nodes that are adjacent on the mesh. Because they are adjacent, in the two shared triangular regions both of their
+gradients will be non-zero. Furthermore, if $\nabla \phi_k = \mat{a_k \\ b_k}$ and $\nabla \phi_j = \mat{a_j \\ b_j}$
+inside of some triangle $T$, we have
+\begin{equation}
+\int\limits_T \nabla \phi_k \nabla \phi_j
+=
+\left( a_k a_j + b_k b_j \right) \mathop{Area}(T)
+\end{equation}
+Summing over both triangles gives a very straightforward method for calculating each individual element of A. Furthermore,
+A will be symmetric, since
+\begin{equation}
+\innerproductdot{\phi_k}{\phi_j} = \innerproductdot{\phi_j}{\phi_k}
+\end{equation}
+so further computation can be saved.
