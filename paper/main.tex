@@ -15,6 +15,12 @@
 \newcommand{\secondfinitediff}[1]{\frac{#1^{n+1} - 2#1^n + #1^{n-1}}{\delta t^2}}
 \newcommand{\firstfinitediff}[1]{\frac{#1^{n+1} - #1^{n-1}}{2\delta t}}
 \newcommand{\step}[1]{\left( \frac{1}{\delta t^2} #1 \frac{\gamma}{2\delta t} \right)}
+\newcommand{\mat}[2][rrrr]{
+    \left(\begin{array}{#1}
+    #2 \\
+    \end{array}
+    \right)
+}
 
 \section{The main PDE}
 The partial differential equation models a damped membrane over a region $\Omega$ bounded by a closed curve $\Gamma$.
@@ -108,8 +114,59 @@ Given this formulation, the only remaining challege is the numerical calculation
 $M^{-1}$ (unless it is implicitly calculated every step via a banded matrix solver).
 \cite{greenwade93}
 
-\subsection{Defining $\phi$}
+\subsection{Defining $\phi_k$}
+Since $\phi_k \in H^1$, we know that it is piecewise linear. We will choose $\phi_k$ to be zero at all nodes
+$N_1, N_2, \ldots$ but be 1 at $N_k$. This will cause $\phi_k$ to be tent-shaped. Because $\phi_k$ is piece-wise linear,
+in order to find a closed form we need only consider each "piece", which is this case a triangular region.
+
+Consider a single triangle with nodes at $N_k$, $N_j$, and $N_i$. Given our definition of $\phi_k$, we know $\phi_k(N_k) = 1$,
+but 0 for any other node. So in the region defined by our triangle (we'll call it $T_{kji}$), $\phi_k$ is non-zero. Because
+$\phi_k$ is piece-wise linear, that means $\phi_k$ is planar on the region, and that the plane passes through these three points:
+$(x_k, y_k, 1)$, $(x_j, y_j, 0)$, $(x_i, y_i, 0)$. Considering a plane in three dimensions can be written as
+\begin{equation} \label{eq:plane}
+z = P(x, y) = ax + bx + c
+\end{equation}
+we can form a linear system to solve for our cooefficients:
+\begin{equation} \label{eq:plane_solution}
+\mat{
+    x_k & y_k & 1 \\
+    x_j & y_j & 1 \\
+    x_i & y_i & 1
+}
+\mat{a \\ b \\ c}
+=
+\mat{1 \\ 0 \\ 0}
+\end{equation}
+Given the size of the matrix a closed form solution can be used (CITE), or direct solver can be used.
+
 \subsection{Formation of $A$}
+The formula for each element of $A$ is given by (\ref{eq:a_definition}). This formulation requires the calculation
+of both $\nabla \phi_i$ and $\nabla \phi_j$. However, since every $\phi$ is piece-wise linear, the gradient
+is constant (and in most places zero). Within a particular triangle $T_{kji}$, applying the results from
+(\ref{eq:plane_solution}) gives
+\begin{equation} \label{eq:grad_phi_definition}
+\nabla \phi_k = \mat{a_{kji} \\ b_{kji}}
+\end{equation}
+
+For any $\phi_k$ and $\phi_j$, $j \ne k$, they will share either zero, one, or two triangular regions. If they share
+zero, the gradient of either $\phi_k$ or $\phi_j$ will be zero over the domain, forcing (\ref{eq:a_definition}) to
+be zero. If they share only a single region, it is because they lie on the domain boundary, which would imply that
+they are zero by the boundary conditions. The last case, sharing two triangular regions implies that they are interior
+nodes that are adjacent on the mesh. Because they are adjacent, in the two shared triangular regions both of their
+gradients will be non-zero. Furthermore, if $\nabla \phi_k = \mat{a_k \\ b_k}$ and $\nabla \phi_j = \mat{a_j \\ b_j}$
+inside of some triangle $T$, we have
+\begin{equation}
+\int\limits_T \nabla \phi_k \nabla \phi_j
+=
+\left( a_k a_j + b_k b_j \right) \mathop{Area}(T)
+\end{equation}
+Summing over both triangles gives a very straightforward method for calculating each individual element of A. Furthermore,
+A will be symmetric, since
+\begin{equation}
+\innerproductdot{\phi_k}{\phi_j} = \innerproductdot{\phi_j}{\phi_k}
+\end{equation}
+so further computation can be saved.
+
 \subsection{Formation of $M$}
 \subsection{Formation of $M^{-1}$}
 
