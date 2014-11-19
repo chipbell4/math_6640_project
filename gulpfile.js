@@ -56,9 +56,10 @@ gulp.task('clean', function(cb) {
     del(['paper/**/*.{aux,bbl,blg,dvi,log,pdf}'], cb);
 });
 
-gulp.task('default', ['jshint', 'test', 'browserify']);
+gulp.task('default', ['jshint', 'test', 'browserify', 'paper']);
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('js/*', ['default']);
 	gulp.watch('tests/*', ['test']);
+    gulp.watch(['paper/**/*.tex', 'paper/**/bib'], ['paper']);
 });
