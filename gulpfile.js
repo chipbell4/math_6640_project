@@ -39,7 +39,7 @@ gulp.task('paper', ['paper-lint'], function(cb) {
 });
 
 gulp.task('clean', function(cb) {
-    del(['paper/**/*.{aux,log,pdf}'], cb);
+    del(['paper/**/*.{aux,bbl,blg,dvi,log,pdf}'], cb);
 });
 
 gulp.task('default', ['jshint', 'test', 'browserify']);
