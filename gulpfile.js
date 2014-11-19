@@ -3,6 +3,7 @@ var browserify = require('gulp-browserify');
 var jshint = require('gulp-jshint');
 var mocha = require('gulp-mocha');
 var exec = require('child_process').exec;
+var del = require('del');
 
 gulp.task('jshint', function() {
 	return gulp.src('js/**/*.js')
@@ -35,6 +36,10 @@ gulp.task('paper', ['paper-lint'], function(cb) {
         console.log(stderr);
         cb(err);
     });
+});
+
+gulp.task('clean', function(cb) {
+    del(['paper/**/*.{aux,log,pdf}'], cb);
 });
 
 gulp.task('default', ['jshint', 'test', 'browserify']);
