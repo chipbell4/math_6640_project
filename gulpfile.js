@@ -3,6 +3,8 @@ var browserify = require('gulp-browserify');
 var jshint = require('gulp-jshint');
 var mocha = require('gulp-mocha');
 var exec = require('child_process').exec;
+var del = require('del');
+var async = require('async');
 
 gulp.task('jshint', function() {
 	return gulp.src('js/**/*.js')
@@ -30,16 +32,34 @@ gulp.task('paper-lint', function(cb) {
 });
 
 gulp.task('paper', ['paper-lint'], function(cb) {
-    exec('pdflatex -halt-on-error -output-directory paper paper/main.tex', function(err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
+    var latex = 'latex -halt-on-error main';
+    var bibtex = 'bibtex main';
+    var dvipdf = 'dvipdf main.dvi main.pdf';
+    
+    async.series([
+        asyncCommand(latex),
+        asyncCommand(bibtex),
+        asyncCommand(latex),
+        asyncCommand(latex),
+        asyncCommand(dvipdf)
+    ], cb);
 });
 
-gulp.task('default', ['jshint', 'test', 'browserify']);
+// Converts a string command into an async exec call, to be chained with async.series
+var asyncCommand = function(commandText) {
+    return function(callback) {
+        exec(commandText, {cwd: 'paper'}, callback);
+    };
+};
+
+gulp.task('clean', function(cb) {
+    del(['paper/**/*.{aux,bbl,blg,dvi,log,pdf}'], cb);
+});
+
+gulp.task('default', ['jshint', 'test', 'browserify', 'paper']);
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('js/*', ['default']);
 	gulp.watch('tests/*', ['test']);
+    gulp.watch(['paper/**/*.tex', 'paper/**/bib'], ['paper']);
 });

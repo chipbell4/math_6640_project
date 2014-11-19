@@ -1,6 +1,9 @@
 node_modules/
 build/
 *.swp
-paper/main.aux
-paper/main.log
-paper/main.pdf
+paper/*.aux
+paper/*.log
+paper/*.pdf
+paper/*.bbl
+paper/*.blg
+paper/*.dvi
