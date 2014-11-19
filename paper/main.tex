@@ -50,7 +50,7 @@ The weak form of $u_h$ is given by taking the inner product
 \begin{equation} \label{eq:u_h_weak_form}
 \innerproduct{ \left( \secondpartial{u_h}{t} + \gamma \firstpartial{u_h}{t} \right) } { v }
 =
-\beta^2 \innerproductdot{ \left( \laplacian{u} \right) }{v(x,y)}
+\beta^2 \innerproductdot{u}{v(x,y)}
 + \innerproduct{F}{v}
 \end{equation}
 for any $v \in H^1(\Omega)$. Since this works for any $v$, we can choose $v$ to be any of the basis functions $\phi$
