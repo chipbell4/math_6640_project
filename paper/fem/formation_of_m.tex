@@ -1,4 +1,60 @@
 \subsection{Formation of $M$}
+To calculate the elements of $M$, the inner product of corresponding basis functions of $\Omega$ must be calculated
+(see (\ref{eq:m_definition})). Since the basis functions are 0 for most of the domain, and most nodes are not
+connected, we expect $M$ to be very sparse. So given a triangular mesh, we need only consider two cases: The inner
+product of two adjacent interior node basis function (since exterior nodes are 0), or the inner product of an interior
+node basis function with itself.
+
+As mentioned before, two adjacent interior node basis functions $\phi_k$ and $\phi_h$ will always share two triangular
+regions of $\Omega$ in which they are both non-zero. Considering just one of these triangles $T$, we can find a solution method for a
+single region and simply extrapolate up to using two regions. For just the single triangle $T$ defined by the points
+$N_k$, $N_j$, and $N_i$, we are wanting to calculate
+\begin{equation}
+\iint\limits_T \phi_k \phi_j dT
+\end{equation}
+The problem with attempting to calculate this integral directly is that $T$ may be an very domain to integrate over
+directly. Instead, we can apply an affine transformation to $T$, so to transform the region into a $(u,v)$ space that
+has more straight-forward limits of integration. We'll refer to the transformation as $S$.
+
+We'll choose $S$ to be a transformation that takes $T$ and transforms it to a triangle with corners at $(0,0)$, $(1,0)$,
+and $(1,1)$. We can choose any ordering, but we'll choose $SN_k = (0, 0)$, $SN_j = (1, 0)$, and $SN_i = (1, 1)$. Note that
+by transforming to this new $(u,v)$ space our integral becomes
+\begin{equation}
+\frac{1}{|S|} \int\limits_0^1 \int\limits_0^u S \phi_k \phi_j dv du
+\end{equation}
+using a straight-forward change of variables (CITE).
+
+Since $S$ is affine, we'll need to use homogeneous coordinates to treat as a linear transformation (CITE). Given a homogeneous
+formulation, $S$ takes the form
+\begin{equation}
+\mat{ a & b & c \\ d & e & f \\ 0 & 0 & 1 }
+\end{equation}
+
+Given the mapping we chose earlier, we can form an equation
+\begin{equation}
+S \mat{ x_k & x_j & x_i \\ y_k & y_j & y_i \\ 1 & 1 & 1}
+=
+\mat{ 0 & 0 & 1 \\ 0 & 1 & 1 \\ 1 & 1 & 1 }
+\end{equation}
+and then rearrange to create a linear system for which we can solve the coefficients of $S$:
+\begin{equation}
+\mat{
+    x_k & y_k & 1 & 0 & 0 & 0 \\
+    x_j & y_j & 1 & 0 & 0 & 0 \\
+    x_i & y_i & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & x_k & y_k & 1 \\
+    0 & 0 & 0 & x_j & y_j & 1 \\
+    0 & 0 & 0 & x_i & y_i & 1
+}
+\mat{a \\ b \\ c \\ d \\ e \\ f}
+=
+\mat{0 \\ 0 \\ 1 \\ 0 \\ 1 \\ 1}
+\end{equation}
+Since this matrix is in block form, we can simply use a closed form for the $3 \times 3$ case (CITE) or
+actually apply a direct solver.
+
+Given that we now have $S$, and we know the form of $\phi_k$ and $\phi_j$ we now need to determine the form of
+$S\phi_k \phi_j$ so that we can find a closed form for our inner product.
 
 - Mention only two triangles shared really matters
 - Integrating $\phi_k$ and $\phi_j$ over region sucks
