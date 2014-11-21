@@ -29,6 +29,15 @@ var FemDrawingState = require('./FemDrawingState.js');
 		};
 	};
 
+    var toggleDrawingState = function() {
+        if(currentDrawingState == femDrawingState) {
+            currentDrawingState = polygonDrawingState;
+        }
+        else {
+            currentDrawingState = femDrawingState;
+        }
+    };
+
 	window.setup = function() {
 		if(window.WebGLRenderingContext) {
 			renderer = new THREE.WebGLRenderer();
@@ -45,6 +54,7 @@ var FemDrawingState = require('./FemDrawingState.js');
 			var eventName = events[i];
 			document.addEventListener(eventName, generateListener(eventName));
 		}
+        document.addEventListener('keydown', toggleDrawingState);
 
 		animate();
 	};
