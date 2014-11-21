@@ -5,6 +5,7 @@ var FemDrawingState = function() {
 
     this.cameraHeight = 2;
     this.cameraDistance = 3;
+    this.elevation = 0;
     this.azimuth = 0;
 
     this.scene = new THREE.Scene();
@@ -18,9 +19,9 @@ var FemDrawingState = function() {
  */
 FemDrawingState.prototype.positionCamera = function() {
     // set the camera to be offset from the center of the surface wave (0.5, 0.5)
-    this.camera.position.x = 0.5 - this.cameraDistance * Math.cos(this.azimuth);
-    this.camera.position.y = 0.5 - this.cameraDistance * Math.sin(this.azimuth);
-    this.camera.position.z = this.cameraHeight;
+    this.camera.position.x = 0.5 + this.cameraDistance * Math.cos(this.azimuth) * Math.sin(this.elevation);
+    this.camera.position.y = 0.5 + this.cameraDistance * Math.sin(this.azimuth) * Math.sin(this.elevation);
+    this.camera.position.z = this.cameraDistance * Math.cos(this.elevation);
 
     // look back at the middle of the sim
     this.camera.lookAt(new THREE.Vector3(0.5, 0.5, 0));
@@ -29,6 +30,7 @@ FemDrawingState.prototype.positionCamera = function() {
 FemDrawingState.prototype.mousemove = function(evt) {
     // set the rotation angle based off of the mouse's position relative to the document size
     this.azimuth = evt.clientX / document.body.clientWidth * 2 * Math.PI;
+    this.elevation = evt.clientY / document.body.clientHeight * Math.PI;
     this.positionCamera();
 };
 
