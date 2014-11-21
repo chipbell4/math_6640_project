@@ -1,0 +1,99 @@
+\subsection{Formation of $M$}
+To calculate the elements of $M$, the inner product of corresponding basis functions of $\Omega$ must be calculated
+(see (\ref{eq:m_definition})). Since the basis functions are 0 for most of the domain, and most nodes are not
+connected, we expect $M$ to be very sparse. So given a triangular mesh, we need only consider two cases: The inner
+product of two adjacent interior node basis function (since exterior nodes are 0), or the inner product of an interior
+node basis function with itself.
+
+As mentioned before, two adjacent interior node basis functions $\phi_k$ and $\phi_h$ will always share two triangular
+regions of $\Omega$ in which they are both non-zero. Considering just one of these triangles $T$, we can find a solution method for a
+single region and simply extrapolate up to using two regions. For just the single triangle $T$ defined by the points
+$N_k$, $N_j$, and $N_i$, we are wanting to calculate
+\begin{equation}
+\iint\limits_T \phi_k \phi_j dT
+\end{equation}
+The problem with attempting to calculate this integral directly is that $T$ may be an very domain to integrate over
+directly. Instead, we can apply an affine transformation to $T$, so to transform the region into a $(u,v)$ space that
+has more straight-forward limits of integration. We'll refer to the transformation as $S$.
+
+We'll choose $S$ to be a transformation that takes a triangle with corners at $(0,0)$, $(1,0)$, and $(1,1)$. and
+transforms them to $T$. We can choose any ordering, but we'll choose $S^{-1}N_k = (0, 0)$, $S^{-1}N_j = (1, 0)$,
+and $S^{-1}N_i = (1, 1)$. Note that
+by transforming to this new $(u,v)$ space our integral becomes
+\begin{equation}
+\int\limits_0^1 \int\limits_0^u \phi_k(S(u, v)) \phi_j(S(u, v)) |S| dv du
+\end{equation}
+using a straight-forward change of variables (CITE).
+
+Since $S$ is affine, we'll need to use homogeneous coordinates to treat as a linear transformation (CITE). Given a homogeneous
+formulation, $S$ takes the form
+\begin{equation}
+\mat{ a & b & c \\ d & e & f \\ 0 & 0 & 1 }
+\end{equation}
+
+Given the mapping we chose earlier, we can form an equation
+\begin{equation}
+S \mat{ 0 & 1 & 1 \\ 0 & 0 & 1 \\ 1 & 1 & 0 }
+= \mat{ x_k & x_j & x_i \\ y_k & y_j & y_i \\ 1 & 1 & 1}
+\end{equation}
+and then rearrange to create a linear system for which we can solve the coefficients of $S$:
+\begin{equation}
+\mat{
+    0 & 0 & 1 & 0 & 0 & 0 \\
+    1 & 0 & 1 & 0 & 0 & 0 \\
+    1 & 1 & 0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 1 \\
+    0 & 0 & 0 & 1 & 0 & 1 \\
+    0 & 0 & 0 & 1 & 1 & 0 
+}
+\mat{a \\ b \\ c \\ d \\ e \\ f}
+=
+\mat{x_k \\ x_j \\ x_i \\ y_k \\ y_j \\ y_i }
+\end{equation}
+Given the form of the matrix, this is easily solved by hand, and we have
+\begin{equation}
+S = \mat{
+    x_j - x_k & x_k - x_j + x_i & x_k \\
+    y_j - y_k & y_k - y_j + y_i & y_k \\
+    0 & 0 & 1
+}
+\end{equation}
+Moreover, $S$ is a simple enough form to find a closed solution for $|S|$:
+\begin{equation}
+|S| = 
+(x_j - x_k)(y_k - y_j + y_i) -
+(y_j - y_k)(x_k - x_j + x_i)
+\end{equation}
+
+Lastly, we need to find a closed form of $\phi_k(S(u,v))\phi_j(S(u,v))$, and ultimately a closed form for the full
+integral. Using $S$, $\phi_k$ will now take the form
+\begin{equation}
+\phi_k(S(u,v)) = A_k ((x_j - x_k)u + (x_k - x_j + x_i)v + x_k) + B_k((y_j - y_k)u + (y_k - y_j + y_i)v + y_k)
+\end{equation}
+After some algebra we get
+\begin{equation}
+((A_k(x_j-x_k) + B_k(y_j-y_k))u + (A_k(x_k-x_j+x_i) + B_k(y_k-y_j+y_i))v + (A_k x_k + B_k y_k)
+\end{equation}
+Or for simplicity we'll right it as
+\begin{equation}
+A'_k u + B'_k v + C'
+\end{equation}
+Multiplying $\phi_k$ and $\phi_j$ gives us
+\begin{equation}
+(A'_k A'_j)u^2 + (B_k'B_j')v^2 + (A'_k B'_j + B'_k A'_j)uv + (A'_k C'_j + C'_k A'_j)u
++ (B'_kC'_j + C'_kB'_j)v + (C'_k C'_j)
+\end{equation}
+Now, we can integrate
+\begin{equation}
+\int\limits_0^1\int\limits_0^u \phi_k(S(u,v)) \phi_j(S(u,v)) dvdu
+\end{equation}
+Which gives us a final closed form
+\begin{equation}
+\frac{A'_k A'_j}{4} + \frac{B_k'B_j'}{12} + \frac{A'_k B'_j + B'_k A'_j}{12} +
+\frac{A'_k C'_j + C'_k A'_j + B'_kC'_j + C'_kB'_j}{6} + \frac{C'_k C'_j}{2}
+\end{equation}
+for the integral over a single triangle. We can apply this method twice for the two shared triangles to calculate
+$\innerproduct{\phi_k}{\phi_j}$.
+
+For $\innerproduct{\phi_k}{\phi_k}$, the method is exactly the same, but we must integrate over all triangles with a
+vertex at $N_k$, since $\phi_k$ shares all neighboring triangles with itself.
