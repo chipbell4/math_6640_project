@@ -1,9 +1,17 @@
 var PolygonDrawingState = require('./PolygonDrawingState.js');
+var FemDrawingState = require('./FemDrawingState.js');
 
 (function() {
 	var polygonDrawingState = new PolygonDrawingState();
+    var femDrawingState = new FemDrawingState();
 
-	var currentDrawingState = polygonDrawingState;
+    // test code
+    var geometry = new THREE.PlaneGeometry( 1, 1, 2, 2);
+    var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+    var plane = new THREE.Mesh( geometry, material );
+    femDrawingState.scene.add(plane);
+	
+    var currentDrawingState = femDrawingState;
 
 	var renderer;
 
@@ -21,6 +29,15 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 		};
 	};
 
+    var toggleDrawingState = function() {
+        if(currentDrawingState == femDrawingState) {
+            currentDrawingState = polygonDrawingState;
+        }
+        else {
+            currentDrawingState = femDrawingState;
+        }
+    };
+
 	window.setup = function() {
 		if(window.WebGLRenderingContext) {
 			renderer = new THREE.WebGLRenderer();
@@ -37,6 +54,7 @@ var PolygonDrawingState = require('./PolygonDrawingState.js');
 			var eventName = events[i];
 			document.addEventListener(eventName, generateListener(eventName));
 		}
+        document.addEventListener('keydown', toggleDrawingState);
 
 		animate();
 	};
