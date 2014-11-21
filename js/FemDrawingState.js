@@ -5,10 +5,10 @@ var FemDrawingState = function() {
 
     this.cameraHeight = 2;
     this.cameraDistance = 3;
-    this.lookAngle = 0;
+    this.azimuth = 0;
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-3, 3, -3, 3, 1, 10000);
+    this.camera = new THREE.OrthographicCamera(-4, 4, -4, 4, 1, 10000);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.positionCamera();
 };
@@ -18,8 +18,8 @@ var FemDrawingState = function() {
  */
 FemDrawingState.prototype.positionCamera = function() {
     // set the camera to be offset from the center of the surface wave (0.5, 0.5)
-    this.camera.position.x = 0.5 - this.cameraDistance * Math.cos(this.lookAngle);
-    this.camera.position.y = 0.5 - this.cameraDistance * Math.sin(this.lookAngle);
+    this.camera.position.x = 0.5 - this.cameraDistance * Math.cos(this.azimuth);
+    this.camera.position.y = 0.5 - this.cameraDistance * Math.sin(this.azimuth);
     this.camera.position.z = this.cameraHeight;
 
     // look back at the middle of the sim
@@ -28,7 +28,7 @@ FemDrawingState.prototype.positionCamera = function() {
 
 FemDrawingState.prototype.mousemove = function(evt) {
     // set the rotation angle based off of the mouse's position relative to the document size
-    this.lookAngle = evt.clientX / document.body.clientWidth * 2 * Math.PI;
+    this.azimuth = evt.clientX / document.body.clientWidth * 2 * Math.PI;
     this.positionCamera();
 };
 

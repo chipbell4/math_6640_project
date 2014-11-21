@@ -6,7 +6,7 @@ var FemDrawingState = require('./FemDrawingState.js');
     var femDrawingState = new FemDrawingState();
 
     // test code
-    var geometry = new THREE.PlaneGeometry( 5, 20, 32 );
+    var geometry = new THREE.PlaneGeometry( 1, 1, 2, 2);
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
     femDrawingState.scene.add(plane);
