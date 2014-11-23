@@ -51,7 +51,7 @@ gulp.task('clean', function(cb) {
 gulp.task('default', ['jshint', 'test', 'browserify', 'paper']);
 
 gulp.task('watch', ['default'], function() {
-	gulp.watch('js/*', ['default']);
-	gulp.watch('tests/*', ['test']);
+	gulp.watch('js/**/*.js', ['default']);
+	gulp.watch('tests/**/*.js', ['test']);
     gulp.watch(['paper/**/*.tex', 'paper/**/bib'], ['paper']);
 });
