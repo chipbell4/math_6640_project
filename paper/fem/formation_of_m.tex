@@ -33,7 +33,7 @@ formulation, $S$ takes the form
 
 Given the mapping we chose earlier, we can form an equation
 \begin{equation}
-S \mat{ 0 & 1 & 1 \\ 0 & 0 & 1 \\ 1 & 1 & 0 }
+S \mat{ 0 & 1 & 1 \\ 0 & 0 & 1 \\ 1 & 1 & 1 }
 = \mat{ x_k & x_j & x_i \\ y_k & y_j & y_i \\ 1 & 1 & 1}
 \end{equation}
 and then rearrange to create a linear system for which we can solve the coefficients of $S$:
@@ -41,10 +41,10 @@ and then rearrange to create a linear system for which we can solve the coeffici
 \mat{
     0 & 0 & 1 & 0 & 0 & 0 \\
     1 & 0 & 1 & 0 & 0 & 0 \\
-    1 & 1 & 0 & 0 & 1 & 0 \\
+    1 & 1 & 1 & 0 & 1 & 0 \\
     0 & 0 & 0 & 0 & 0 & 1 \\
     0 & 0 & 0 & 1 & 0 & 1 \\
-    0 & 0 & 0 & 1 & 1 & 0 
+    0 & 0 & 0 & 1 & 1 & 1 
 }
 \mat{a \\ b \\ c \\ d \\ e \\ f}
 =
@@ -53,26 +53,26 @@ and then rearrange to create a linear system for which we can solve the coeffici
 Given the form of the matrix, this is easily solved by hand, and we have
 \begin{equation}
 S = \mat{
-    x_j - x_k & x_k - x_j + x_i & x_k \\
-    y_j - y_k & y_k - y_j + y_i & y_k \\
+    x_j - x_k & x_i - x_j & x_k \\
+    y_j - y_k & y_i - y_j & y_k \\
     0 & 0 & 1
 }
 \end{equation}
 Moreover, $S$ is a simple enough form to find a closed solution for $|S|$:
 \begin{equation}
 |S| = 
-(x_j - x_k)(y_k - y_j + y_i) -
-(y_j - y_k)(x_k - x_j + x_i)
+(x_j - x_k)(y_i - y_j) -
+(y_j - y_k)(x_i - x_j)
 \end{equation}
 
 Lastly, we need to find a closed form of $\phi_k(S(u,v))\phi_j(S(u,v))$, and ultimately a closed form for the full
 integral. Using $S$, $\phi_k$ will now take the form
 \begin{equation}
-\phi_k(S(u,v)) = A_k ((x_j - x_k)u + (x_k - x_j + x_i)v + x_k) + B_k((y_j - y_k)u + (y_k - y_j + y_i)v + y_k)
+\phi_k(S(u,v)) = A_k ((x_j - x_k)u + (x_i - x_j)v + x_k) + B_k((y_j - y_k)u + (y_i - y_j)v + y_k)
 \end{equation}
 After some algebra we get
 \begin{equation}
-((A_k(x_j-x_k) + B_k(y_j-y_k))u + (A_k(x_k-x_j+x_i) + B_k(y_k-y_j+y_i))v + (A_k x_k + B_k y_k)
+((A_k(x_j-x_k) + B_k(y_j-y_k))u + (A_k(x_i-x_j) + B_k(y_i-y_j))v + (A_k x_k + B_k y_k)
 \end{equation}
 Or for simplicity we'll right it as
 \begin{equation}
