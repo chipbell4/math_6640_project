@@ -85,12 +85,13 @@ Multiplying $\phi_k$ and $\phi_j$ gives us
 \end{equation}
 Now, we can integrate
 \begin{equation}
-\int\limits_0^1\int\limits_0^u \phi_k(S(u,v)) \phi_j(S(u,v)) dvdu
+\int\limits_0^1\int\limits_0^u \phi_k(S(u,v)) \phi_j(S(u,v)) |S| dvdu
 \end{equation}
 Which gives us a final closed form
 \begin{equation}
-\frac{A'_k A'_j}{4} + \frac{B_k'B_j'}{12} + \frac{A'_k B'_j + B'_k A'_j}{12} +
+\left(\frac{A'_k A'_j}{4} + \frac{B_k'B_j'}{12} + \frac{A'_k B'_j + B'_k A'_j}{12} +
 \frac{A'_k C'_j + C'_k A'_j + B'_kC'_j + C'_kB'_j}{6} + \frac{C'_k C'_j}{2}
+\right) |S|
 \end{equation}
 for the integral over a single triangle. We can apply this method twice for the two shared triangles to calculate
 $\innerproduct{\phi_k}{\phi_j}$.
