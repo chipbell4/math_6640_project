@@ -1,6 +1,7 @@
 var expect = require('chai').expect;
 var THREE = require('three');
 var TSC = require('../../js/Fem/TriangleStiffnessCalculator.js');
+var numeric = require('numeric');
 
 var expectVectorEquals = function(v1, v2) {
     expect(v1.x).to.be.closeTo(v2.x, 0.001);
@@ -30,7 +31,6 @@ describe('TSC', function() {
         it('should transform points correctly', function() {
 
             var transform = TSC.buildUnitTriangleTransformToPoints(p1, p2, p3);
-            console.log(transform);
 
             // make sure the points are transformed correctly
             expect(numeric.dot(transform, [0, 0, 1])).to.deep.equal(TSC.to2DNumericHomogeneousVector(p1));
