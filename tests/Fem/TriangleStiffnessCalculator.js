@@ -13,9 +13,25 @@ describe('TSC', function() {
         expect(TSC).to.be.instanceOf(Object);
     });
 
-    describe('calculateStiffness', function() {
+    describe('singleTriangleInnerProduct', function() {
         it('should exist', function() {
-            expect(TSC.calculateStiffness).to.be.instanceOf(Function);
+            expect(TSC.singleTriangleInnerProduct).to.be.instanceOf(Function);
+        });
+
+        it('should calculate the value, when there is no scaling', function() {
+            var p1 = new THREE.Vector3(0, 0, 0);
+            var p2 = new THREE.Vector3(1, 0, 0);
+            var p3 = new THREE.Vector3(1, 1, 0);
+
+            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 24, 0.0001);
+        });
+
+        it('should calculate the value, when there is scaling', function() {
+            var p1 = new THREE.Vector3(0, 0, 0);
+            var p2 = new THREE.Vector3(3, 0, 0);
+            var p3 = new THREE.Vector3(3, 2, 0);
+
+            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 36, 0.0001);
         });
     });
 
@@ -36,6 +52,27 @@ describe('TSC', function() {
             expect(numeric.dot(transform, [0, 0, 1])).to.deep.equal(TSC.to2DNumericHomogeneousVector(p1));
             expect(numeric.dot(transform, [1, 0, 1])).to.deep.equal(TSC.to2DNumericHomogeneousVector(p2));
             expect(numeric.dot(transform, [1, 1, 1])).to.deep.equal(TSC.to2DNumericHomogeneousVector(p3));
+        });
+    });
+
+    describe('calculateUVPlaneCoefficientsForPoints', function() {
+        it('Should produce a "unit" transformation for already centered points', function() {
+            var p1 = new THREE.Vector3(0, 0, 0);
+            var p2 = new THREE.Vector3(1, 0, 1);
+            var p3 = new THREE.Vector3(1, 1, 2);
+
+            expect(TSC.calculateUVPlaneCoefficientsForPoints(p1, p2, p3)).to.deep.equal([1, 1, 0]);
+        });
+
+        it('Should produce a correct transformation for non-centered points', function() {
+            var p1 = new THREE.Vector3(4, 0, 0);
+            var p2 = new THREE.Vector3(6, 1, 1);
+            var p3 = new THREE.Vector3(6, 3, 2);
+
+            var planeCoords = TSC.calculateUVPlaneCoefficientsForPoints(p1, p2, p3);
+            expect(planeCoords[0]).to.be.closeTo(1, 0.001);
+            expect(planeCoords[1]).to.be.closeTo(1, 0.001);
+            expect(planeCoords[2]).to.be.closeTo(0, 0.001);
         });
     });
 
