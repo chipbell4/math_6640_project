@@ -28,10 +28,10 @@ describe('TSC', function() {
 
         it('should calculate the value, when there is scaling', function() {
             var p1 = new THREE.Vector3(0, 0, 0);
-            var p2 = new THREE.Vector3(3, 0, 0);
-            var p3 = new THREE.Vector3(3, 2, 0);
+            var p2 = new THREE.Vector3(3, 2, 0);
+            var p3 = new THREE.Vector3(3, 0, 0);
 
-            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 36, 0.0001);
+            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 4, 0.0001);
         });
     });
 

@@ -56,7 +56,7 @@ var singleTriangleInnerProduct = function(firstWeightedPoint, secondWeightedPoin
         (A1 * C2 + A2 * C1) / 3 + (B1 * C2 + B2 * C1) / 6 + (C1 * C2) / 2;
 
     var coordinateTransform = buildUnitTriangleTransformToPoints(firstWeightedPoint, secondWeightedPoint, sharedPoint);
-    return unscaledIntegral * numeric.det(coordinateTransform);
+    return unscaledIntegral * Math.abs(numeric.det(coordinateTransform));
 };
 
 module.exports = {
