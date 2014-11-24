@@ -1,10 +1,17 @@
 var numeric = require('numeric');
 var PartialBasisFunction = require('./PartialBasisFunction.js');
 
+/**
+ * Converts a THREE vector into a homogeneous vector, so we can use numeric.js functions on it
+ */
 var to2DNumericHomogeneousVector = function(vector) {
     return [vector.x, vector.y, 1];
 };
 
+/**
+ * Builds the transform matrix that translates (0,0), (0,1), and (1,1) to p1, p2, p3 respectively, using homogeneous
+ * coordinates.
+ */
 var buildUnitTriangleTransformToPoints = function(p1, p2, p3) {
     var transform = [
         [0,0,0],
@@ -23,6 +30,10 @@ var buildUnitTriangleTransformToPoints = function(p1, p2, p3) {
     return transform;
 };
 
+/**
+ * Calculates the plane passing through p1, p2, and p3, then converts the coordinates into uv triangle space, which
+ * has corners at (0,0) (1,0) and (1,1).
+ */
 var calculateUVPlaneCoefficientsForPoints = function(p1, p2, p3) {
     var transform = buildUnitTriangleTransformToPoints(p1, p2, p3);
     var originalPlane = new PartialBasisFunction(p1, p2, p3);
@@ -32,6 +43,10 @@ var calculateUVPlaneCoefficientsForPoints = function(p1, p2, p3) {
     return numeric.dot(originalPlane, transform);
 };
 
+/**
+ * Calculates the inner product of two basis functions (with weights at the two first points), over the triangle
+ * enclosed by the three passed points
+ */
 var singleTriangleInnerProduct = function(firstWeightedPoint, secondWeightedPoint, sharedPoint) {
     // build the plane that's 1 only at the first weighted point
     firstWeightedPoint.z = 1;
