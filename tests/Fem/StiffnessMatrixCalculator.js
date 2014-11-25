@@ -59,6 +59,17 @@ describe('SMC', function() {
              expect(geometry.massBetweenNodes(0, 1)).to.not.equal(0);
         });
 
+        it('should return the sum of the triangle inner products if they are the same node', function() {
+            var geometry = calculatorFactory(
+                [new THREE.Vector3(), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 1, 0)],
+                [new THREE.Face3(0, 1, 2), new THREE.Face3(0, 1, 3)],
+                []
+            );
+
+            // TODO: Make this test more exact plz
+             expect(geometry.massBetweenNodes(0, 0)).to.not.equal(0);
+        });
+
         it('should return the sum of all neighboring triangles if the nodes are the same');
     });
 

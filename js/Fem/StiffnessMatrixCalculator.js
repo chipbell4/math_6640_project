@@ -10,12 +10,7 @@ StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
         !this.geometry.nodesAreAdjacent(i, j);
 };
 
-StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
-    if(this.innerProductTriviallyZero(i, j)) {
-        return 0;
-    }
-
-    // they are adjacent, sum each of the mini inner products
+StiffnessMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
     var total = 0;
     var sharedNodes = this.geometry.sharedAdjacentVertices(i, i);
     var N = sharedNodes.length;
@@ -27,6 +22,54 @@ StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
         total += TSC.singleTriangleInnerProduct([firstNode, secondNode, sharedNode], [0, 1]);
     }
     return total;
+};
+
+/**
+ * Extracts an array of vertex indices from a face, shifting the provided node (if its in the face) to the front
+ */
+var extractTriangleFromFace = function(face, firstNode) {
+    var nodes = [face.a, face.b, face.c];
+
+    return nodes.sort(function(node1, node2) {
+        if(node1 == firstNode) {
+            return -1;
+        }
+        if(node2 == firstNode) {
+            return 1;
+        }
+        return 0;
+    });
+};
+
+StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
+    // get only the faces that node i is in
+    return this.geometry.threeGeometry.faces.filter(function(face) {
+        return face.a == i || face.b == i || face.c == i;
+    })
+    // map that to an array of vertex indices
+    .map(function(face) {
+        return extractTriangleFromFace(face, i);
+    })
+    // calculate the integral over the triangle
+    .map(function(triangleVertices) {
+        return TSC.singleTriangleInnerProduct(triangleVertices, [0, 0]);
+    })
+    // sum up the result
+    .reduce(function(carry, currentValue) {
+        return carry + currentValue;
+    }, 0);
+};
+
+StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
+    if(i == j) {
+        return this.squaredMassForNode(i);
+    }
+
+    if(this.innerProductTriviallyZero(i, j)) {
+        return 0;
+    }
+
+    return this.massBetweenDifferentAdjacentNodes(i, j);
 };
 
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
