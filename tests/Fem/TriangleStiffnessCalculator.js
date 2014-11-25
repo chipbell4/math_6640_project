@@ -23,7 +23,9 @@ describe('TSC', function() {
             var p2 = new THREE.Vector3(1, 0, 0);
             var p3 = new THREE.Vector3(1, 1, 0);
 
-            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 24, 0.0001);
+            var points = [p1, p2, p3];
+            var weightedPoints = [0, 1];
+            expect(TSC.singleTriangleInnerProduct(points, weightedPoints)).to.be.closeTo(1 / 24, 0.0001);
         });
 
         it('should calculate the value, when there is scaling', function() {
@@ -31,7 +33,9 @@ describe('TSC', function() {
             var p2 = new THREE.Vector3(3, 2, 0);
             var p3 = new THREE.Vector3(3, 0, 0);
 
-            expect(TSC.singleTriangleInnerProduct(p1, p2, p3)).to.be.closeTo(1 / 4, 0.0001);
+            var points = [p1, p2, p3];
+            var weightedPoints = [0, 1];
+            expect(TSC.singleTriangleInnerProduct(points, weightedPoints)).to.be.closeTo(1 / 4, 0.0001);
         });
     });
 

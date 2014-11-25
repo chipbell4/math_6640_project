@@ -24,7 +24,7 @@ StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
     var secondNode = this.geometry.threeGeometry.vertices[j];
     for(var k = 0; k < N; k++) {
         var sharedNode = this.geometry.threeGeometry.vertices[k];
-        total += TSC.singleTriangleInnerProduct(firstNode, secondNode, sharedNode);
+        total += TSC.singleTriangleInnerProduct([firstNode, secondNode, sharedNode], [0, 1]);
     }
     return total;
 };
