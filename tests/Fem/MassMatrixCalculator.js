@@ -1,11 +1,11 @@
 var expect = require('chai').expect;
 var THREE = require('three');
 var FemGeometry = require('../../js/Fem/FemGeometry.js');
-var StiffnessMatrixCalculator = require('../../js/Fem/StiffnessMatrixCalculator.js');
+var MassMatrixCalculator = require('../../js/Fem/MassMatrixCalculator.js');
 
 describe('SMC', function() {
     it('should exist', function() {
-        expect(StiffnessMatrixCalculator).to.be.instanceOf(Function);
+        expect(MassMatrixCalculator).to.be.instanceOf(Function);
     });
 
     var calculatorFactory = function(vertices, faces, boundaryNodes) {
@@ -13,12 +13,12 @@ describe('SMC', function() {
         Array.prototype.push.apply(threeGeometry.vertices, vertices);
         Array.prototype.push.apply(threeGeometry.faces, faces);
         geometry = new FemGeometry(threeGeometry, boundaryNodes);
-        return new StiffnessMatrixCalculator(geometry);
+        return new MassMatrixCalculator(geometry);
     };
 
     describe('massBetweenNodes', function() {
         it('should exist', function() {
-            expect(StiffnessMatrixCalculator.prototype.massBetweenNodes).to.be.instanceOf(Function);
+            expect(MassMatrixCalculator.prototype.massBetweenNodes).to.be.instanceOf(Function);
         });
 
         it('should return 0 if the first node is a boundary node', function() {
@@ -75,7 +75,7 @@ describe('SMC', function() {
 
     describe('buildMatrix', function() {
         it('should exist', function() {
-            expect(StiffnessMatrixCalculator.prototype.buildMatrix).to.be.instanceOf(Function);
+            expect(MassMatrixCalculator.prototype.buildMatrix).to.be.instanceOf(Function);
         });
         
         it('should return a matrix', function() {
