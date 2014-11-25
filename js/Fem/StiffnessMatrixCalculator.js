@@ -1,15 +1,24 @@
 var TSC = require('./TriangleStiffnessCalculator.js');
 
+/**
+ * Represents a class for generating the matrix of inner products of basis functions over our domain
+ */
 var StiffnessMatrixCalculator = function(femGeometry) {
     this.geometry = femGeometry;
 };
 
+/**
+ * Returns true if the inner product between two DIFFERENT nodes is trivially 0
+ */
 StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
     return this.geometry.isBoundaryNode(i) || 
         this.geometry.isBoundaryNode(j) ||
         !this.geometry.nodesAreAdjacent(i, j);
 };
 
+/**
+ * Calculates the inner product between two adjacent nodes, no assumptions
+ */
 StiffnessMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
     var total = 0;
     var sharedNodes = this.geometry.sharedAdjacentVertices(i, i);
@@ -41,6 +50,9 @@ var extractTriangleFromFace = function(face, firstNode) {
     });
 };
 
+/**
+ * Calculates the inner product of basis function with itself.
+ */
 StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
     // get only the faces that node i is in
     return this.geometry.threeGeometry.faces.filter(function(face) {
@@ -60,6 +72,9 @@ StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
     }, 0);
 };
 
+/**
+ * Calculates the mass between two nodes i and j.
+ */
 StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
     if(i == j) {
         return this.squaredMassForNode(i);
@@ -74,7 +89,5 @@ StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
 
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
 };
-
-// TSC.singleTriangleInnerProduct(p1, p2, sharedPoint);
 
 module.exports = StiffnessMatrixCalculator;
