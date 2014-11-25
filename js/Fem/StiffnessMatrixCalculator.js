@@ -8,9 +8,13 @@ var StiffnessMatrixCalculator = function(femGeometry) {
 };
 
 /**
- * Returns true if the inner product between two DIFFERENT nodes is trivially 0
+ * Returns true if the inner product between two nodes is trivially 0
  */
 StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
+    if(i == j) {
+        return this.geometry.isBoundaryNode(i);
+    }
+
     return this.geometry.isBoundaryNode(i) || 
         this.geometry.isBoundaryNode(j) ||
         !this.geometry.nodesAreAdjacent(i, j);
@@ -21,13 +25,13 @@ StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
  */
 StiffnessMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
     var total = 0;
-    var sharedNodes = this.geometry.sharedAdjacentVertices(i, i);
+    var sharedNodes = this.geometry.sharedAdjacentVertices(i, j);
     var N = sharedNodes.length;
 
     var firstNode = this.geometry.threeGeometry.vertices[i];
     var secondNode = this.geometry.threeGeometry.vertices[j];
     for(var k = 0; k < N; k++) {
-        var sharedNode = this.geometry.threeGeometry.vertices[k];
+        var sharedNode = this.geometry.threeGeometry.vertices[sharedNodes[k]];
         total += TSC.singleTriangleInnerProduct([firstNode, secondNode, sharedNode], [0, 1]);
     }
     return total;
@@ -54,6 +58,7 @@ var extractTriangleFromFace = function(face, firstNode) {
  * Calculates the inner product of basis function with itself.
  */
 StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
+    var that = this;
     // get only the faces that node i is in
     return this.geometry.threeGeometry.faces.filter(function(face) {
         return face.a == i || face.b == i || face.c == i;
@@ -61,6 +66,12 @@ StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
     // map that to an array of vertex indices
     .map(function(face) {
         return extractTriangleFromFace(face, i);
+    })
+    // map to actual triangle values
+    .map(function(triangleVertices) {
+        return triangleVertices.map(function(index) {
+            return that.geometry.threeGeometry.vertices[index];
+        });
     })
     // calculate the integral over the triangle
     .map(function(triangleVertices) {
@@ -76,18 +87,37 @@ StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
  * Calculates the mass between two nodes i and j.
  */
 StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
-    if(i == j) {
-        return this.squaredMassForNode(i);
-    }
-
     if(this.innerProductTriviallyZero(i, j)) {
         return 0;
+    }
+    
+    if(i == j) {
+        return this.squaredMassForNode(i);
     }
 
     return this.massBetweenDifferentAdjacentNodes(i, j);
 };
 
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
+    // build an empty array
+    var i, j, N = this.geometry.threeGeometry.vertices.length;
+    var matrix = Array(N);
+    for(i = 0; i < N; i++) {
+        matrix[i] = Array(N);
+    }
+
+    // now build the mass matrix...
+    for(i = 0; i < N; i++) {
+        // save ourselves some work, by taking advantage of symmetry
+        for(j = i; j < N; j++) {
+            matrix[i][j] = this.massBetweenNodes(i, j);
+        }
+        for(j = 0; j < i; j++) {
+            matrix[i][j] = matrix[j][i];
+        }
+    }
+
+    return matrix;
 };
 
 module.exports = StiffnessMatrixCalculator;
