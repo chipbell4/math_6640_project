@@ -4,12 +4,14 @@ var StiffnessMatrixCalculator = function(femGeometry) {
     this.geometry = femGeometry;
 };
 
-StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
-    if(this.geometry.isBoundaryNode(i) || this.geometry.isBoundaryNode(j)) {
-        return 0;
-    }
+StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
+    return this.geometry.isBoundaryNode(i) || 
+        this.geometry.isBoundaryNode(j) ||
+        !this.geometry.nodesAreAdjacent(i, j);
+};
 
-    if(!this.geometry.nodesAreAdjacent(i, j)) {
+StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
+    if(this.innerProductTriviallyZero(i, j)) {
         return 0;
     }
 
