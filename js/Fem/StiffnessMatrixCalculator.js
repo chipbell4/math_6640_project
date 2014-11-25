@@ -98,6 +98,9 @@ StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
     return this.massBetweenDifferentAdjacentNodes(i, j);
 };
 
+/**
+ * Builds the actual stiffness matrix
+ */
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
     // build an empty array
     var i, j, N = this.geometry.threeGeometry.vertices.length;
