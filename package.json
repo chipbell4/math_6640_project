@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "del": "^0.1.3",
-    "delaunay-triangulate": "^1.1.6"
+    "delaunay-triangulate": "^1.1.6",
+    "numeric": "^1.2.6"
   }
 }

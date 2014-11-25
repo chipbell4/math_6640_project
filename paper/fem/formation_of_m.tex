@@ -33,7 +33,7 @@ formulation, $S$ takes the form
 
 Given the mapping we chose earlier, we can form an equation
 \begin{equation}
-S \mat{ 0 & 1 & 1 \\ 0 & 0 & 1 \\ 1 & 1 & 0 }
+S \mat{ 0 & 1 & 1 \\ 0 & 0 & 1 \\ 1 & 1 & 1 }
 = \mat{ x_k & x_j & x_i \\ y_k & y_j & y_i \\ 1 & 1 & 1}
 \end{equation}
 and then rearrange to create a linear system for which we can solve the coefficients of $S$:
@@ -41,10 +41,10 @@ and then rearrange to create a linear system for which we can solve the coeffici
 \mat{
     0 & 0 & 1 & 0 & 0 & 0 \\
     1 & 0 & 1 & 0 & 0 & 0 \\
-    1 & 1 & 0 & 0 & 1 & 0 \\
+    1 & 1 & 1 & 0 & 1 & 0 \\
     0 & 0 & 0 & 0 & 0 & 1 \\
     0 & 0 & 0 & 1 & 0 & 1 \\
-    0 & 0 & 0 & 1 & 1 & 0 
+    0 & 0 & 0 & 1 & 1 & 1 
 }
 \mat{a \\ b \\ c \\ d \\ e \\ f}
 =
@@ -53,30 +53,30 @@ and then rearrange to create a linear system for which we can solve the coeffici
 Given the form of the matrix, this is easily solved by hand, and we have
 \begin{equation}
 S = \mat{
-    x_j - x_k & x_k - x_j + x_i & x_k \\
-    y_j - y_k & y_k - y_j + y_i & y_k \\
+    x_j - x_k & x_i - x_j & x_k \\
+    y_j - y_k & y_i - y_j & y_k \\
     0 & 0 & 1
 }
 \end{equation}
 Moreover, $S$ is a simple enough form to find a closed solution for $|S|$:
 \begin{equation}
 |S| = 
-(x_j - x_k)(y_k - y_j + y_i) -
-(y_j - y_k)(x_k - x_j + x_i)
+(x_j - x_k)(y_i - y_j) -
+(y_j - y_k)(x_i - x_j)
 \end{equation}
 
 Lastly, we need to find a closed form of $\phi_k(S(u,v))\phi_j(S(u,v))$, and ultimately a closed form for the full
 integral. Using $S$, $\phi_k$ will now take the form
 \begin{equation}
-\phi_k(S(u,v)) = A_k ((x_j - x_k)u + (x_k - x_j + x_i)v + x_k) + B_k((y_j - y_k)u + (y_k - y_j + y_i)v + y_k)
+\phi_k(S(u,v)) = A_k ((x_j - x_k)u + (x_i - x_j)v + x_k) + B_k((y_j - y_k)u + (y_i - y_j)v + y_k) + C_k
 \end{equation}
 After some algebra we get
 \begin{equation}
-((A_k(x_j-x_k) + B_k(y_j-y_k))u + (A_k(x_k-x_j+x_i) + B_k(y_k-y_j+y_i))v + (A_k x_k + B_k y_k)
+((A_k(x_j-x_k) + B_k(y_j-y_k))u + (A_k(x_i-x_j) + B_k(y_i-y_j))v + (A_k x_k + B_k y_k + C_k)
 \end{equation}
 Or for simplicity we'll right it as
 \begin{equation}
-A'_k u + B'_k v + C'
+A'_k u + B'_k v + C'_k
 \end{equation}
 Multiplying $\phi_k$ and $\phi_j$ gives us
 \begin{equation}
@@ -85,12 +85,13 @@ Multiplying $\phi_k$ and $\phi_j$ gives us
 \end{equation}
 Now, we can integrate
 \begin{equation}
-\int\limits_0^1\int\limits_0^u \phi_k(S(u,v)) \phi_j(S(u,v)) dvdu
+\int\limits_0^1\int\limits_0^u \phi_k(S(u,v)) \phi_j(S(u,v)) |S| dvdu
 \end{equation}
 Which gives us a final closed form
 \begin{equation}
-\frac{A'_k A'_j}{4} + \frac{B_k'B_j'}{12} + \frac{A'_k B'_j + B'_k A'_j}{12} +
-\frac{A'_k C'_j + C'_k A'_j + B'_kC'_j + C'_kB'_j}{6} + \frac{C'_k C'_j}{2}
+\left(\frac{A'_k A'_j}{4} + \frac{B_k'B_j'}{12} + \frac{A'_k B'_j + B'_k A'_j}{8} +
+\frac{A'_k C'_j + C'_k A'_j}{3} + \frac{B'_kC'_j + C'_kB'_j}{6} + \frac{C'_k C'_j}{2}
+\right) |S|
 \end{equation}
 for the integral over a single triangle. We can apply this method twice for the two shared triangles to calculate
 $\innerproduct{\phi_k}{\phi_j}$.
