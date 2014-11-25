@@ -69,8 +69,6 @@ describe('SMC', function() {
             // TODO: Make this test more exact plz
              expect(geometry.massBetweenNodes(0, 0)).to.not.equal(0);
         });
-
-        it('should return the sum of all neighboring triangles if the nodes are the same');
     });
 
     describe('buildMatrix', function() {
