@@ -64,16 +64,25 @@ FemGeometry.prototype.isBoundaryNode = function(nodeIndex) {
     return this.boundaryNodes.indexOf(nodeIndex) != -1;
 };
 
+/**
+ * Function generator for determining if a passed face has a node (used for array filters)
+ */
 var faceHasNode = function(node) {
     return function(face) {
         return face.a == node || face.b == node || face.c == node;
     };
 };
 
+/**
+ * Converts a face to an array of node indices
+ */
 var faceToArray = function(face) {
     return [face.a, face.b, face.c];
 };
 
+/**
+ * Converts a node index to the vertex at that index
+ */
 var indicesToNodes = function(nodeIndex) {
     return this.threeGeometry.vertices[nodeIndex];
 };
@@ -82,13 +91,17 @@ var indicesToNodes = function(nodeIndex) {
  * Returns a list of the shared adjacent nodes between two nodes
  */
 FemGeometry.prototype.sharedAdjacentVertices = function(firstNode, secondNode) {
+    // filter out only faces that have both nodes in them
     var nodes = this.threeGeometry.faces.filter(faceHasNode(firstNode))
         .filter(faceHasNode(secondNode))
+        // convert the face to an array
         .map(faceToArray)
+        // flatten: [ [1,2], [3,4] ] => [1, 2, 3, 4]
         .reduce(function(carry, faceArray) {
             Array.prototype.push.apply(carry, faceArray);
             return carry;
         }, [])
+        // don't include the passed nodes, since we "assume" they're there
         .filter(function(index) {
             return index != firstNode && index != secondNode;
         });
