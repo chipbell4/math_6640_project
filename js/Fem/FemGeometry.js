@@ -64,11 +64,37 @@ FemGeometry.prototype.isBoundaryNode = function(nodeIndex) {
     return this.boundaryNodes.indexOf(nodeIndex) != -1;
 };
 
+var faceHasNode = function(node) {
+    return function(face) {
+        return face.a == node || face.b == node || face.c == node;
+    };
+};
+
+var faceToArray = function(face) {
+    return [face.a, face.b, face.c];
+};
+
+var indicesToNodes = function(nodeIndex) {
+    return this.threeGeometry.vertices[nodeIndex];
+};
+
 /**
  * Returns a list of the shared adjacent nodes between two nodes
  */
 FemGeometry.prototype.sharedAdjacentVertices = function(firstNode, secondNode) {
-    return _.intersection(this.adjacency[firstNode], this.adjacency[secondNode]);
+    var nodes = this.threeGeometry.faces.filter(faceHasNode(firstNode))
+        .filter(faceHasNode(secondNode))
+        .map(faceToArray)
+        .reduce(function(carry, faceArray) {
+            Array.prototype.push.apply(carry, faceArray);
+            return carry;
+        }, [])
+        .filter(function(index) {
+            return index != firstNode && index != secondNode;
+        });
+
+    // remove dupes
+    return _.unique(nodes);
 };
 
 /**
@@ -84,25 +110,21 @@ FemGeometry.prototype.nodesAreAdjacent = function(firstNode, secondNode) {
 FemGeometry.prototype.trianglesAttachedToNode = function(node) {
     var that = this;
     
-    return this.threeGeometry.faces.filter(function(face) {
-        return face.a == node || face.b == node || face.c == node;
-    }).map(function(face) {
-        return [face.a, face.b, face.c];
-    }).map(function(faceArray) {
-        return faceArray.sort(function(a, b) {
-            if(a == node) {
-                return -1;
-            }
-            else if(b == node) {
-                return 1;
-            }
-            return 0;    
+    return this.threeGeometry.faces.filter(faceHasNode(node))
+        .map(faceToArray)
+        .map(function(faceArray) {
+            return faceArray.sort(function(a, b) {
+                if(a == node) {
+                    return -1;
+                }
+                else if(b == node) {
+                    return 1;
+                }
+                return 0;    
+            });
+        }).map(function(faceArray) {
+            return faceArray.map(indicesToNodes.bind(that));
         });
-    }).map(function(faceArray) {
-        return faceArray.map(function(nodeIndex) {
-            return that.threeGeometry.vertices[nodeIndex];
-        });
-    });
 };
 
 /**
@@ -111,8 +133,6 @@ FemGeometry.prototype.trianglesAttachedToNode = function(node) {
 FemGeometry.prototype.sharedTriangles = function(i, j) {
     var vertexI = this.threeGeometry.vertices[i];
     var vertexJ = this.threeGeometry.vertices[j];
-
-    console.log(this.sharedAdjacentVertices(i, j));
 
     var that = this;
     return this.sharedAdjacentVertices(i, j).map(function(node) {
