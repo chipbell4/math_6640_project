@@ -4,28 +4,27 @@ var FemGeometry = require('../../js/Fem/FemGeometry.js');
 var StiffnessMatrixCalculator = require('../../js/Fem/StiffnessMatrixCalculator.js');
 
 describe('StiffnessMatrixCalculator', function() {
+    var stiffnessMatrixCalculator;
+
+    beforeEach(function() {
+        var threeGeometry = new THREE.Geometry();
+        threeGeometry.vertices.push(
+            new THREE.Vector3(1, 1, 0),
+            new THREE.Vector3(2, 1, 0),
+            new THREE.Vector3(2, 2, 0)
+        );
+        threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
+        
+        var femGeometry = new FemGeometry(threeGeometry, []);
+
+        stiffnessMatrixCalculator = new StiffnessMatrixCalculator(femGeometry);
+    });
+
     it('Should exist', function() {
         expect(StiffnessMatrixCalculator).to.be.instanceOf(Function);
     });
 
     describe('singleTriangleInnerProduct', function() {
-
-        var stiffnessMatrixCalculator;
-
-        beforeEach(function() {
-            var threeGeometry = new THREE.Geometry();
-            threeGeometry.vertices.push(
-                new THREE.Vector3(1, 1, 0),
-                new THREE.Vector3(2, 1, 0),
-                new THREE.Vector3(2, 2, 0)
-            );
-            threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
-            
-            var femGeometry = new FemGeometry(threeGeometry, []);
-
-            stiffnessMatrixCalculator = new StiffnessMatrixCalculator(femGeometry);
-        });
-
         it('should exist', function() {
             expect(stiffnessMatrixCalculator.singleTriangleInnerProduct).to.be.instanceOf(Function);
         });
