@@ -69,15 +69,55 @@ describe('FemGeometry', function() {
                 new THREE.Face3(0, 2, 3),
                 new THREE.Face3(0, 2, 1) // add a duplicate face, so we know we uniq out doubles
             );
-            var geometry = new FemGeometry(
-                threeGeometry,
-                []
-            ); 
+            var geometry = new FemGeometry(threeGeometry, []); 
 
             var results = geometry.sharedAdjacentVertices(0, 2);
             results.sort();
 
             expect(results).to.have.members([1, 3]);
+        });
+    });
+
+    describe('trianglesAttachedToNode', function() {
+        var threeGeometry = new THREE.Geometry();
+        threeGeometry.vertices.push(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(0, 1, 0)
+        );
+        threeGeometry.faces.push(
+            new THREE.Face3(0, 1, 2)
+        );
+        var geometry = new FemGeometry(threeGeometry, []);
+
+        it('should orient the requested node if it is the first in the face list', function() {
+            var result = geometry.trianglesAttachedToNode(0);
+            expect(result.length).to.equal(1);
+            expect(result[0].length).to.equal(3);
+
+            var point = result[0][0];
+            expect(point.x).to.be.closeTo(0, 0.001);
+            expect(point.y).to.be.closeTo(0, 0.001);
+        });
+
+        it('should orient the requested node if is the second in the face list', function() {
+            var result = geometry.trianglesAttachedToNode(1);
+            expect(result.length).to.equal(1);
+            expect(result[0].length).to.equal(3);
+
+            var point = result[0][0];
+            expect(point.x).to.be.closeTo(1, 0.001);
+            expect(point.y).to.be.closeTo(0, 0.001);
+        });
+
+        it('should orient the requested node if it is the last in the face list', function() {
+            var result = geometry.trianglesAttachedToNode(2);
+            expect(result.length).to.equal(1);
+            expect(result[0].length).to.equal(3);
+
+            var point = result[0][0];
+            expect(point.x).to.be.closeTo(0, 0.001);
+            expect(point.y).to.be.closeTo(1, 0.001);
         });
     });
 });

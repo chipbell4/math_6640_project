@@ -78,4 +78,31 @@ FemGeometry.prototype.nodesAreAdjacent = function(firstNode, secondNode) {
     return this.adjacency[firstNode].indexOf(secondNode) != -1;
 };
 
+/**
+ * Returns all of the triangles (as an array of arrays of vectors) attached to a particular node
+ */
+FemGeometry.prototype.trianglesAttachedToNode = function(node) {
+    var that = this;
+    
+    return this.threeGeometry.faces.filter(function(face) {
+        return face.a == node || face.b == node || face.c == node;
+    }).map(function(face) {
+        return [face.a, face.b, face.c];
+    }).map(function(faceArray) {
+        return faceArray.sort(function(a, b) {
+            if(a == node) {
+                return -1;
+            }
+            else if(b == node) {
+                return 1;
+            }
+            return 0;    
+        });
+    }).map(function(faceArray) {
+        return faceArray.map(function(nodeIndex) {
+            return that.threeGeometry.vertices[nodeIndex];
+        });
+    });
+};
+
 module.exports = FemGeometry;
