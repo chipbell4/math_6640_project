@@ -22,7 +22,6 @@ var basisFunctionGradient = function(points, weightedIndex) {
     points[weightedIndex].z = 1;
 
     var basisFunction = new PartialBasisFunction(points[0], points[1], points[2]);
-    console.log(points);
 
     return new THREE.Vector2(basisFunction.A, basisFunction.B);
 };
@@ -48,11 +47,6 @@ StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points
     // calculate the gradients
     var gradient1 = basisFunctionGradient(points, weightedPoints[0]);
     var gradient2 = basisFunctionGradient(points, weightedPoints[1]);
-
-    console.log(gradient1);
-    console.log(gradient2);
-    console.log(gradient1.dot(gradient2));
-    console.log(area);
 
     return gradient1.dot(gradient2) * area;
 };
