@@ -17,7 +17,7 @@ describe('StiffnessMatrixCalculator', function() {
             threeGeometry.vertices.push(
                 new THREE.Vector3(1, 1, 0),
                 new THREE.Vector3(2, 1, 0),
-                new THREE.Vector3(1, 2, 0)
+                new THREE.Vector3(2, 2, 0)
             );
             threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
             

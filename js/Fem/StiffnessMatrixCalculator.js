@@ -6,8 +6,8 @@ var StiffnessMatrixCalculator = function(femGeometry) {
 };
 
 var triangleArea = function(points) {
-    var side1 = points[1].sub(points[0]);
-    var side2 = points[2].sub(points[0]);
+    var side1 = points[1].clone().sub(points[0]);
+    var side2 = points[2].clone().sub(points[0]);
 
     var areaVector = new THREE.Vector3();
     areaVector.crossVectors(side1, side2);
@@ -15,34 +15,44 @@ var triangleArea = function(points) {
     return areaVector.length() / 2;
 };
 
-var buildBasisFunctionWithAWeightedPoint = function(points, weightedIndex) {
+var basisFunctionGradient = function(points, weightedIndex) {
     points.forEach(function(point) {
         point.z = 0;
     });
-    points[weightedIndex] = 1;
+    points[weightedIndex].z = 1;
 
-    return new PartialBasisFunction(points[0], points[1], points[2]);
-};
+    var basisFunction = new PartialBasisFunction(points[0], points[1], points[2]);
+    console.log(points);
 
-var basisFunctionGradient = function(basisFunction) {
     return new THREE.Vector2(basisFunction.A, basisFunction.B);
 };
 
 StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points, weightedPoints) {
+    // if any of the weighted points are boundary points
+    var that = this;
+    var hasBoundaryPoint = weightedPoints.some(function(node) {
+        return that.geometry.boundaryNodes.indexOf(node) > -1;
+    });
+    if(hasBoundaryPoint) {
+        return 0;
+    }
+    
+    var vertices = this.geometry.threeGeometry.vertices;
     points = points.map(function(pointIndex) {
-        return this.geometry.threeGeometry.vertices[pointIndex];
+        return vertices[pointIndex];
     });
 
     // calculate the triangle area
     var area = triangleArea(points);
 
-    // calculate the basis function
-    var basis1 = buildBasisFunctionWithAWeightedPoint(points, weightedPoints[0]);
-    var basis2 = buildBasisFunctionWithAWeightedPoint(points, weightedPoints[1]);
-
     // calculate the gradients
-    var gradient1 = basisFunctionGradient(basis1);
-    var gradient2 = basisFunctionGradient(basis2);
+    var gradient1 = basisFunctionGradient(points, weightedPoints[0]);
+    var gradient2 = basisFunctionGradient(points, weightedPoints[1]);
+
+    console.log(gradient1);
+    console.log(gradient2);
+    console.log(gradient1.dot(gradient2));
+    console.log(area);
 
     return gradient1.dot(gradient2) * area;
 };
