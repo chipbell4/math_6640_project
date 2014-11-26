@@ -9,28 +9,47 @@ describe('StiffnessMatrixCalculator', function() {
     });
 
     describe('singleTriangleInnerProduct', function() {
-        var threeGeometry = new THREE.Geometry();
-        threeGeometry.vertices.push(
-            new THREE.Vector3(1, 1, 0),
-            new THREE.Vector3(2, 1, 0),
-            new THREE.Vector3(1, 2, 0)
-        );
-        threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
-        var femGeometry;
+
+        var stiffnessMatrixCalculator;
 
         beforeEach(function() {
-            femGeometry = new FemGeometry(threeGeometry, []);
+            var threeGeometry = new THREE.Geometry();
+            threeGeometry.vertices.push(
+                new THREE.Vector3(1, 1, 0),
+                new THREE.Vector3(2, 1, 0),
+                new THREE.Vector3(1, 2, 0)
+            );
+            threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
+            
+            var femGeometry = new FemGeometry(threeGeometry, []);
+
+            stiffnessMatrixCalculator = new StiffnessMatrixCalculator(femGeometry);
         });
 
         it('should exist', function() {
-            expect(StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct).to.be.instanceOf(Function);
+            expect(stiffnessMatrixCalculator.singleTriangleInnerProduct).to.be.instanceOf(Function);
         });
             
+        it('should handle orthogonal gradients', function() {
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 2]);
+            expect(result).to.equal(0);
+        });
 
-        it('should calculate values using the correct formulat');
+        it('should handle non-orthogonal gradients', function() {
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.be.closeTo(-0.5, 0.001);
+        });
 
-        it('should return zero if the first weighted point is a boundary node');
+        it('should return zero if the first weighted point is a boundary node', function() {
+            stiffnessMatrixCalculator.geometry.boundaryNodes.push(0);
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.equal(0);
+        });
 
-        it('should return zero if the second weighted point is a boundary node');
+        it('should return zero if the second weighted point is a boundary node', function() {
+            stiffnessMatrixCalculator.geometry.boundaryNodes.push(1);
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.equal(0);
+        });
     });
 });
