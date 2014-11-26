@@ -120,4 +120,38 @@ describe('FemGeometry', function() {
             expect(point.y).to.be.closeTo(1, 0.001);
         });
     });
+
+    describe('sharedTriangles', function() {
+        var threeGeometry = new THREE.Geometry();
+        threeGeometry.vertices.push(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(1, 1, 0)
+        );
+        threeGeometry.faces.push(
+            new THREE.Face3(0, 1, 2),
+            new THREE.Face3(1, 2, 3)
+        );
+
+        var geometry = new FemGeometry(threeGeometry, []);
+
+        it('should return two triangles if the points share two triangles', function() {
+            var triangles = geometry.sharedTriangles(1, 2);
+            expect(triangles.length).to.equal(2);
+            expect(triangles[0].length).to.equal(3);
+            expect(triangles[1].length).to.equal(3);
+        });
+
+        it('should return one triangle if the points share one triangle', function() {
+            var triangles = geometry.sharedTriangles(0, 2);
+            expect(triangles.length).to.equal(1);
+            expect(triangles[0].length).to.equal(3);
+        });
+
+        it('should return no triangles if the points share no triangles', function() {
+            var triangles = geometry.sharedTriangles(0, 3);
+            expect(triangles.length).to.equal(0);
+        });
+    });
 });

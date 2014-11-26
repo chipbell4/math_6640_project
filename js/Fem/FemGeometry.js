@@ -105,4 +105,20 @@ FemGeometry.prototype.trianglesAttachedToNode = function(node) {
     });
 };
 
+/**
+ * Returns all of the triangles shared between two nodes as an array of arrays of vectors
+ */
+FemGeometry.prototype.sharedTriangles = function(i, j) {
+    var vertexI = this.threeGeometry.vertices[i];
+    var vertexJ = this.threeGeometry.vertices[j];
+
+    console.log(this.sharedAdjacentVertices(i, j));
+
+    var that = this;
+    return this.sharedAdjacentVertices(i, j).map(function(node) {
+        var vertexK = that.threeGeometry.vertices[node];
+        return [vertexI, vertexJ, vertexK];
+    });
+};
+
 module.exports = FemGeometry;
