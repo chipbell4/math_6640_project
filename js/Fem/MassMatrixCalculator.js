@@ -24,62 +24,17 @@ MassMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
  * Calculates the inner product between two adjacent nodes, no assumptions
  */
 MassMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
-    var total = 0;
-    var sharedNodes = this.geometry.sharedAdjacentVertices(i, j);
-    var N = sharedNodes.length;
-
-    var firstNode = this.geometry.threeGeometry.vertices[i];
-    var secondNode = this.geometry.threeGeometry.vertices[j];
-    for(var k = 0; k < N; k++) {
-        var sharedNode = this.geometry.threeGeometry.vertices[sharedNodes[k]];
-        total += TMC.singleTriangleInnerProduct([firstNode, secondNode, sharedNode], [0, 1]);
-    }
-    return total;
-};
-
-/**
- * Extracts an array of vertex indices from a face, shifting the provided node (if its in the face) to the front
- */
-var extractTriangleFromFace = function(face, firstNode) {
-    var nodes = [face.a, face.b, face.c];
-
-    return nodes.sort(function(node1, node2) {
-        if(node1 == firstNode) {
-            return -1;
-        }
-        if(node2 == firstNode) {
-            return 1;
-        }
-        return 0;
-    });
+    return this.geometry.sharedTriangles(i, j).reduce(function(carry, triangle) {
+        return carry + TMC.singleTriangleInnerProduct(triangle, [0, 1]);
+    }, 0);
 };
 
 /**
  * Calculates the inner product of basis function with itself.
  */
 MassMatrixCalculator.prototype.squaredMassForNode = function(i) {
-    var that = this;
-    // get only the faces that node i is in
-    return this.geometry.threeGeometry.faces.filter(function(face) {
-        return face.a == i || face.b == i || face.c == i;
-    })
-    // map that to an array of vertex indices
-    .map(function(face) {
-        return extractTriangleFromFace(face, i);
-    })
-    // map to actual triangle values
-    .map(function(triangleVertices) {
-        return triangleVertices.map(function(index) {
-            return that.geometry.threeGeometry.vertices[index];
-        });
-    })
-    // calculate the integral over the triangle
-    .map(function(triangleVertices) {
-        return TMC.singleTriangleInnerProduct(triangleVertices, [0, 0]);
-    })
-    // sum up the result
-    .reduce(function(carry, currentValue) {
-        return carry + currentValue;
+    return this.geometry.trianglesAttachedToNode(i).reduce(function(carry, triangle) {
+        return carry + TMC.singleTriangleInnerProduct(triangle, [0, 0]);
     }, 0);
 };
 
