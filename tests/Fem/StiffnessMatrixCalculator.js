@@ -3,121 +3,67 @@ var THREE = require('three');
 var FemGeometry = require('../../js/Fem/FemGeometry.js');
 var StiffnessMatrixCalculator = require('../../js/Fem/StiffnessMatrixCalculator.js');
 
-describe('SMC', function() {
-    it('should exist', function() {
+describe('StiffnessMatrixCalculator', function() {
+    var stiffnessMatrixCalculator;
+
+    beforeEach(function() {
+        var threeGeometry = new THREE.Geometry();
+        threeGeometry.vertices.push(
+            new THREE.Vector3(1, 1, 0),
+            new THREE.Vector3(2, 1, 0),
+            new THREE.Vector3(2, 2, 0)
+        );
+        threeGeometry.faces.push(new THREE.Face3(0, 1, 2));
+        
+        var femGeometry = new FemGeometry(threeGeometry, []);
+
+        stiffnessMatrixCalculator = new StiffnessMatrixCalculator(femGeometry);
+    });
+
+    it('Should exist', function() {
         expect(StiffnessMatrixCalculator).to.be.instanceOf(Function);
     });
 
-    var calculatorFactory = function(vertices, faces, boundaryNodes) {
-        var threeGeometry = new THREE.Geometry();
-        Array.prototype.push.apply(threeGeometry.vertices, vertices);
-        Array.prototype.push.apply(threeGeometry.faces, faces);
-        geometry = new FemGeometry(threeGeometry, boundaryNodes);
-        return new StiffnessMatrixCalculator(geometry);
-    };
-
-    describe('massBetweenNodes', function() {
+    describe('singleTriangleInnerProduct', function() {
         it('should exist', function() {
-            expect(StiffnessMatrixCalculator.prototype.massBetweenNodes).to.be.instanceOf(Function);
+            expect(stiffnessMatrixCalculator.singleTriangleInnerProduct).to.be.instanceOf(Function);
+        });
+            
+        it('should handle orthogonal gradients', function() {
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 2]);
+            expect(result).to.equal(0);
         });
 
-        it('should return 0 if the first node is a boundary node', function() {
-            var geometry = calculatorFactory(
-                [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()],
-                [new THREE.Face3(0, 1, 2)],
-                [0]
-                );
-             expect(geometry.massBetweenNodes(0, 1)).to.equal(0);
-        });
-        
-        it('should return 0 if the second node is a boundary node', function() {
-            var geometry = calculatorFactory(
-                [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()],
-                [new THREE.Face3(0, 1, 2)],
-                [0]
-                );
-             expect(geometry.massBetweenNodes(1, 0)).to.equal(0);
+        it('should handle non-orthogonal gradients', function() {
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.be.closeTo(-0.5, 0.001);
         });
 
-        it('should return 0 if the nodes are not adjacent', function() {
-            var geometry = calculatorFactory(
-                [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()],
-                [new THREE.Face3(0, 1, 2)],
-                [1]
-                );
-             expect(geometry.massBetweenNodes(0, 3)).to.equal(0);
+        it('should return zero if the first weighted point is a boundary node', function() {
+            stiffnessMatrixCalculator.geometry.boundaryNodes.push(0);
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.equal(0);
         });
 
-        it('should return the sum of the triangle inner products if they are adjacent interior nodes', function() {
-            var geometry = calculatorFactory(
-                [new THREE.Vector3(), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 1, 0)],
-                [new THREE.Face3(0, 1, 2), new THREE.Face3(0, 1, 3)],
-                []
-            );
-
-            // TODO: Make this test more exact plz
-             expect(geometry.massBetweenNodes(0, 1)).to.not.equal(0);
+        it('should return zero if the second weighted point is a boundary node', function() {
+            stiffnessMatrixCalculator.geometry.boundaryNodes.push(1);
+            var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
+            expect(result).to.equal(0);
         });
-
-        it('should return the sum of the triangle inner products if they are the same node', function() {
-            var geometry = calculatorFactory(
-                [new THREE.Vector3(), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 1, 0)],
-                [new THREE.Face3(0, 1, 2), new THREE.Face3(0, 1, 3)],
-                []
-            );
-
-            // TODO: Make this test more exact plz
-             expect(geometry.massBetweenNodes(0, 0)).to.not.equal(0);
-        });
-
-        it('should return the sum of all neighboring triangles if the nodes are the same');
     });
 
     describe('buildMatrix', function() {
-        it('should exist', function() {
-            expect(StiffnessMatrixCalculator.prototype.buildMatrix).to.be.instanceOf(Function);
-        });
-        
-        it('should return a matrix', function() {
-            var calculator = calculatorFactory([
-                new THREE.Vector3(0, 0, 0),
-                new THREE.Vector3(1, 0, 0),
-                new THREE.Vector3(0, 1, 0),
-                new THREE.Vector3(1, 1, 0),
-                new THREE.Vector3(1/3, 1/3, 0),
-                new THREE.Vector3(2/3, 2/3, 0),
-            ], [
-                new THREE.Face3(0, 1, 4),
-                new THREE.Face3(0, 2, 4),
-                new THREE.Face3(2, 4, 5),
-                new THREE.Face3(2, 5, 3),
-                new THREE.Face3(5, 1, 4),
-                new THREE.Face3(5, 1, 3),
-            ],
-            [0, 1, 2, 3]);
+        it('should have non-zero entries', function() {
+            var matrix = stiffnessMatrixCalculator.buildMatrix();
 
-            var matrix = calculator.buildMatrix();
-            expect(matrix).to.be.instanceOf(Array);
+            expect(matrix.length).to.equal(3);
+            expect(matrix[0].length).to.equal(3);
+            expect(matrix[1].length).to.equal(3);
+            expect(matrix[2].length).to.equal(3);
 
-            // make sure dimensions are correct
-            expect(matrix.length).to.equal(6);
-            matrix.forEach(function(row) {
-                expect(row.length).to.equal(6);
-            });
-
-            // make sure boundary nodes have zeroes
-            [0, 1, 2, 3].forEach(function(node) {
-                expect(matrix[node]).to.deep.equal([0, 0, 0, 0, 0, 0]);
-            });
-
-            // make sure the interior nodes have non-zeros
-            expect(matrix[4][4]).to.be.greaterThan(0);
-            expect(matrix[5][5]).to.be.greaterThan(0);
-            expect(matrix[4][5]).to.be.greaterThan(0);
-            expect(matrix[5][4]).to.not.equal(0);
-
-            // make sure we're symmetric
-            expect(matrix[5][4]).to.equal(matrix[4][5]);
+            expect(matrix[0][0]).to.not.equal(0);
+            expect(matrix[1][1]).to.not.equal(0);
+            expect(matrix[2][2]).to.not.equal(0);
         });
     });
 });

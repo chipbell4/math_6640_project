@@ -14,7 +14,7 @@ gulp.task('jshint', function() {
 
 gulp.task('test', function() {
 	return gulp.src('tests/**/*.js')
-		.pipe(mocha({ reporter: 'dot' }));
+		.pipe(mocha({ reporter: 'spec' }));
 });
 
 gulp.task('browserify', ['jshint', 'test'], function() {

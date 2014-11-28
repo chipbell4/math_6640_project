@@ -1,120 +1,106 @@
-var TSC = require('./TriangleStiffnessCalculator.js');
+var THREE = require('three');
+var PartialBasisFunction = require('./PartialBasisFunction.js');
 
 /**
- * Represents a class for generating the matrix of inner products of basis functions over our domain
+ * A class for building the stiffness matrix for a mesh
  */
 var StiffnessMatrixCalculator = function(femGeometry) {
     this.geometry = femGeometry;
 };
 
 /**
- * Returns true if the inner product between two nodes is trivially 0
+ * Calculates the area of a triangle
  */
-StiffnessMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
-    if(i == j) {
-        return this.geometry.isBoundaryNode(i);
-    }
+var triangleArea = function(points) {
+    var side1 = points[1].clone().sub(points[0]);
+    var side2 = points[2].clone().sub(points[0]);
 
-    return this.geometry.isBoundaryNode(i) || 
-        this.geometry.isBoundaryNode(j) ||
-        !this.geometry.nodesAreAdjacent(i, j);
+    var areaVector = new THREE.Vector3();
+    areaVector.crossVectors(side1, side2);
+
+    return areaVector.length() / 2;
 };
 
 /**
- * Calculates the inner product between two adjacent nodes, no assumptions
+ * Calculates the gradient of a basis function
  */
-StiffnessMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
-    var total = 0;
-    var sharedNodes = this.geometry.sharedAdjacentVertices(i, j);
-    var N = sharedNodes.length;
-
-    var firstNode = this.geometry.threeGeometry.vertices[i];
-    var secondNode = this.geometry.threeGeometry.vertices[j];
-    for(var k = 0; k < N; k++) {
-        var sharedNode = this.geometry.threeGeometry.vertices[sharedNodes[k]];
-        total += TSC.singleTriangleInnerProduct([firstNode, secondNode, sharedNode], [0, 1]);
-    }
-    return total;
-};
-
-/**
- * Extracts an array of vertex indices from a face, shifting the provided node (if its in the face) to the front
- */
-var extractTriangleFromFace = function(face, firstNode) {
-    var nodes = [face.a, face.b, face.c];
-
-    return nodes.sort(function(node1, node2) {
-        if(node1 == firstNode) {
-            return -1;
-        }
-        if(node2 == firstNode) {
-            return 1;
-        }
-        return 0;
+var basisFunctionGradient = function(points, weightedIndex) {
+    points.forEach(function(point) {
+        point.z = 0;
     });
+    points[weightedIndex].z = 1;
+
+    var basisFunction = new PartialBasisFunction(points[0], points[1], points[2]);
+
+    return new THREE.Vector2(basisFunction.A, basisFunction.B);
 };
 
 /**
- * Calculates the inner product of basis function with itself.
+ * Calculates the gradient inner product over a triangle, given as indices
  */
-StiffnessMatrixCalculator.prototype.squaredMassForNode = function(i) {
+StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points, weightedPoints) {
+    // if any of the weighted points are boundary points
     var that = this;
-    // get only the faces that node i is in
-    return this.geometry.threeGeometry.faces.filter(function(face) {
-        return face.a == i || face.b == i || face.c == i;
-    })
-    // map that to an array of vertex indices
-    .map(function(face) {
-        return extractTriangleFromFace(face, i);
-    })
-    // map to actual triangle values
-    .map(function(triangleVertices) {
-        return triangleVertices.map(function(index) {
-            return that.geometry.threeGeometry.vertices[index];
-        });
-    })
-    // calculate the integral over the triangle
-    .map(function(triangleVertices) {
-        return TSC.singleTriangleInnerProduct(triangleVertices, [0, 0]);
-    })
-    // sum up the result
-    .reduce(function(carry, currentValue) {
-        return carry + currentValue;
+    var hasBoundaryPoint = weightedPoints.some(function(node) {
+        return that.geometry.boundaryNodes.indexOf(node) > -1;
+    });
+    if(hasBoundaryPoint) {
+        return 0;
+    }
+    
+    var vertices = this.geometry.threeGeometry.vertices;
+    points = points.map(function(pointIndex) {
+        return vertices[pointIndex];
+    });
+
+    // calculate the triangle area
+    var area = triangleArea(points);
+
+    // calculate the gradients
+    var gradient1 = basisFunctionGradient(points, weightedPoints[0]);
+    var gradient2 = basisFunctionGradient(points, weightedPoints[1]);
+
+    return gradient1.dot(gradient2) * area;
+};
+
+/**
+ * Calculates the stiffness between two nodes
+ */
+StiffnessMatrixCalculator.prototype.stiffnessBetweenNodes = function(i, j) {
+    if(this.geometry.isBoundaryNode(i) || this.geometry.isBoundaryNode(j)) {
+        return 0;
+    }
+
+    var that = this;
+    if(i == j) {
+        return this.geometry.trianglesAttachedToNodeAsIndices(i).reduce(function(carry, triangle) {
+            return carry + that.singleTriangleInnerProduct(triangle, [0, 0]);
+        }, 0);
+    }
+
+    return this.geometry.sharedTriangleIndices(i, j).reduce(function(carry, triangle) {
+        return carry + that.singleTriangleInnerProduct(triangle, [0, 1]);
     }, 0);
 };
 
 /**
- * Calculates the mass between two nodes i and j.
- */
-StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
-    if(this.innerProductTriviallyZero(i, j)) {
-        return 0;
-    }
-    
-    if(i == j) {
-        return this.squaredMassForNode(i);
-    }
-
-    return this.massBetweenDifferentAdjacentNodes(i, j);
-};
-
-/**
- * Builds the actual stiffness matrix
+ * Actually builds the stiffness matrix
  */
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
-    // build an empty array
-    var i, j, N = this.geometry.threeGeometry.vertices.length;
+    var N = this.geometry.threeGeometry.vertices.length;
     var matrix = Array(N);
+
+    var i, j;
     for(i = 0; i < N; i++) {
         matrix[i] = Array(N);
     }
 
-    // now build the mass matrix...
+    // fill in the entries
     for(i = 0; i < N; i++) {
-        // save ourselves some work, by taking advantage of symmetry
         for(j = i; j < N; j++) {
-            matrix[i][j] = this.massBetweenNodes(i, j);
+            matrix[i][j] = this.stiffnessBetweenNodes(i, j);
         }
+
         for(j = 0; j < i; j++) {
             matrix[i][j] = matrix[j][i];
         }
