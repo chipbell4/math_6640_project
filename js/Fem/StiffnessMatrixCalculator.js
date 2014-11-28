@@ -107,6 +107,6 @@ StiffnessMatrixCalculator.prototype.buildMatrix = function() {
     }
 
     return matrix;
-}
+};
 
 module.exports = StiffnessMatrixCalculator;

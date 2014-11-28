@@ -154,7 +154,7 @@ FemGeometry.prototype.sharedTriangleIndices = function(i, j) {
     return this.sharedAdjacentVertices(i, j).map(function(node) {
         return [i, j, node];
     });
-}
+};
 
 /**
  * Returns all of the triangles shared between two nodes as an array of arrays of vectors
@@ -164,7 +164,7 @@ FemGeometry.prototype.sharedTriangles = function(i, j) {
     var that = this;
     var indexToVertex = function(index) {
         return that.threeGeometry.vertices[index];
-    }
+    };
 
     return this.sharedTriangleIndices(i, j).map(function(triangleIndices) {
         return triangleIndices.map(indexToVertex);
