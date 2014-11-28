@@ -1,10 +1,16 @@
 var THREE = require('three');
 var PartialBasisFunction = require('./PartialBasisFunction.js');
 
+/**
+ * A class for building the stiffness matrix for a mesh
+ */
 var StiffnessMatrixCalculator = function(femGeometry) {
     this.geometry = femGeometry;
 };
 
+/**
+ * Calculates the area of a triangle
+ */
 var triangleArea = function(points) {
     var side1 = points[1].clone().sub(points[0]);
     var side2 = points[2].clone().sub(points[0]);
@@ -15,6 +21,9 @@ var triangleArea = function(points) {
     return areaVector.length() / 2;
 };
 
+/**
+ * Calculates the gradient of a basis function
+ */
 var basisFunctionGradient = function(points, weightedIndex) {
     points.forEach(function(point) {
         point.z = 0;
@@ -26,6 +35,9 @@ var basisFunctionGradient = function(points, weightedIndex) {
     return new THREE.Vector2(basisFunction.A, basisFunction.B);
 };
 
+/**
+ * Calculates the gradient inner product over a triangle, given as indices
+ */
 StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points, weightedPoints) {
     // if any of the weighted points are boundary points
     var that = this;
@@ -51,7 +63,10 @@ StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points
     return gradient1.dot(gradient2) * area;
 };
 
-StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
+/**
+ * Calculates the stiffness between two nodes
+ */
+StiffnessMatrixCalculator.prototype.stiffnessBetweenNodes = function(i, j) {
     if(this.geometry.isBoundaryNode(i) || this.geometry.isBoundaryNode(j)) {
         return 0;
     }
@@ -68,6 +83,9 @@ StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
     }, 0);
 };
 
+/**
+ * Actually builds the stiffness matrix
+ */
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
     var N = this.geometry.threeGeometry.vertices.length;
     var matrix = Array(N);
@@ -80,7 +98,7 @@ StiffnessMatrixCalculator.prototype.buildMatrix = function() {
     // fill in the entries
     for(i = 0; i < N; i++) {
         for(j = i; j < N; j++) {
-            matrix[i][j] = this.massBetweenNodes(i, j);
+            matrix[i][j] = this.stiffnessBetweenNodes(i, j);
         }
 
         for(j = 0; j < i; j++) {
