@@ -141,16 +141,26 @@ FemGeometry.prototype.trianglesAttachedToNode = function(node) {
 };
 
 /**
+ * Returns the vertex indices of triangles shared between two nodes as an array of arrays of integers
+ */
+FemGeometry.prototype.sharedTriangleIndices = function(i, j) {
+    return this.sharedAdjacentVertices(i, j).map(function(node) {
+        return [i, j, node];
+    });
+}
+
+/**
  * Returns all of the triangles shared between two nodes as an array of arrays of vectors
  */
 FemGeometry.prototype.sharedTriangles = function(i, j) {
-    var vertexI = this.threeGeometry.vertices[i];
-    var vertexJ = this.threeGeometry.vertices[j];
 
     var that = this;
-    return this.sharedAdjacentVertices(i, j).map(function(node) {
-        var vertexK = that.threeGeometry.vertices[node];
-        return [vertexI, vertexJ, vertexK];
+    var indexToVertex = function(index) {
+        return that.threeGeometry.vertices[index];
+    }
+
+    return this.sharedTriangleIndices(i, j).map(function(triangleIndices) {
+        return triangleIndices.map(indexToVertex);
     });
 };
 
