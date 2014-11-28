@@ -118,11 +118,9 @@ FemGeometry.prototype.nodesAreAdjacent = function(firstNode, secondNode) {
 };
 
 /**
- * Returns all of the triangles (as an array of arrays of vectors) attached to a particular node
+ * Method for returning triangles as indices that are attached to a single node
  */
-FemGeometry.prototype.trianglesAttachedToNode = function(node) {
-    var that = this;
-    
+FemGeometry.prototype.trianglesAttachedToNodeAsIndices = function(node) {
     return this.threeGeometry.faces.filter(faceHasNode(node))
         .map(faceToArray)
         .map(function(faceArray) {
@@ -135,9 +133,18 @@ FemGeometry.prototype.trianglesAttachedToNode = function(node) {
                 }
                 return 0;    
             });
-        }).map(function(faceArray) {
-            return faceArray.map(indicesToNodes.bind(that));
         });
+};
+
+/**
+ * Returns all of the triangles (as an array of arrays of vectors) attached to a particular node
+ */
+FemGeometry.prototype.trianglesAttachedToNode = function(node) {
+    var that = this;
+    
+    return that.trianglesAttachedToNodeAsIndices(node).map(function(faceArray) {
+        return faceArray.map(indicesToNodes.bind(that));
+    });
 };
 
 /**
