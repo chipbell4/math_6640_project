@@ -51,4 +51,44 @@ StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points
     return gradient1.dot(gradient2) * area;
 };
 
+StiffnessMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
+    if(this.geometry.isBoundaryNode(i) || this.geometry.isBoundaryNode(j)) {
+        return 0;
+    }
+
+    var that = this;
+    if(i == j) {
+        return this.geometry.trianglesAttachedToNodeAsIndices(i).reduce(function(carry, triangle) {
+            return carry + that.singleTriangleInnerProduct(triangle, [0, 0]);
+        }, 0);
+    }
+
+    return this.geometry.sharedTriangleIndices(i, j).reduce(function(carry, triangle) {
+        return carry + that.singleTriangleInnerProduct(triangle, [0, 1]);
+    }, 0);
+};
+
+StiffnessMatrixCalculator.prototype.buildMatrix = function() {
+    var N = this.geometry.threeGeometry.vertices.length;
+    var matrix = Array(N);
+
+    var i, j;
+    for(i = 0; i < N; i++) {
+        matrix[i] = Array(N);
+    }
+
+    // fill in the entries
+    for(i = 0; i < N; i++) {
+        for(j = i; j < N; j++) {
+            matrix[i][j] = this.massBetweenNodes(i, j);
+        }
+
+        for(j = 0; j < i; j++) {
+            matrix[i][j] = matrix[j][i];
+        }
+    }
+
+    return matrix;
+}
+
 module.exports = StiffnessMatrixCalculator;

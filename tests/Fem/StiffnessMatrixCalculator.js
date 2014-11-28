@@ -51,4 +51,19 @@ describe('StiffnessMatrixCalculator', function() {
             expect(result).to.equal(0);
         });
     });
+
+    describe('buildMatrix', function() {
+        it('should have non-zero entries', function() {
+            var matrix = stiffnessMatrixCalculator.buildMatrix();
+
+            expect(matrix.length).to.equal(3);
+            expect(matrix[0].length).to.equal(3);
+            expect(matrix[1].length).to.equal(3);
+            expect(matrix[2].length).to.equal(3);
+
+            expect(matrix[0][0]).to.not.equal(0);
+            expect(matrix[1][1]).to.not.equal(0);
+            expect(matrix[2][2]).to.not.equal(0);
+        });
+    });
 });
