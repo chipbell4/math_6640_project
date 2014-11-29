@@ -41,8 +41,6 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var sparseF  = N.ccsSparseVector(this.resolveF(mouseClickLocation));
-    console.log(mouseClickLocation);
-    console.log(sparseF);
 
     // form the currentWavePosition scale factor
     var currentScale = N.ccsadd(
@@ -64,8 +62,19 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     rightHandSide = N.ccsadd(rightHandSide, sparseF);
     rightHandSide = N.ccsScale(rightHandSide, 2 * deltaT / (2 + this.dampingCoefficient * deltaT));
 
+    console.log("MASS MATRIX");
+    console.log(N.ccsFull(this.massMatrix));
+    console.log("\nINVERSE");
+    console.log(N.inv(N.ccsFull(this.massMatrix)));
+    console.log("\nRHS");
+    console.log(N.ccsFullVector(rightHandSide));
+    console.log("\n");
+
     // now solve for the next timestep
     var nextWavePosition = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rightHandSide));
+    console.log("RESULT");
+    console.log(nextWavePosition);
+    console.log("\n");
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;
