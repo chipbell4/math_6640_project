@@ -6,7 +6,6 @@ describe('ccsFixVector', function() {
     it('should fix vectors', function() {
         var sparseV = [ [0,0], [], [] ];
         sparseV = ccsFixVector(sparseV, 3);
-        console.log(sparseV);
         expect(numeric.ccsFull(sparseV)).to.deep.equal([[0], [0], [0]]);
     });
 });
