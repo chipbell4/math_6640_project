@@ -11,4 +11,11 @@ describe('ccsSparseVector', function() {
         // make sure that "un-sparsing" works okay
         numeric.ccsFull(sparse);
     });
+
+    it('should convert the zero vector ok', function() {
+        var V = [0, 0, 0];
+        var sparse = ccsSparseVector(V);
+        expect(sparse[1].length).to.not.equal(0);
+        expect(sparse[2].length).to.not.equal(0);
+    });
 });
