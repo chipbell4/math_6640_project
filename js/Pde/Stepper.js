@@ -42,7 +42,7 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var F  = this.resolveF(mouseClickLocation);
 
     // form the currentWavePosition scale factor
-    var currentScale = N.ccsAdd(
+    var currentScale = N.ccsadd(
         N.ccsScale(this.massMatrix, 2 / deltaT / deltaT),
         N.ccsScale(this.stiffnessMatrix, this.waveSpeed * this.waveSpeed)
     );
