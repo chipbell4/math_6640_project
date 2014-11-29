@@ -41,6 +41,8 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var sparseF  = N.ccsSparseVector(this.resolveF(mouseClickLocation));
+    console.log(mouseClickLocation);
+    console.log(sparseF);
 
     // form the currentWavePosition scale factor
     var currentScale = N.ccsadd(
