@@ -5,6 +5,10 @@ var FMatrixCalculator = function(femGeometry, weight) {
 };
 
 FMatrixCalculator.prototype.weightForClickAtNode = function(clickLocation, node) {
+    if(this.geometry.isBoundaryNode(node)) {
+        return 0;
+    }
+
     node = this.geometry.threeGeometry.vertices[node];
     return this.weight / (node.distanceToSquared(clickLocation) + 1);
 };

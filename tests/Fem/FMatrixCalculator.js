@@ -30,6 +30,11 @@ describe('FMatrixCalculator', function() {
             var weight = calculator.weightForClickAtNode(new THREE.Vector3(0,0,0),0);
             expect(weight).to.be.lessThan(Infinity);
         });
+        it('should return 0 for boundary nodes', function() {
+            calculator.geometry.boundaryNodes = [0];
+            var weight = calculator.weightForClickAtNode(new THREE.Vector3(0,0,0), 0);
+            expect(weight).to.equal(0);
+        });
     });
 
     describe('buildMatrix', function() {
