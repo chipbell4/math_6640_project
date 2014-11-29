@@ -39,7 +39,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 };
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
-    var F  = this.resolveF(mouseClickLocation);
+    var sparseF  = N.ccsSparseVector(this.resolveF(mouseClickLocation));
 
     // form the currentWavePosition scale factor
     var currentScale = N.ccsadd(
@@ -48,12 +48,17 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     );
     var previousScale = N.ccsScale(this.massMatrix, (2 - this.dampingCoefficient * deltaT) / (2 * deltaT));
 
+    var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
+    var sparsePreviousPosition = N.ccsSparseVector(this.previousWavePosition);
+
+    var currentTerm = N.ccsDot(currentScale, sparseCurrentPosition);
+    var previousTerm = N.ccsDot(previousScale, sparsePreviousPosition);
+    console.log(currentTerm);
+    console.log(previousTerm);
+
     // calculate the right side to solve
-    var rightHandSide = N.ccsadd(
-        N.ccsDot(currentScale, N.ccsSparseVector(this.currentWavePosition)),
-        N.ccsDot(previousScale, N.ccsSparseVector(this.previousWavePosition))
-    );
-    rightHandSide = N.ccsadd(rightHandSide, N.ccsSparseVector(F));
+    var rightHandSide = N.ccsadd(currentTerm, previousTerm);
+    rightHandSide = N.ccsadd(rightHandSide, sparseF);
     rightHandSide = N.ccsScale(rightHandSide, 2 * deltaT / (2 + this.dampingCoefficient * deltaT));
 
     // now solve for the next timestep
