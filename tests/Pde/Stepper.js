@@ -46,13 +46,13 @@ describe('Stepper', function() {
         
         // Make sure the energy DID propogate
         expect(currentWavePosition).to.not.deep.equal(Zero);
-        throw Error('Stoppin');
         
         for(var i = 0; i < many; i++) {
             var nextWavePosition = stepper.step(0.01);
+            console.log(nextWavePosition);
 
             // Make sure that the wave height is decreasing
-            expect(numeric.norminf(nextWavePosition)).to.be.lessThan(numeric.norminf(currentWavePosition));
+            expect(numeric.norm2(nextWavePosition)).to.be.lessThan(numeric.norm2(currentWavePosition));
             
             currentWavePosition = nextWavePosition;
         }
