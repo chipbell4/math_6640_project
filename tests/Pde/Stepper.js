@@ -30,7 +30,7 @@ describe('Stepper', function() {
     });
 
     it('should not blow up after many empty steps', function() {
-        var many = 1;
+        var many = 1000;
         for(var i = 0; i < many; i++) {
             stepper.step(0.01);
         }
