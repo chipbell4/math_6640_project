@@ -30,12 +30,12 @@ describe('Stepper', function() {
     });
 
     it('should not blow up after many empty steps', function() {
-        var many = 1000;
+        var many = 1;
         for(var i = 0; i < many; i++) {
             stepper.step(0.01);
         }
 
-       expect(stepper.currentWavePosition).to.equal([0, 0, 0, 0, 0, 0]); 
+       expect(stepper.currentWavePosition).to.deep.equal([0, 0, 0, 0, 0, 0]); 
     });
 
     it('should limit to zero if a click is registered at the start');

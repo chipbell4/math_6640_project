@@ -3,6 +3,7 @@ N.scale = require('../util/scale.js');
 N.ccsScale = require('../util/ccsScale.js');
 N.ccsSparseVector = require('../util/ccsSparseVector.js');
 N.ccsFullVector = require('../util/ccsFullVector.js');
+N.ccsFixVector = require('../util/ccsFixVector.js');
 var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
@@ -11,7 +12,7 @@ var Stepper = function(femGeometry, dampingCoefficient, waveSpeed) {
     this.geometry = femGeometry;
     this.massMatrix = N.ccsSparse(new MassMatrixCalculator(femGeometry).buildMatrix());
     this.stiffnessMatrix = N.ccsSparse(new StiffnessMatrixCalculator(femGeometry).buildMatrix());
-    this.dampingCoefficient = this.dampingCoefficient;
+    this.dampingCoefficient = dampingCoefficient;
     this.waveSpeed = waveSpeed;
     this.currentWavePosition = this.zeroVector();
     this.previousWavePosition = this.zeroVector();
@@ -53,8 +54,8 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
 
     var currentTerm = N.ccsDot(currentScale, sparseCurrentPosition);
     var previousTerm = N.ccsDot(previousScale, sparsePreviousPosition);
-    console.log(currentTerm);
-    console.log(previousTerm);
+    currentTerm = N.ccsFixVector(currentTerm, this.massMatrix.length);
+    previousTerm = N.ccsFixVector(previousTerm, this.massMatrix.length);
 
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
