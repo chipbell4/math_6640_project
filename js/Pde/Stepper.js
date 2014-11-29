@@ -1,6 +1,8 @@
 var N = require('numeric');
 N.scale = require('../util/scale.js');
 N.ccsScale = require('../util/ccsScale.js');
+N.ccsSparseVector = require('../util/ccsSparseVector.js');
+N.ccsFullVector = require('../util/ccsFullVector.js');
 var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
@@ -15,6 +17,7 @@ var Stepper = function(femGeometry, dampingCoefficient, waveSpeed) {
     this.previousWavePosition = this.zeroVector();
 
     // precalculate some values needed in the calculation
+    this.massLUP = N.ccsLUP(this.massMatrix);
 };
 
 Stepper.prototype.zeroVector = function() {
@@ -44,6 +47,21 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
         N.ccsScale(this.stiffnessMatrix, this.waveSpeed * this.waveSpeed)
     );
     var previousScale = N.ccsScale(this.massMatrix, (2 - this.dampingCoefficient * deltaT) / (2 * deltaT));
+
+    // calculate the right side to solve
+    var rightHandSide = N.ccsadd(
+        N.ccsDot(currentScale, N.ccsSparseVector(this.currentWavePosition)),
+        N.ccsDot(previousScale, N.ccsSparseVector(this.previousWavePosition))
+    );
+    rightHandSide = N.ccsadd(rightHandSide, N.ccsSparseVector(F));
+    rightHandSide = N.ccsScale(rightHandSide, 2 * deltaT / (2 + this.dampingCoefficient * deltaT));
+
+    // now solve for the next timestep
+    var nextWavePosition = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rightHandSide));
+
+    this.previousWavePosition = this.currentWavePosition;
+    this.currentWavePosition = nextWavePosition;
+    return this.currentWavePosition;
 };
 
 module.exports = Stepper;
