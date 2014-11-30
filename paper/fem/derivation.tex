@@ -13,7 +13,7 @@ The weak form of $u_h$ is given by taking the inner product
 \begin{equation} \label{eq:u_h_weak_form}
 \innerproduct{ \left( \secondpartial{u_h}{t} - \gamma \firstpartial{u_h}{t} \right) } { v }
 =
-\beta^2 \innerproductdot{u}{v(x,y)}
+- \beta^2 \innerproductdot{u}{v}
 + \innerproduct{F}{v}
 \end{equation}
 for any $v \in H^1(\Omega)$. Since this works for any $v$, we can choose $v$ to be any of the basis functions $\phi$
@@ -21,7 +21,7 @@ we chose for $H^1(\Omega)$. So, for any basis $\phi_j$, we can expand $u_h$ usin
 \begin{equation} \label{eq:u_h_weak_form_expanded}
 \sum\limits_{k=1}^N \left( \secondderivative{c_k}{t} - \gamma\firstderivative{c_k}{t} \right) \innerproduct{\phi_k}{\phi_j}
 =
-\beta^2\sum\limits_{k=1}^N c_k(t) \innerproductdot{\phi_k}{\phi_j}
+- \beta^2\sum\limits_{k=1}^N c_k(t) \innerproductdot{\phi_k}{\phi_j}
 +
 \innerproduct{F}{\phi_j}
 \end{equation}
@@ -44,7 +44,7 @@ $\vec{F}(t)$ to be a vector, s.t. the $k$th entry is given as
 
 We can now rewrite (\ref{eq:u_h_weak_form_expanded}) as
 \begin{equation} \label{eq:u_h_matrix}
-M\left( \secondderivative{\vec{c}}{t} - \gamma\firstderivative{\vec{c}}{t} \right) = \beta^2 A \vec{c} + \vec{F}
+M\left( \secondderivative{\vec{c}}{t} - \gamma\firstderivative{\vec{c}}{t} \right) = - \beta^2 A \vec{c} + \vec{F}
 \end{equation}
 
 We now can build a finite difference scheme for $\vec{c}$ by using the following expansion for the second derivative:
@@ -58,14 +58,14 @@ and the following (second order) expansion for the first derivative
 
 Substituting into (\ref{eq:u_h_matrix}) gives us
 \begin{equation} \label{eq:finite_diff_weak_form}
-M \left( \secondfinitediff{c} - \gamma \firstfinitediff{c} \right) = \beta^2 A c^n + \vec{F}
+M \left( \secondfinitediff{c} - \gamma \firstfinitediff{c} \right) = - \beta^2 A c^n + \vec{F}
 \end{equation}
 
 Lastly, we can rearrange and solve for $c^{n+1}$
 \begin{equation} \label{eq:finite_diff_solution}
 c^{n+1} = \step{-}^{-1} M^{-1}
 \left(
-\left( \frac{2}{\delta t^2}M + \beta^2 A \right) c^n
+\left( \frac{2}{\delta t^2}M - \beta^2 A \right) c^n
 +
 \step{+} M c^{n-1}
 +
