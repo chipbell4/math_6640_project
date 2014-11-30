@@ -41,7 +41,9 @@ var basisFunctionGradient = function(points, weightedIndex) {
 StiffnessMatrixCalculator.prototype.singleTriangleInnerProduct = function(points, weightedPoints) {
     // if any of the weighted points are boundary points
     var that = this;
-    var hasBoundaryPoint = weightedPoints.some(function(node) {
+    var hasBoundaryPoint = weightedPoints.map(function(pointArrayIndex) {
+        return points[pointArrayIndex];
+    }).some(function(node) {
         return that.geometry.boundaryNodes.indexOf(node) > -1;
     });
     if(hasBoundaryPoint) {

@@ -34,6 +34,15 @@ describe('StiffnessMatrixCalculator', function() {
             expect(result).to.equal(0);
         });
 
+        it('should handle different orderings of boundary nodes', function() {
+            stiffnessMatrixCalculator.geometry.boundaryNodes.push(2);
+            var result;
+            result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [1, 2]);
+            expect(result).to.equal(0);
+            result = stiffnessMatrixCalculator.singleTriangleInnerProduct([2, 1, 0], [1, 2]);
+            expect(result).to.be.closeTo(-0.5, 0.001);
+        });
+
         it('should handle non-orthogonal gradients', function() {
             var result = stiffnessMatrixCalculator.singleTriangleInnerProduct([0, 1, 2], [0, 1])
             expect(result).to.be.closeTo(-0.5, 0.001);
