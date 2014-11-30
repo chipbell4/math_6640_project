@@ -87,7 +87,7 @@ StiffnessMatrixCalculator.prototype.stiffnessBetweenNodes = function(i, j) {
  * Actually builds the stiffness matrix
  */
 StiffnessMatrixCalculator.prototype.buildMatrix = function() {
-    var N = this.geometry.threeGeometry.vertices.length;
+    var N = this.geometry.internalNodes.length;
     var matrix = Array(N);
 
     var i, j;
@@ -98,7 +98,10 @@ StiffnessMatrixCalculator.prototype.buildMatrix = function() {
     // fill in the entries
     for(i = 0; i < N; i++) {
         for(j = i; j < N; j++) {
-            matrix[i][j] = this.stiffnessBetweenNodes(i, j);
+            matrix[i][j] = this.stiffnessBetweenNodes(
+                this.geometry.internalNodes[i],
+                this.geometry.internalNodes[j]
+            );
         }
 
         for(j = 0; j < i; j++) {

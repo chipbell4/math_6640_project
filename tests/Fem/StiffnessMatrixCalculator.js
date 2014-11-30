@@ -65,5 +65,18 @@ describe('StiffnessMatrixCalculator', function() {
             expect(matrix[1][1]).to.not.equal(0);
             expect(matrix[2][2]).to.not.equal(0);
         });
+
+        it('should only include internal nodes', function() {
+            stiffnessMatrixCalculator.geometry.internalNodes = [0, 1];
+
+            var matrix = stiffnessMatrixCalculator.buildMatrix();
+
+            expect(matrix.length).to.equal(2);
+            expect(matrix[0].length).to.equal(2);
+            expect(matrix[1].length).to.equal(2);
+
+            expect(matrix[0][0]).to.not.equal(0);
+            expect(matrix[1][1]).to.not.equal(0);
+        });
     });
 });
