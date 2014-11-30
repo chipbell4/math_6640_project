@@ -27,21 +27,22 @@ describe('Stepper', function() {
 
     var stepper;
     beforeEach(function() {
-        stepper = new Stepper(femGeometry, 1, 1);
+        stepper = new Stepper(femGeometry, 1, 0.01);
     });
 
     it('should not blow up after many empty steps', function() {
-        var many = 1000;
+        var many = 1;
         for(var i = 0; i < many; i++) {
             stepper.step(0.01);
         }
 
-       expect(stepper.currentWavePosition).to.deep.equal([0, 0, 0, 0, 0, 0]); 
+        expect(stepper.currentWavePosition[0]).to.equal(0);
+        expect(stepper.currentWavePosition[1]).to.equal(0);
     });
 
     it('should limit to zero if a click is registered at the start', function() {
-        var Zero = [0, 0, 0, 0, 0, 0];
-        var many = 2;
+        var Zero = [0, 0];
+        var many = 1;
         var currentWavePosition = stepper.step(0.01, new THREE.Vector3(0.5, 0.5, 0));
         
         // Make sure the energy DID propogate
@@ -52,10 +53,11 @@ describe('Stepper', function() {
 
             // Make sure that the wave height is decreasing
             //expect(numeric.norm2(nextWavePosition)).to.be.lessThan(numeric.norm2(currentWavePosition));
-            console.log(currentWavePosition);
             
             currentWavePosition = nextWavePosition;
         }
-        expect(stepper.currentWavePosition).to.deep.equal(Zero);
+        
+        expect(stepper.currentWavePosition[0]).to.equal(0);
+        expect(stepper.currentWavePosition[1]).to.equal(0);
     });
 });
