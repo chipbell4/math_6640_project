@@ -22,7 +22,7 @@ var Stepper = function(femGeometry, dampingCoefficient, waveSpeed) {
 };
 
 Stepper.prototype.zeroVector = function() {
-    var n = this.massMatrix.length;
+    var n = this.geometry.internalNodes.length;
 
     var array = [];
     for(var i = 0; i < n; i++) {
@@ -36,7 +36,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     if(mouseClickLocation === undefined) {
         return this.zeroVector();
     }
-    return new FMatrixCalculator(this.geometry, 1).buildMatrix(mouseClickLocation); 
+    return new FMatrixCalculator(this.geometry, 0.1).buildMatrix(mouseClickLocation); 
 };
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
@@ -47,7 +47,7 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
         N.ccsScale(this.massMatrix, 2 / deltaT / deltaT),
         N.ccsScale(this.stiffnessMatrix, this.waveSpeed * this.waveSpeed)
     );
-    var previousScale = N.ccsScale(this.massMatrix, (2 - this.dampingCoefficient * deltaT) / (2 * deltaT));
+    var previousScale = N.ccsScale(this.massMatrix, (2 + this.dampingCoefficient * deltaT) / (2 * deltaT));
 
     var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
     var sparsePreviousPosition = N.ccsSparseVector(this.previousWavePosition);
@@ -60,18 +60,17 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
     rightHandSide = N.ccsadd(rightHandSide, sparseF);
-    rightHandSide = N.ccsScale(rightHandSide, 2 * deltaT / (2 + this.dampingCoefficient * deltaT));
-
-    console.log("MASS MATRIX");
-    console.log(N.ccsFull(this.massMatrix));
-    console.log("\nINVERSE");
-    console.log(N.inv(N.ccsFull(this.massMatrix)));
-    console.log("\nRHS");
-    console.log(N.ccsFullVector(rightHandSide));
-    console.log("\n");
+    rightHandSide = N.ccsScale(rightHandSide, 2 * deltaT * deltaT / (2 - this.dampingCoefficient * deltaT));
 
     // now solve for the next timestep
     var nextWavePosition = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rightHandSide));
+
+    console.log("F");
+    console.log(N.ccsFullVector(sparseF));
+    console.log("MASS MATRIX");
+    console.log(N.ccsFull(this.massMatrix));
+    console.log("RHS");
+    console.log(N.ccsFullVector(rightHandSide));
     console.log("RESULT");
     console.log(nextWavePosition);
     console.log("\n");
