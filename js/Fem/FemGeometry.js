@@ -6,6 +6,10 @@ var _ = require('underscore');
 var FemGeometry = function(threeGeometry, boundaryNodes) {
     this.threeGeometry = threeGeometry;
     this.boundaryNodes = boundaryNodes;
+    
+    var allNodes = _.range(threeGeometry.vertices.length);
+    this.internalNodes = _.difference(allNodes, boundaryNodes);
+    this.internalNodes.sort();
 
     this.rebuildAdjacencyList();
 };
