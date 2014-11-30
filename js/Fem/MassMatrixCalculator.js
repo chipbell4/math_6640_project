@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var TMC = require('./TriangleMassCalculator.js');
 
 /**
@@ -57,8 +58,15 @@ MassMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
  * Builds the actual mass matrix
  */
 MassMatrixCalculator.prototype.buildMatrix = function() {
-    // build an empty array
-    var i, j, N = this.geometry.threeGeometry.vertices.length;
+    var i, j;
+
+    // the list of internal nodes
+    var allNodes = _.range(this.geometry.threeGeometry.vertices.length);
+    var internalNodes = _.difference(allNodes, this.geometry.boundaryNodes);
+    internalNodes.sort();
+
+    // stub out the matrix
+    var N = internalNodes.length;
     var matrix = Array(N);
     for(i = 0; i < N; i++) {
         matrix[i] = Array(N);
@@ -66,10 +74,13 @@ MassMatrixCalculator.prototype.buildMatrix = function() {
 
     // now build the mass matrix...
     for(i = 0; i < N; i++) {
-        // save ourselves some work, by taking advantage of symmetry
+        var internalNodeI = internalNodes[i];
         for(j = i; j < N; j++) {
-            matrix[i][j] = this.massBetweenNodes(i, j);
+            var internalNodeJ = internalNodes[j];
+            matrix[i][j] = this.massBetweenNodes(internalNodeI, internalNodeJ);
         }
+        
+        // save ourselves some work, by taking advantage of symmetry
         for(j = 0; j < i; j++) {
             matrix[i][j] = matrix[j][i];
         }
