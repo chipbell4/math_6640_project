@@ -42,7 +42,7 @@ describe('Stepper', function() {
 
     it('should limit to zero if a click is registered at the start', function() {
         var Zero = [0, 0];
-        var many = 1;
+        var many = 2;
         var currentWavePosition = stepper.step(0.01, new THREE.Vector3(0.5, 0.5, 0));
         
         // Make sure the energy DID propogate

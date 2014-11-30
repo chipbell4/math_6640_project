@@ -46,7 +46,11 @@ Stepper.prototype.globalScaleFactor = function(deltaT) {
 
 Stepper.prototype.currentStateScaleTerm = function(deltaT) {
     var scaledMassMatrix = N.ccsScale(this.massMatrix, 2 / deltaT / deltaT);
+    console.log("STIFFNESS MATRIX");
+    console.log(this.stiffnessMatrix);
+    console.log(N.ccsFull(this.stiffnessMatrix));
     var scaledStiffnessMatrix = N.ccsScale(this.stiffnessMatrix, this.waveSpeed * this.waveSpeed);
+    console.log(N.ccsFull(scaledStiffnessMatrix));
     return N.ccsadd(scaledMassMatrix, scaledStiffnessMatrix);
 };
 
@@ -74,6 +78,15 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentTerm = this.currentStateTerm(deltaT);
     var previousTerm = this.previousStateTerm(deltaT);
 
+    var solved = N.ccsLUPSolve(
+        this.massLUP,
+        N.ccsFullVector(N.ccsScale(currentTerm, this.globalScaleFactor(deltaT)))
+    );
+    console.log("COMPARING");
+    console.log(this.currentWavePosition);
+    console.log(solved);
+    console.log("\n");
+
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
     rightHandSide = N.ccsadd(rightHandSide, F);
@@ -81,16 +94,6 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
 
     // now solve for the next timestep
     var nextWavePosition = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rightHandSide));
-
-    console.log("F");
-    console.log(N.ccsFullVector(F));
-    console.log("MASS MATRIX");
-    console.log(N.ccsFull(this.massMatrix));
-    console.log("RHS");
-    console.log(N.ccsFullVector(rightHandSide));
-    console.log("RESULT");
-    console.log(nextWavePosition);
-    console.log("\n");
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;
