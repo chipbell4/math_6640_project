@@ -32,12 +32,12 @@
 \section{The main PDE}
 The partial differential equation models a damped membrane over a region $\Omega$ bounded by a closed curve $\Gamma$.
 \begin{equation} \label{eq:main_pde}
-\secondpartial{u}{t} + \gamma \firstpartial{u}{t}
+\secondpartial{u}{t} - \gamma \firstpartial{u}{t}
 =
 \beta^2 \laplacian{u} + F(x,y,t)
 \end{equation}
 
-where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma$ is a damping factor for the wave,
+where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma \ge 0$ is a damping factor for the wave,
 $\beta$ is the wave speed, and $F$ is a forcing function on the wave. Because this a drum head, (or ``membrane''), we choose
 $u$ along $\Gamma$ to be 0, giving us a Dirichet boundary condition.
 
