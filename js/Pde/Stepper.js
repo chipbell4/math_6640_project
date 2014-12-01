@@ -46,11 +46,7 @@ Stepper.prototype.globalScaleFactor = function(deltaT) {
 
 Stepper.prototype.currentStateScaleTerm = function(deltaT) {
     var scaledMassMatrix = N.ccsScale(this.massMatrix, 2 / deltaT / deltaT);
-    console.log("STIFFNESS MATRIX");
-    console.log(this.stiffnessMatrix);
-    console.log(N.ccsFull(this.stiffnessMatrix));
-    var scaledStiffnessMatrix = N.ccsScale(this.stiffnessMatrix, this.waveSpeed * this.waveSpeed);
-    console.log(N.ccsFull(scaledStiffnessMatrix));
+    var scaledStiffnessMatrix = N.ccsScale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
     return N.ccsadd(scaledMassMatrix, scaledStiffnessMatrix);
 };
 
