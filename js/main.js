@@ -16,6 +16,8 @@ var FemDrawingState = require('./FemDrawingState.js');
 
 	var renderer;
 
+    window.scene = new THREE.Scene();
+
 	var animate = function() {
 		renderer.render(currentDrawingState.scene, currentDrawingState.camera);
 
@@ -35,6 +37,9 @@ var FemDrawingState = require('./FemDrawingState.js');
             currentDrawingState = polygonDrawingState;
         }
         else {
+            // clear the previous scene
+            femDrawingState.scene.children = [];
+            femDrawingState.scene.add(polygonDrawingState.polygonMesh);
             currentDrawingState = femDrawingState;
         }
     };
