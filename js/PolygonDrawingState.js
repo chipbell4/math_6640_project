@@ -17,6 +17,10 @@ var PolygonDrawingState = function() {
 
 	// Create the buffer
 	this.buffer = new PolygonBuffer(1000);
+    this.buffer.addPoint(new THREE.Vector3(0, 0, 0));
+    this.buffer.addPoint(new THREE.Vector3(1, 0, 0));
+    this.buffer.addPoint(new THREE.Vector3(1, 1, 0));
+    this.buffer.addPoint(new THREE.Vector3(0, 1, 0));
 
 	// now setup the meshes
 	this.refreshGeometries();
