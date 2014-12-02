@@ -57,8 +57,10 @@ MassMatrixCalculator.prototype.massBetweenNodes = function(i, j) {
  * Builds the actual mass matrix
  */
 MassMatrixCalculator.prototype.buildMatrix = function() {
-    // build an empty array
-    var i, j, N = this.geometry.threeGeometry.vertices.length;
+    var i, j;
+
+    // stub out the matrix
+    var N = this.geometry.internalNodes.length;
     var matrix = Array(N);
     for(i = 0; i < N; i++) {
         matrix[i] = Array(N);
@@ -66,10 +68,14 @@ MassMatrixCalculator.prototype.buildMatrix = function() {
 
     // now build the mass matrix...
     for(i = 0; i < N; i++) {
-        // save ourselves some work, by taking advantage of symmetry
         for(j = i; j < N; j++) {
-            matrix[i][j] = this.massBetweenNodes(i, j);
+            matrix[i][j] = this.massBetweenNodes(
+                this.geometry.internalNodes[i],
+                this.geometry.internalNodes[j]
+            );
         }
+        
+        // save ourselves some work, by taking advantage of symmetry
         for(j = 0; j < i; j++) {
             matrix[i][j] = matrix[j][i];
         }

@@ -3,7 +3,7 @@ var THREE = require('three');
 var FemGeometry = require('../../js/Fem/FemGeometry.js');
 var MassMatrixCalculator = require('../../js/Fem/MassMatrixCalculator.js');
 
-describe('SMC', function() {
+describe('MMC', function() {
     it('should exist', function() {
         expect(MassMatrixCalculator).to.be.instanceOf(Function);
     });
@@ -56,7 +56,7 @@ describe('SMC', function() {
             );
 
             // TODO: Make this test more exact plz
-             expect(geometry.massBetweenNodes(0, 1)).to.not.equal(0);
+            expect(geometry.massBetweenNodes(0, 1)).to.not.equal(0);
         });
 
         it('should return the sum of the triangle inner products if they are the same node', function() {
@@ -98,24 +98,19 @@ describe('SMC', function() {
             expect(matrix).to.be.instanceOf(Array);
 
             // make sure dimensions are correct
-            expect(matrix.length).to.equal(6);
+            expect(matrix.length).to.equal(2);
             matrix.forEach(function(row) {
-                expect(row.length).to.equal(6);
-            });
-
-            // make sure boundary nodes have zeroes
-            [0, 1, 2, 3].forEach(function(node) {
-                expect(matrix[node]).to.deep.equal([0, 0, 0, 0, 0, 0]);
+                expect(row.length).to.equal(2);
             });
 
             // make sure the interior nodes have non-zeros
-            expect(matrix[4][4]).to.be.greaterThan(0);
-            expect(matrix[5][5]).to.be.greaterThan(0);
-            expect(matrix[4][5]).to.be.greaterThan(0);
-            expect(matrix[5][4]).to.not.equal(0);
+            expect(matrix[0][0]).to.be.greaterThan(0);
+            expect(matrix[1][1]).to.be.greaterThan(0);
+            expect(matrix[0][1]).to.be.greaterThan(0);
+            expect(matrix[1][0]).to.not.equal(0);
 
             // make sure we're symmetric
-            expect(matrix[5][4]).to.equal(matrix[4][5]);
+            expect(matrix[1][0]).to.equal(matrix[0][1]);
         });
     });
 });
