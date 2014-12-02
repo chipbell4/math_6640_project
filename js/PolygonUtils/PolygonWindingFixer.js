@@ -20,12 +20,14 @@ var calculateWindedness = function(points) {
 
 var PolygonWindingFixer = function(points) {
 	// clone the array
-	this.correctedPoints = points.slice(0);
+	var correctedPoints = points.slice(0);
 
 	// fix if the windedness is wrong
 	if(calculateWindedness(points) < 0) {
-		this.correctedPoints = this.correctedPoints.reverse();
+		correctedPoints = correctedPoints.reverse();
 	}
+
+    return correctedPoints;
 };
 
 
