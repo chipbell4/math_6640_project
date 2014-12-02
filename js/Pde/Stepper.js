@@ -78,8 +78,6 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
         this.massLUP,
         N.ccsFullVector(N.ccsScale(currentTerm, this.globalScaleFactor(deltaT)))
     );
-    //console.log("COMPARING");
-    //console.log(this.currentWavePosition);
 
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
