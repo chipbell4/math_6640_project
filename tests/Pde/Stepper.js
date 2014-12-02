@@ -27,7 +27,7 @@ describe('Stepper', function() {
 
     var stepper;
     beforeEach(function() {
-        stepper = new Stepper(femGeometry, 1, 0.01);
+        stepper = new Stepper(femGeometry, 1, 0.1);
     });
 
     it('should not blow up after many empty steps', function() {
@@ -42,7 +42,7 @@ describe('Stepper', function() {
 
     it('should limit to zero if a click is registered at the start', function() {
         var Zero = [0, 0];
-        var many = 2;
+        var many = 1000;
         var currentWavePosition = stepper.step(0.01, new THREE.Vector3(0.5, 0.5, 0));
         
         // Make sure the energy DID propogate
@@ -50,14 +50,11 @@ describe('Stepper', function() {
         
         for(var i = 0; i < many; i++) {
             var nextWavePosition = stepper.step(0.01);
-
-            // Make sure that the wave height is decreasing
-            //expect(numeric.norm2(nextWavePosition)).to.be.lessThan(numeric.norm2(currentWavePosition));
             
             currentWavePosition = nextWavePosition;
         }
         
-        expect(stepper.currentWavePosition[0]).to.equal(0);
-        expect(stepper.currentWavePosition[1]).to.equal(0);
+        expect(stepper.currentWavePosition[0]).to.be.closeTo(0, 0.001);
+        expect(stepper.currentWavePosition[1]).to.be.closeTo(0, 0.001);
     });
 });

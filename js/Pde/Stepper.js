@@ -40,7 +40,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 };
 
 Stepper.prototype.globalScaleFactor = function(deltaT) {
-    var inverse = (1 / deltaT / deltaT) - (this.dampingCoefficient / (2 * deltaT));
+    var inverse = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
     return 1 / inverse;
 };
 
@@ -51,8 +51,8 @@ Stepper.prototype.currentStateScaleTerm = function(deltaT) {
 };
 
 Stepper.prototype.previousStateScaleTerm = function(deltaT) {
-    var scaleFactor = (1 / deltaT / deltaT) + (this.dampingCoefficient / (2 * deltaT));
-    return N.ccsScale(this.massMatrix, scaleFactor);
+    var scaleFactor = (1 / deltaT / deltaT) - (this.dampingCoefficient / (2 * deltaT));
+    return N.ccsScale(this.massMatrix, -scaleFactor);
 };
 
 Stepper.prototype.currentStateTerm = function(deltaT) {
@@ -78,10 +78,8 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
         this.massLUP,
         N.ccsFullVector(N.ccsScale(currentTerm, this.globalScaleFactor(deltaT)))
     );
-    console.log("COMPARING");
-    console.log(this.currentWavePosition);
-    console.log(solved);
-    console.log("\n");
+    //console.log("COMPARING");
+    //console.log(this.currentWavePosition);
 
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
