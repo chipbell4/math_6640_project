@@ -61,9 +61,9 @@ PolygonDrawingState.prototype.refreshGeometries = function() {
 
 	if(!this.polygonMesh) {
 		this.polygonMesh = new THREE.Mesh(new THREE.Geometry(), new THREE.MeshBasicMaterial({
-			color: '#ffffff'
+			color: '#ffffff',
+            side: THREE.DoubleSide,
 		}));
-		this.polygonMesh.material.side = THREE.DoubleSide;
 	}
 
 
@@ -78,6 +78,7 @@ PolygonDrawingState.prototype.showPolygon = function() {
 	}
 
 	this.scene.remove(this.lineMesh);
+    this.scene.remove(this.polygonMesh);
 	this.scene.add(this.polygonMesh);
 };
 
@@ -87,6 +88,7 @@ PolygonDrawingState.prototype.showLine = function() {
 		return;
 	}
 
+	this.scene.remove(this.lineMesh);
 	this.scene.add(this.lineMesh);
 	this.scene.remove(this.polygonMesh);
 };

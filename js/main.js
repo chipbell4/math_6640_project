@@ -34,12 +34,13 @@ var FemDrawingState = require('./FemDrawingState.js');
 
     var toggleDrawingState = function() {
         if(currentDrawingState == femDrawingState) {
+            polygonDrawingState.showPolygon();
             currentDrawingState = polygonDrawingState;
         }
         else {
             // clear the previous scene
-            femDrawingState.scene.children = [];
-            femDrawingState.scene.add(polygonDrawingState.polygonMesh);
+            femDrawingState.scene.remove(femDrawingState.scene.children[0]);
+            femDrawingState.scene.add(polygonDrawingState.polygonMesh.clone());
             currentDrawingState = femDrawingState;
         }
     };
