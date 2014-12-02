@@ -74,11 +74,6 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentTerm = this.currentStateTerm(deltaT);
     var previousTerm = this.previousStateTerm(deltaT);
 
-    var solved = N.ccsLUPSolve(
-        this.massLUP,
-        N.ccsFullVector(N.ccsScale(currentTerm, this.globalScaleFactor(deltaT)))
-    );
-
     // calculate the right side to solve
     var rightHandSide = N.ccsadd(currentTerm, previousTerm);
     rightHandSide = N.ccsadd(rightHandSide, F);

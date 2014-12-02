@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var TMC = require('./TriangleMassCalculator.js');
 
 /**
