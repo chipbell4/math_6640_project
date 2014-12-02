@@ -8,8 +8,9 @@ var PolygonDrawingState = function() {
 
 	var half = 1 / 2;
 
+    this.aspectRatio = window.innerWidth / window.innerHeight;
 	this.scene = new THREE.Scene();
-	this.camera = new THREE.OrthographicCamera(-half, half, -half, half, 1, 10000);
+	this.camera = new THREE.OrthographicCamera(-half * this.aspectRatio, half * this.aspectRatio, -half, half, 1, 10000);
 	this.camera.up = new THREE.Vector3(0, -1, 0);
 	this.camera.position.x = this.camera.position.y = half;
 	this.camera.position.z = -50;
@@ -112,8 +113,12 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	// scale screen coordinates to world
 	var screenCoordinates = new THREE.Vector3(evt.offsetX, window.innerHeight - evt.offsetY, 0);
 	var worldCoordinates = screenCoordinates.clone();
-	worldCoordinates.x /= window.innerWidth;
 	worldCoordinates.y /= window.innerHeight;
+    
+    var leftOffset = (window.innerWidth - window.innerHeight) / 2;
+    var clampedScreenX = Math.max(leftOffset, screenCoordinates.x);
+    clampedScreenX = Math.min(clampedScreenX, window.innerWidth - leftOffset);
+    worldCoordinates.x = (clampedScreenX - leftOffset) / window.innerHeight; 
 
 	// push onto the mesh
 	this.buffer.addPoint(worldCoordinates);

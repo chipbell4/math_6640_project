@@ -12,7 +12,7 @@ var FemDrawingState = require('./FemDrawingState.js');
     var plane = new THREE.Mesh( geometry, material );
     femDrawingState.scene.add(plane);
 	
-    var currentDrawingState = femDrawingState;
+    var currentDrawingState = polygonDrawingState;
 
 	var renderer;
 
