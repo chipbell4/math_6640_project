@@ -32,7 +32,7 @@ FemDrawingState.prototype.positionCamera = function() {
 FemDrawingState.prototype.mousemove = function(evt) {
     // set the rotation angle based off of the mouse's position relative to the document size
     this.azimuth = evt.clientX / document.body.clientWidth * 2 * Math.PI;
-    this.elevation = evt.clientY / document.body.clientHeight * Math.PI;
+    this.elevation = evt.clientY / document.body.clientHeight * (Math.PI / 2);
     this.positionCamera();
 };
 
