@@ -28,8 +28,6 @@ var PolygonRescaler = function(points) {
 		throw new Error('Point list must have at least two points');
 	}
 
-	this.points = points;
-
 	var minX = minValueInArrayForKey(points, 'x');
 	var maxX = maxValueInArrayForKey(points, 'x');
 	var minY = minValueInArrayForKey(points, 'y');
@@ -44,7 +42,7 @@ var PolygonRescaler = function(points) {
 	var translationVector = new THREE.Vector3(minX, minY, 0);
 	var xScaleFactor = 1.0 / (maxX - minX);
 	var yScaleFactor = 1.0 / (maxY - minY);
-	this.translatedPoints = this.points.map(function(point) {
+	return points.map(function(point) {
 		var centeredPoint = point.sub(translationVector);
 
 		centeredPoint.x *= xScaleFactor;
@@ -52,7 +50,6 @@ var PolygonRescaler = function(points) {
 
 		return centeredPoint;
 	});
-
 };
 
 module.exports = PolygonRescaler;
