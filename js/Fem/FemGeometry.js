@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var THREE = require('three');
 
 /**
  * A wrapper class for the THREE geometry class that provides "mesh"-like capabilities, such as adjacency tests.
@@ -173,6 +174,16 @@ FemGeometry.prototype.sharedTriangles = function(i, j) {
     return this.sharedTriangleIndices(i, j).map(function(triangleIndices) {
         return triangleIndices.map(indexToVertex);
     });
+};
+
+/**
+ * Returns a mesh of the Fem geometry that we can add to scene and draw
+ */
+FemGeometry.prototype.asMesh = function() {
+    return new THREE.Mesh(
+        this.threeGeometry,
+        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+    );
 };
 
 module.exports = FemGeometry;
