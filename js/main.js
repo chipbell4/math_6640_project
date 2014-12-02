@@ -1,3 +1,4 @@
+var THREE = require('three');
 var PolygonDrawingState = require('./PolygonDrawingState.js');
 var FemDrawingState = require('./FemDrawingState.js');
 

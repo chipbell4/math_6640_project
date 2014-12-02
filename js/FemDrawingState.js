@@ -1,3 +1,5 @@
+var THREE = require('three');
+
 /**
  * A class representing a drawing state of the simulated FEM
  */

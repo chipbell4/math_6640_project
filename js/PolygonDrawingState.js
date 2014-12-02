@@ -1,3 +1,4 @@
+var THREE = require('three');
 var PolygonBuffer = require('./PolygonUtils/PolygonBuffer.js');
 
 /**
