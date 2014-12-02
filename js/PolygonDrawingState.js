@@ -10,7 +10,14 @@ var PolygonDrawingState = function() {
 
     this.aspectRatio = window.innerWidth / window.innerHeight;
 	this.scene = new THREE.Scene();
-	this.camera = new THREE.OrthographicCamera(-half * this.aspectRatio, half * this.aspectRatio, -half, half, 1, 10000);
+	this.camera = new THREE.OrthographicCamera(
+        -half * this.aspectRatio,
+        half * this.aspectRatio,
+        -half,
+        half,
+        1,
+        10000
+    );
 	this.camera.up = new THREE.Vector3(0, -1, 0);
 	this.camera.position.x = this.camera.position.y = half;
 	this.camera.position.z = -50;
