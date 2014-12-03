@@ -39,8 +39,7 @@ var FemDrawingState = require('./FemDrawingState.js');
         }
         else {
             // clear the previous scene
-            femDrawingState.scene.remove(femDrawingState.scene.children[0]);
-            femDrawingState.scene.add(polygonDrawingState.polygonMesh.clone());
+            femDrawingState.setCurrentPolygon(polygonDrawingState.buffer.vertices);
             currentDrawingState = femDrawingState;
         }
     };
