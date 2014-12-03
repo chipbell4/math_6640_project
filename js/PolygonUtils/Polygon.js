@@ -1,3 +1,8 @@
+var CollinearityFilter = require('./CollinearityFilter.js');
+var PolygonRescaler = require('./PolygonRescaler.js');
+var PolygonWindingFixer = require('./PolygonWindingFixer.js');
+var Smoother = require('./Smoother.js');
+
 var Polygon = function(vertices) {
     this.vertices = vertices;
     this.maps = [];
@@ -6,6 +11,7 @@ var Polygon = function(vertices) {
 Polygon.prototype.addMap = function(map) {
     if(map instanceof Function) {
         this.maps.push(map);
+        return this;
     }
     else {
         throw new Error('You need to pass a map');
@@ -17,6 +23,23 @@ Polygon.prototype.mappedPoints = function() {
     return this.maps.reduce(function(vertices, map) {
         return map(vertices);
     }, this.vertices);
+};
+
+/**
+ * Helper function for building a polygon, with some default filtering
+ */
+Polygon.factory = function(vertices) {
+    var polygon = new Polygon(vertices);
+
+    // add some maps to clean up the points
+    polygon
+        .addMap(CollinearityFilter(0.001))
+        .addMap(Smoother(1))
+        .addMap(CollinearityFilter(0.001))
+        .addMap(PolygonWindingFixer())
+        .addMap(PolygonRescaler());
+
+    return polygon;
 };
 
 module.exports = Polygon;
