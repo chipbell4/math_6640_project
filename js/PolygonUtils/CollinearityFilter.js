@@ -4,7 +4,7 @@
 var pointAt = function(points, index) {
     index = (index + points.length) % points.length;
     return points[index];
-}
+};
 
 /**
  * Returns true if the points around a given index are collinear, meaning that the middle point can be deleted
@@ -36,7 +36,7 @@ var removeCollinearPoints = function(points, tolerance) {
         else {
             index++;
         }
-    };
+    }
 
     return points;
 };
