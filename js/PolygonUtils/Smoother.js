@@ -10,8 +10,8 @@ var pointAt = function(points, offset) {
 
 var smoothPoint = function(points, index, boxCarWidth) {
     var averagePoint = new THREE.Vector3(0, 0, 0);
-    for(var i = -boxCarWidth; i <= -boxCarWidth; i++) {
-        averagePoint = averagePoint.add(pointAt(points, i));
+    for(var i = -boxCarWidth; i <= boxCarWidth; i++) {
+        averagePoint = averagePoint.add(pointAt(points, index + i));
     }
 
     // scale the point by the number of points we averaged in
