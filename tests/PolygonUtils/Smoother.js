@@ -14,7 +14,8 @@ describe('Smoother', function() {
             new THREE.Vector3(1, 0, 0),
         ];
 
-        var smoothedPoints = Smoother(points);
+        var smoother = Smoother(2);
+        var smoothedPoints = smoother(points);
         expect(smoothedPoints[0].y).to.be.greaterThan(0);
         expect(smoothedPoints[1].y).to.be.lessThan(0.1);
         expect(smoothedPoints[2].y).to.be.greaterThan(0);
