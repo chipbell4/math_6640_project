@@ -18,7 +18,7 @@ var calculateWindedness = function(points) {
 	return windingFactor;
 };
 
-var PolygonWindingFixer = function(points) {
+var fixWinding = function(points) {
 	// clone the array
 	var correctedPoints = points.slice(0);
 
@@ -30,5 +30,8 @@ var PolygonWindingFixer = function(points) {
     return correctedPoints;
 };
 
+var PolygonWindingFixer = function() {
+    return fixWinding;
+};
 
 module.exports = PolygonWindingFixer;
