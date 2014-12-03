@@ -12,16 +12,18 @@ describe('PolygonWindingFixer', function() {
 		expect(p1.y).to.be.closeTo(p2.y, 0.001)
 	};
 
+    var windingFixer = PolygonWindingFixer();
+
 	it('Should leave the point set unchanged if the point set is counter clockwise', function() {
 		var originalPoints = [
 			new THREE.Vector3(0, 0, 0),
 			new THREE.Vector3(1, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		];
-		var fixer = new PolygonWindingFixer(originalPoints);
+		var correctedPoints = windingFixer(originalPoints);
 
 		// check that the second point hasn't been moved
-		expectPointsEqual(fixer.correctedPoints[1], new THREE.Vector3(1, 0, 0));
+		expectPointsEqual(correctedPoints[1], new THREE.Vector3(1, 0, 0));
 
 	});
 
@@ -31,8 +33,8 @@ describe('PolygonWindingFixer', function() {
 			new THREE.Vector3(0, 1, 0),
 			new THREE.Vector3(1, 0, 0)
 		];
-		var fixer = new PolygonWindingFixer(originalPoints);
+		var correctedPoints = windingFixer(originalPoints);
 
-		expectPointsEqual(fixer.correctedPoints[1], new THREE.Vector3(0, 1, 0));
+		expectPointsEqual(correctedPoints[1], new THREE.Vector3(0, 1, 0));
 	});
 });
