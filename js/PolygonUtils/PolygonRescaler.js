@@ -51,7 +51,7 @@ var rescalePolygon = function(points) {
 	});
 };
 
-var PolygonRescaler = function(points) {
+var PolygonRescaler = function() {
     return function(points) {
         return rescalePolygon(points);
     };
