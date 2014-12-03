@@ -3,25 +3,28 @@ var THREE = require('three');
 var PolygonRescaler = require('../../js/PolygonUtils/PolygonRescaler.js');
 
 describe('PolygonRescaler', function() {
-	it('Should Exist', function() {
+	it('should exist', function() {
 		expect(PolygonRescaler).to.be.ok;
 	});
 
 	it('Should throw an exception if passed no points', function() {
 		expect(function() {
-			PolygonRescaler([]);
+            var rescaler = PolygonRescaler();
+            rescaler([]);
 		}).to.throw(Error);
 	});
 
 	it('Should throw an exception if passed 1 point', function() {
 		expect(function() {
-			PolygonRescaler([new THREE.Vector3(0, 0, 0)]);
+            var rescaler = PolygonRescaler();
+	        rescaler([new THREE.Vector3(0, 0, 0)]);
 		}).to.throw(Error);
 	});
 
 	it('Should enforce a non-zero x range', function() {
 		expect(function() {
-			PolygonRescaler([
+            var rescaler = PolygonRescaler();
+			rescaler([
 				new THREE.Vector3(0, 0, 0),
 				new THREE.Vector3(0, 1, 0),
 			]);
@@ -30,7 +33,8 @@ describe('PolygonRescaler', function() {
 
 	it('Should enforce a non-zero y range', function() {
 		expect(function() {
-			PolygonRescaler([
+            var rescaler = polygonrescaler();
+			rescaler([
 				new THREE.Vector3(0, 0, 0),
 				new THREE.Vector3(1, 0, 0),
 			]);
@@ -38,7 +42,8 @@ describe('PolygonRescaler', function() {
 	});
 
 	it('Should construct a translated and scaled set', function() {
-		var translatedPoints = PolygonRescaler([
+        var rescaler = PolygonRescaler();
+		var translatedPoints = rescaler([
 			new THREE.Vector3(3, 1, 0),
 			new THREE.Vector3(1, 2, 0)
 		]);

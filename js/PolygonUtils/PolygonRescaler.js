@@ -22,8 +22,7 @@ function maxValueInArrayForKey(array, key) {
 	return Math.max.apply(Math, pluckedValues);
 }
 
-var PolygonRescaler = function(points) {
-
+var rescalePolygon = function(points) {
 	if(points.length < 2) {
 		throw new Error('Point list must have at least two points');
 	}
@@ -50,6 +49,12 @@ var PolygonRescaler = function(points) {
 
 		return centeredPoint;
 	});
+};
+
+var PolygonRescaler = function(points) {
+    return function(points) {
+        return rescalePolygon(points);
+    };
 };
 
 module.exports = PolygonRescaler;
