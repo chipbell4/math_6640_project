@@ -182,7 +182,7 @@ FemGeometry.prototype.sharedTriangles = function(i, j) {
 FemGeometry.prototype.asMesh = function() {
     return new THREE.Mesh(
         this.threeGeometry,
-        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, wireframe: true })
     );
 };
 
