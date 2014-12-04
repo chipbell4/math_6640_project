@@ -1,4 +1,5 @@
 var CollinearityFilter = require('./CollinearityFilter.js');
+var PointSetDensifier = require('./PointSetDensifier.js');
 var PolygonRescaler = require('./PolygonRescaler.js');
 var PolygonWindingFixer = require('./PolygonWindingFixer.js');
 var Smoother = require('./Smoother.js');
@@ -34,8 +35,9 @@ Polygon.factory = function(vertices) {
     // add some maps to clean up the points
     polygon
         .addMap(CollinearityFilter(0.001))
-        .addMap(Smoother(1))
+        .addMap(Smoother(0))
         .addMap(CollinearityFilter(0.001))
+        .addMap(PointSetDensifier(0.1))
         .addMap(PolygonWindingFixer())
         .addMap(PolygonRescaler());
 
