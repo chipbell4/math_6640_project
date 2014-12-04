@@ -36,7 +36,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     if(mouseClickLocation === undefined) {
         return this.zeroVector();
     }
-    return new FMatrixCalculator(this.geometry, 0.1).buildMatrix(mouseClickLocation); 
+    return new FMatrixCalculator(this.geometry, 0.01).buildMatrix(mouseClickLocation); 
 };
 
 Stepper.prototype.globalScaleFactor = function(deltaT) {

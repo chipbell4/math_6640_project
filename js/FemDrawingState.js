@@ -45,19 +45,20 @@ FemDrawingState.prototype.mousemove = function(evt) {
 FemDrawingState.prototype.mousedown = function(evt) {
     var projector = new MouseProjector(this.camera, window.innerWidth, window.innerHeight);
     var screenCoordinate = new THREE.Vector3(evt.clientX, evt.clientY, 0);
-    console.log(screenCoordinate);
-    var clickProjection = projector.projectClick(screenCoordinate);
-    console.log(clickProjection);
+    this.currentClick = projector.projectClick(screenCoordinate);
+};
+
+FemDrawingState.prototype.mouseup = function(evt) {
+    delete this.currentClick;
 };
 
 FemDrawingState.prototype.update = function() {
-    console.log('hello');
-    this.stepper.step(0.01);
+    this.stepper.step(0.01, this.currentClick);
 
     // set the z position of each internal node
     var that = this;
-    this.stepper.geometry.internalNodes.forEach(function(i) {
-        that.scene.children[0].geometry.vertices[i].z = that.stepper.currentWavePosition[i];
+    this.stepper.geometry.internalNodes.forEach(function(nodeIndex, arrayIndex) {
+        that.scene.children[0].geometry.vertices[nodeIndex].z = that.stepper.currentWavePosition[arrayIndex];
     });
 	
     this.scene.children[0].geometry.verticesNeedUpdate = true;
@@ -87,7 +88,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper(femGeometry, 0.1, 0.1);
+    this.stepper = new Stepper(femGeometry, 0, 0.1);
 };
 
 module.exports = FemDrawingState;
