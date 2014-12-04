@@ -51,6 +51,11 @@ Stepper.prototype.currentDiffusionTerm = function(deltaT) {
         N.ccsDot(this.stiffnessMatrix, sparseCurrentPosition),
         - 2 * this.waveSpeed * this.waveSpeed / (2 + this.dampingCoefficient * deltaT)
     );
+    var rhsFull = N.ccsFullVector(rhs);
+
+    if(N.norminf(rhsFull) < 0.00001) {
+        return N.ccsSparseVector(this.zeroVector());
+    }
 
     var fullResult = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rhs));
     return N.ccsSparseVector(fullResult);
