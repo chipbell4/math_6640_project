@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var THREE = require('three');
 var Polygon = require('../../js/PolygonUtils/Polygon.js');
 
 describe('Polygon', function() {
@@ -10,10 +11,11 @@ describe('Polygon', function() {
         it('should add a function', function() {
             var polygon = new Polygon([]);
             expect(polygon.maps.length).to.equal(0);
-            polygon.addMap(function() { });
+            var result = polygon.addMap(function() { });
+            expect(result).to.equal(polygon);
             expect(polygon.maps.length).to.equal(1);
         });
-        it('should throw an exception if the map does not have a map function', function() {
+        it('should throw an exception if the map is not a function', function() {
             var polygon = new Polygon([]);
             expect(function() {
                 polygon.addMap('asdf');
@@ -38,6 +40,20 @@ describe('Polygon', function() {
             polygon.addMap(squareAll);
             polygon.addMap(addOne);
             expect(polygon.mappedPoints()).to.deep.equal([2, 5, 10]);
+        });
+    });
+
+    describe('factory', function() {
+        it('should work', function() {
+            var polygon = Polygon.factory([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(1, 0, 0),
+                new THREE.Vector3(2, 0, 0),
+                new THREE.Vector3(1, 1, 0),
+                new THREE.Vector3(0.5, 0.5, 0)
+            ]);
+
+            polygon.mappedPoints();
         });
     });
 });

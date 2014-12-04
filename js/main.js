@@ -12,9 +12,11 @@ var FemDrawingState = require('./FemDrawingState.js');
     var plane = new THREE.Mesh( geometry, material );
     femDrawingState.scene.add(plane);
 	
-    var currentDrawingState = femDrawingState;
+    var currentDrawingState = polygonDrawingState;
 
 	var renderer;
+
+    window.scene = new THREE.Scene();
 
 	var animate = function() {
 		renderer.render(currentDrawingState.scene, currentDrawingState.camera);
@@ -32,9 +34,12 @@ var FemDrawingState = require('./FemDrawingState.js');
 
     var toggleDrawingState = function() {
         if(currentDrawingState == femDrawingState) {
+            polygonDrawingState.showPolygon();
             currentDrawingState = polygonDrawingState;
         }
         else {
+            // clear the previous scene
+            femDrawingState.setCurrentPolygon(polygonDrawingState.buffer.vertices);
             currentDrawingState = femDrawingState;
         }
     };

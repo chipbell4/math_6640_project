@@ -159,4 +159,12 @@ describe('FemGeometry', function() {
             expect(triangles.length).to.equal(0);
         });
     });
+
+    describe('asMesh', function() {
+        it('should return a mesh', function() {
+            var geometry = new FemGeometry(new THREE.Geometry, []);
+
+            expect(geometry.asMesh()).to.be.instanceOf(THREE.Mesh);
+        });
+    });
 });
