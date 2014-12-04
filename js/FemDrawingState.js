@@ -6,6 +6,7 @@ var GeometryBuilder = require('./GeometryBuilder.js');
 var FemGeometry = require('./Fem/FemGeometry.js');
 var MouseProjector = require('./Ui/MouseProjector.js');
 var range = require('range-function');
+var Stepper = require('./Pde/Stepper.js');
 
 /**
  * A class representing a drawing state of the simulated FEM
@@ -49,6 +50,21 @@ FemDrawingState.prototype.mousedown = function(evt) {
     console.log(clickProjection);
 };
 
+FemDrawingState.prototype.update = function() {
+    console.log('hello');
+    this.stepper.step(0.01);
+
+    // set the z position of each internal node
+    var that = this;
+    this.stepper.geometry.internalNodes.forEach(function(i) {
+        that.scene.children[0].geometry.vertices[i].z = that.stepper.currentWavePosition[i];
+    });
+	
+    this.scene.children[0].geometry.verticesNeedUpdate = true;
+	this.scene.children[0].geometry.elementsNeedUpdate = true;
+	this.scene.children[0].geometry.computeBoundingSphere();
+};
+
 
 /**
  * Sets the current polygon on the fem drawing side
@@ -65,9 +81,13 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     var threeGeometry = new GeometryBuilder(meshPoints).buildGeometry();
     var femGeometry = new FemGeometry(threeGeometry, boundaryNodes);
 
+    // make it drawable
     var mesh = femGeometry.asMesh();
     this.scene.remove(this.scene.children[0]);
     this.scene.add(mesh);
+
+    // setup the Fem Model
+    this.stepper = new Stepper(femGeometry, 0.1, 0.1);
 };
 
 module.exports = FemDrawingState;
