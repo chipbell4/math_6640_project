@@ -10,14 +10,12 @@ var range = require('range-function');
  * A class representing a drawing state of the simulated FEM
  */
 var FemDrawingState = function() {
-
-    this.cameraHeight = 2;
-    this.cameraDistance = 3;
+    this.cameraDistance = 1;
     this.elevation = 0;
     this.azimuth = 0;
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-4, 4, -4, 4, 1, 10000);
+    this.camera = new THREE.OrthographicCamera(-1.5, 1.5, -1.5, 1.5, 0.01, 10000);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.positionCamera();
 };
@@ -38,7 +36,7 @@ FemDrawingState.prototype.positionCamera = function() {
 FemDrawingState.prototype.mousemove = function(evt) {
     // set the rotation angle based off of the mouse's position relative to the document size
     this.azimuth = evt.clientX / document.body.clientWidth * 2 * Math.PI;
-    this.elevation = evt.clientY / document.body.clientHeight * (Math.PI / 2);
+    this.elevation = -evt.clientY / document.body.clientHeight * (Math.PI / 2) + Math.PI / 2;
     this.positionCamera();
 };
 
