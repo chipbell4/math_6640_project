@@ -47,6 +47,8 @@ describe('Stepper', function() {
         
         // Make sure the energy DID propogate
         expect(currentWavePosition).to.not.deep.equal(Zero);
+        // Make sure we didn't get NaN
+        expect(currentWavePosition).to.deep.equal(currentWavePosition);
         
         for(var i = 0; i < many; i++) {
             var nextWavePosition = stepper.step(0.01);
@@ -56,5 +58,19 @@ describe('Stepper', function() {
         
         expect(stepper.currentWavePosition[0]).to.be.closeTo(0, 0.001);
         expect(stepper.currentWavePosition[1]).to.be.closeTo(0, 0.001);
+    });
+
+    it('does not blow up after many steps without diffusion', function() {
+        var many = 10000;
+        stepper.dampingCoefficient = 0;
+        stepper.step(0.01, new THREE.Vector3(0.5, 0.5, 0));
+
+        for(var i = 0; i < many; i++) {
+            stepper.step(0.01);
+        }
+
+        expect(stepper.currentWavePosition[0]).to.be.lessThan(100);
+        expect(stepper.currentWavePosition[1]).to.be.lessThan(100);
+
     });
 });

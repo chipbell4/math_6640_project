@@ -39,48 +39,46 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     return new FMatrixCalculator(this.geometry, 0.01).buildMatrix(mouseClickLocation); 
 };
 
-Stepper.prototype.globalScaleFactor = function(deltaT) {
-    var inverse = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
-    return 1 / inverse;
+Stepper.prototype.currentWaveTerm = function(deltaT) {
+    var scaleFactor = 4 / (2 + this.dampingCoefficient * deltaT);
+    var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
+    return N.ccsScale(sparseCurrentPosition, scaleFactor);
 };
 
-Stepper.prototype.currentStateScaleTerm = function(deltaT) {
-    var scaledMassMatrix = N.ccsScale(this.massMatrix, 2 / deltaT / deltaT);
-    var scaledStiffnessMatrix = N.ccsScale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
-    return N.ccsadd(scaledMassMatrix, scaledStiffnessMatrix);
+Stepper.prototype.currentDiffusionTerm = function(deltaT) {
+    var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
+    var rhs = N.ccsScale(
+        N.ccsDot(this.stiffnessMatrix, sparseCurrentPosition),
+        - 2 * this.waveSpeed * this.waveSpeed / (2 + this.dampingCoefficient * deltaT)
+    );
+
+    var fullResult = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rhs));
+    return N.ccsSparseVector(fullResult);
 };
 
-Stepper.prototype.previousStateScaleTerm = function(deltaT) {
-    var scaleFactor = (1 / deltaT / deltaT) - (this.dampingCoefficient / (2 * deltaT));
-    return N.ccsScale(this.massMatrix, -scaleFactor);
+Stepper.prototype.previousTerm = function(deltaT) {
+    return N.ccsScale(
+        N.ccsSparseVector(this.previousWavePosition),
+        -(2 - this.dampingCoefficient * deltaT) / (2 + this.dampingCoefficient * deltaT)
+    );
 };
 
-Stepper.prototype.currentStateTerm = function(deltaT) {
-    var scaleTerm = this.currentStateScaleTerm(deltaT);
-    var sparseCurrentState = N.ccsSparseVector(this.currentWavePosition);
-    var currentTerm = N.ccsDot(scaleTerm, sparseCurrentState);
-    return N.ccsFixVector(currentTerm, this.geometry.internalNodes.length);
-};
-
-Stepper.prototype.previousStateTerm = function(deltaT) {
-    var scaleTerm = this.previousStateScaleTerm(deltaT);
-    var sparsePreviousState = N.ccsSparseVector(this.previousWavePosition);
-    var previousTerm = N.ccsDot(scaleTerm, sparsePreviousState);
-    return N.ccsFixVector(previousTerm, this.geometry.internalNodes.length);
+Stepper.prototype.fTerm = function(deltaT, F) {
+    var sparseF = N.ccsSparseVector(F);
+    return N.ccsScale(sparseF, 2 * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
 };
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
-    var F = N.ccsSparseVector(this.resolveF(mouseClickLocation));
-    var currentTerm = this.currentStateTerm(deltaT);
-    var previousTerm = this.previousStateTerm(deltaT);
-
-    // calculate the right side to solve
-    var rightHandSide = N.ccsadd(currentTerm, previousTerm);
-    rightHandSide = N.ccsadd(rightHandSide, F);
-    rightHandSide = N.ccsScale(rightHandSide, this.globalScaleFactor(deltaT));
+    var currentWaveTerm = this.currentWaveTerm(deltaT);
+    var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
+    var previousTerm = this.previousTerm(deltaT);
+    var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
 
     // now solve for the next timestep
-    var nextWavePosition = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rightHandSide));
+    var nextWavePosition = N.ccsadd(currentWaveTerm, currentDiffusionTerm);
+    nextWavePosition = N.ccsadd(nextWavePosition, previousTerm);
+    nextWavePosition = N.ccsadd(nextWavePosition, fTerm);
+    nextWavePosition = N.ccsFullVector(nextWavePosition);
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;
