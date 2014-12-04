@@ -4,6 +4,7 @@ var PolygonPointContainmentChecker = require('./PolygonUtils/PolygonPointContain
 var MeshPointSetBuilder = require('./PolygonUtils/MeshPointSetBuilder.js');
 var GeometryBuilder = require('./GeometryBuilder.js');
 var FemGeometry = require('./Fem/FemGeometry.js');
+var MouseProjector = require('./Ui/MouseProjector.js');
 var range = require('range-function');
 
 /**
@@ -38,6 +39,14 @@ FemDrawingState.prototype.mousemove = function(evt) {
     this.azimuth = evt.clientX / document.body.clientWidth * 2 * Math.PI;
     this.elevation = -evt.clientY / document.body.clientHeight * (Math.PI / 2) + Math.PI / 2;
     this.positionCamera();
+};
+
+FemDrawingState.prototype.mousedown = function(evt) {
+    var projector = new MouseProjector(this.camera, window.innerWidth, window.innerHeight);
+    var screenCoordinate = new THREE.Vector3(evt.clientX, evt.clientY, 0);
+    console.log(screenCoordinate);
+    var clickProjection = projector.projectClick(screenCoordinate);
+    console.log(clickProjection);
 };
 
 
