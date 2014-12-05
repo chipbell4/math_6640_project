@@ -73,7 +73,7 @@ FemDrawingState.prototype.update = function() {
 FemDrawingState.prototype.setCurrentPolygon = function(points) {
     var filteredPoints = Polygon.factory(points).mappedPoints();
     var containmentChecker = new PolygonPointContainmentChecker(filteredPoints);    
-    var pointSetBuilder = new MeshPointSetBuilder(0.2, 0.2, containmentChecker);
+    var pointSetBuilder = new MeshPointSetBuilder(0.1, 0.1, containmentChecker);
     
     var meshPoints = pointSetBuilder.calculateMeshPoints();
     var boundaryNodes = range(filteredPoints.length, 'inclusive');
@@ -88,7 +88,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper(femGeometry, 0, 0, 100, 10000);
+    this.stepper = new Stepper(femGeometry, 0, 1, 100, 10000);
 };
 
 module.exports = FemDrawingState;
