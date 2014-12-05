@@ -18,7 +18,7 @@ PolygonPointContainmentChecker.prototype.calculateWindingForPointAtIndex = funct
 	// return the sign (the z-component) of the cross product to determine which side of the axis the point is
 	var crossProduct = firstAxis.cross(secondAxis);
 
-	if(crossProduct.z < 0) {
+	if(crossProduct.z <= 0) {
 		return -1;
 	}
 

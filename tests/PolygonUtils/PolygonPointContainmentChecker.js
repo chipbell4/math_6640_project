@@ -28,5 +28,10 @@ describe('PolygonPointContainmentChecker', function() {
 		expect(checker.containsPoint(candidate)).to.be.not.ok;
 	});
 
+    it('should return false if a point is on an edge', function() {
+        var candidate = new THREE.Vector3(1, 0.6);
+
+        expect(checker.containsPoint(candidate)).to.not.be.ok;
+    });
 
 });
