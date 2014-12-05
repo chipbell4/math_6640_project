@@ -1,17 +1,13 @@
 var N = require('numeric');
 N.scale = require('../util/scale.js');
-N.ccsScale = require('../util/ccsScale.js');
-N.ccsSparseVector = require('../util/ccsSparseVector.js');
-N.ccsFullVector = require('../util/ccsFullVector.js');
-N.ccsFixVector = require('../util/ccsFixVector.js');
 var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
 
 var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, clickTightness) {
     this.geometry = femGeometry;
-    this.massMatrix = N.ccsSparse(new MassMatrixCalculator(femGeometry).buildMatrix());
-    this.stiffnessMatrix = N.ccsSparse(new StiffnessMatrixCalculator(femGeometry).buildMatrix());
+    this.massMatrix = new MassMatrixCalculator(femGeometry).buildMatrix();
+    this.stiffnessMatrix = new StiffnessMatrixCalculator(femGeometry).buildMatrix();
     this.dampingCoefficient = dampingCoefficient;
     this.waveSpeed = waveSpeed;
     this.clickWeight = clickWeight;
@@ -20,7 +16,7 @@ var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, 
     this.previousWavePosition = this.zeroVector();
 
     // precalculate some values needed in the calculation
-    this.massLUP = N.ccsLUP(this.massMatrix);
+    this.massLU = N.LU(this.massMatrix);
 };
 
 Stepper.prototype.zeroVector = function() {
@@ -43,32 +39,27 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 
 Stepper.prototype.currentWaveTerm = function(deltaT) {
     var scaleFactor = 4 / (2 + this.dampingCoefficient * deltaT);
-    var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
-    return N.ccsScale(sparseCurrentPosition, scaleFactor);
+    return N.scale(this.currentWavePosition, scaleFactor);
 };
 
 Stepper.prototype.currentDiffusionTerm = function(deltaT) {
-    var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
-    var rhs = N.ccsScale(
-        N.ccsDot(this.stiffnessMatrix, sparseCurrentPosition),
+    var rhs = N.scale(
+        N.dot(this.stiffnessMatrix, this.currentWavePosition),
          -2 * this.waveSpeed * this.waveSpeed * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT)
     );
-    var rhsFull = N.ccsFullVector(rhs);
 
-    var fullResult = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rhs));
-    return N.ccsSparseVector(fullResult);
+    return N.LUsolve(this.massLU, rhs);
 };
 
 Stepper.prototype.previousTerm = function(deltaT) {
-    return N.ccsScale(
-        N.ccsSparseVector(this.previousWavePosition),
+    return N.scale(
+        this.previousWavePosition,
         -(2 - this.dampingCoefficient * deltaT) / (2 + this.dampingCoefficient * deltaT)
     );
 };
 
 Stepper.prototype.fTerm = function(deltaT, F) {
-    var sparseF = N.ccsSparseVector(F);
-    return N.ccsScale(sparseF, 2 * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
+    return N.scale(F, 2 * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
 };
 
 Math.sign = Math.sign || function(x) {
@@ -89,10 +80,6 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
 
     // now solve for the next timestep
-    currentWaveTerm = N.ccsFullVector(currentWaveTerm);
-    currentDiffusionTerm = N.ccsFullVector(currentDiffusionTerm);
-    previousTerm = N.ccsFullVector(previousTerm);
-    fTerm = N.ccsFullVector(fTerm);
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
 
     this.previousWavePosition = this.currentWavePosition;
