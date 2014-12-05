@@ -49,15 +49,11 @@ FemDrawingState.prototype.mousedown = function(evt) {
 };
 
 FemDrawingState.prototype.mouseup = function(evt) {
-    counter = 0;
     delete this.currentClick;
 };
-var counter = 0;
 
 FemDrawingState.prototype.update = function() {
     this.stepper.step(0.001, this.currentClick);
-    if(this.currentClick) counter++;
-    console.log('Adding force for ' + counter);
 
     // set the z position of each internal node
     var that = this;
@@ -77,7 +73,7 @@ FemDrawingState.prototype.update = function() {
 FemDrawingState.prototype.setCurrentPolygon = function(points) {
     var filteredPoints = Polygon.factory(points).mappedPoints();
     var containmentChecker = new PolygonPointContainmentChecker(filteredPoints);    
-    var pointSetBuilder = new MeshPointSetBuilder(0.1, 0.1, containmentChecker);
+    var pointSetBuilder = new MeshPointSetBuilder(0.2, 0.2, containmentChecker);
     
     var meshPoints = pointSetBuilder.calculateMeshPoints();
     var boundaryNodes = range(filteredPoints.length, 'inclusive');
