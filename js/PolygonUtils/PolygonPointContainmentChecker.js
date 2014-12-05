@@ -10,15 +10,25 @@ PolygonPointContainmentChecker.prototype.calculateWindingForPointAtIndex = funct
 	var nextPoint = this.points[ (index + 1) % this.points.length ].clone();
 
 	// The polygon edge
-	var firstAxis = nextPoint.sub(currentPoint);
+	var firstAxis = nextPoint.clone().sub(currentPoint.clone());
+    firstAxis.setZ(0);
+    if(firstAxis.length() < 0.0001) {
+        return -1;
+    }
 
 	// A vector from point[i] to the provided point
-	var secondAxis = point.clone().sub(currentPoint);
+	var secondAxis = point.clone().sub(currentPoint.clone());
+    secondAxis.setZ(0);
+    if(secondAxis.length() < 0.0001) {
+        return -1;
+    }
 
 	// return the sign (the z-component) of the cross product to determine which side of the axis the point is
-	var crossProduct = firstAxis.cross(secondAxis);
+	var crossProduct = firstAxis.clone().cross(secondAxis);
 
-	if(crossProduct.z <= 0) {
+    var relativeCrossProductMagnitude = crossProduct.z / firstAxis.length() / secondAxis.length();
+    
+	if(relativeCrossProductMagnitude <= 0.001) {
 		return -1;
 	}
 
