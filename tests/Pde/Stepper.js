@@ -2,6 +2,9 @@ var expect = require('chai').expect;
 var numeric = require('numeric');
 var THREE = require('three');
 var FemGeometry = require('../../js/Fem/FemGeometry.js');
+var PolygonPointContainmentChecker = require('../../js/PolygonUtils/PolygonPointContainmentChecker.js');
+var MeshPointSetBuilder = require('../../js/PolygonUtils/MeshPointSetBuilder.js');
+var GeometryBuilder = require('../../js/GeometryBuilder.js');
 var Stepper = require('../../js/Pde/Stepper.js');
 
 describe('Stepper', function() {
@@ -72,5 +75,37 @@ describe('Stepper', function() {
         expect(stepper.currentWavePosition[0]).to.be.lessThan(100);
         expect(stepper.currentWavePosition[1]).to.be.lessThan(100);
 
+    });
+
+    it('does not blow up with a normal mesh', function() {
+        var many = 200;
+        var points = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(1, 1, 0),
+            new THREE.Vector3(0.5, 0.5, 0),
+            new THREE.Vector3(0.75, 0.5, 0),
+            new THREE.Vector3(0.25, 0.5, 0),
+            new THREE.Vector3(0.5, 0.25, 0),
+            new THREE.Vector3(0.5, 0.75, 0),
+        ];
+        var boundaryNodes = [0, 1, 2, 3];
+        var threeGeometry = new GeometryBuilder(points).buildGeometry();
+        var femGeometry = new FemGeometry(threeGeometry, boundaryNodes) 
+
+        var stepper = new Stepper(femGeometry, 1, 0.1);
+
+        // add energy to the system
+        for(var i = 0; i < 1; i++) {
+            stepper.step(0.01, new THREE.Vector3(0.5, 0.5));
+        }
+
+        for(var i = 0; i < many; i++) {
+            stepper.step(0.01);
+        }
+
+        console.log(numeric.norminf(stepper.currentWavePosition));
+        expect(numeric.norminf(stepper.currentWavePosition)).to.be.lessThan(100);
     });
 });
