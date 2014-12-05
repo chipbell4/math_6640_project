@@ -49,7 +49,7 @@ Stepper.prototype.currentDiffusionTerm = function(deltaT) {
     var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
     var rhs = N.ccsScale(
         N.ccsDot(this.stiffnessMatrix, sparseCurrentPosition),
-         -2 * this.waveSpeed * this.waveSpeed / (2 + this.dampingCoefficient * deltaT)
+         -2 * this.waveSpeed * this.waveSpeed * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT)
     );
     var rhsFull = N.ccsFullVector(rhs);
 
@@ -82,13 +82,13 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     fTerm = N.ccsFullVector(fTerm);
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
 
-    console.log(currentWaveTerm);
-    console.log(currentDiffusionTerm);
-    console.log(previousTerm);
-    console.log(fTerm);
-    console.log('RESULT');
-    console.log(nextWavePosition);
-    console.log('');
+    //console.log(currentWaveTerm);
+    //console.log(currentDiffusionTerm);
+    //console.log(previousTerm);
+    //console.log(fTerm);
+    //console.log('RESULT');
+    //console.log(nextWavePosition);
+    //console.log('');
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;

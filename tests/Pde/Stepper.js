@@ -77,6 +77,20 @@ describe('Stepper', function() {
 
     });
 
+    it('does not blow up with points offset sort of high', function() {
+        var many = 10000;
+        stepper.currentWavePosition = [0.1000, .1000];
+        stepper.previousWavePosition = [0.0500, 0.0500];
+
+        for(var i = 0; i < many; i++) {
+            stepper.step(0.01);
+        }
+
+        console.log(stepper.currentWavePosition);
+        expect(stepper.currentWavePosition[0]).to.be.lessThan(100);
+        expect(stepper.currentWavePosition[1]).to.be.lessThan(100);
+    });
+
     it('does not blow up with a normal mesh', function() {
         var many = 5;
         var points = [
