@@ -71,7 +71,7 @@ Math.sign = Math.sign || function(x) {
 
 function clampToOne(x) {
     return Math.sign(x) * Math.min(Math.abs(x), 1);
-};
+}
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);

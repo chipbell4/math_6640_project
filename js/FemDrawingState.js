@@ -48,7 +48,7 @@ FemDrawingState.prototype.mousedown = function(evt) {
     this.currentClick = projector.projectClick(screenCoordinate);
 };
 
-FemDrawingState.prototype.mouseup = function(evt) {
+FemDrawingState.prototype.mouseup = function() {
     delete this.currentClick;
 };
 
