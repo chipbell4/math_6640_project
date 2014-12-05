@@ -8,13 +8,14 @@ var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
 
-var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickForce) {
+var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, clickTightness) {
     this.geometry = femGeometry;
     this.massMatrix = N.ccsSparse(new MassMatrixCalculator(femGeometry).buildMatrix());
     this.stiffnessMatrix = N.ccsSparse(new StiffnessMatrixCalculator(femGeometry).buildMatrix());
     this.dampingCoefficient = dampingCoefficient;
     this.waveSpeed = waveSpeed;
-    this.clickForce = clickForce;
+    this.clickWeight = clickWeight;
+    this.clickTightness = clickTightness;
     this.currentWavePosition = this.zeroVector();
     this.previousWavePosition = this.zeroVector();
 
@@ -37,7 +38,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     if(mouseClickLocation === undefined) {
         return this.zeroVector();
     }
-    return new FMatrixCalculator(this.geometry, this.clickForce).buildMatrix(mouseClickLocation); 
+    return new FMatrixCalculator(this.geometry, this.clickWeight, this.clickTightness).buildMatrix(mouseClickLocation); 
 };
 
 Stepper.prototype.currentWaveTerm = function(deltaT) {
@@ -93,14 +94,6 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     previousTerm = N.ccsFullVector(previousTerm);
     fTerm = N.ccsFullVector(fTerm);
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
-
-    //console.log(currentWaveTerm);
-    //console.log(currentDiffusionTerm);
-    //console.log(previousTerm);
-    //console.log(fTerm);
-    //console.log('RESULT');
-    //console.log(nextWavePosition);
-    //console.log('');
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition.map(clampToOne);

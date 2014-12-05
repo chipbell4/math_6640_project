@@ -18,7 +18,7 @@ describe('FMatrixCalculator', function() {
             new THREE.Vector3(0,1,0)
         );
         var femGeometry = new FemGeometry(threeGeometry, []);
-        calculator = new FMatrixCalculator(femGeometry, 1);
+        calculator = new FMatrixCalculator(femGeometry, 1, 1);
     });
 
     describe('weightForNode', function() {
