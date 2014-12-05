@@ -49,12 +49,15 @@ FemDrawingState.prototype.mousedown = function(evt) {
 };
 
 FemDrawingState.prototype.mouseup = function(evt) {
+    counter = 0;
     delete this.currentClick;
 };
+var counter = 0;
 
 FemDrawingState.prototype.update = function() {
-    this.stepper.step(0.0001, this.currentClick);
-    delete this.currentClick;
+    this.stepper.step(0.001, this.currentClick);
+    if(this.currentClick) counter++;
+    console.log('Adding force for ' + counter);
 
     // set the z position of each internal node
     var that = this;
@@ -89,7 +92,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper(femGeometry, 10, 0.1);
+    this.stepper = new Stepper(femGeometry, 0.00, 0.9, 0.1);
 };
 
 module.exports = FemDrawingState;

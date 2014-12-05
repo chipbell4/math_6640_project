@@ -70,6 +70,17 @@ Stepper.prototype.fTerm = function(deltaT, F) {
     return N.ccsScale(sparseF, 2 * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
 };
 
+Math.sign = Math.sign || function(x) {
+    if(x < 0) {
+        return -1;
+    }
+    return 1;
+};
+
+function clampToOne(x) {
+    return Math.sign(x) * Math.min(Math.abs(x), 1);
+};
+
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
@@ -92,7 +103,7 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     //console.log('');
 
     this.previousWavePosition = this.currentWavePosition;
-    this.currentWavePosition = nextWavePosition;
+    this.currentWavePosition = nextWavePosition.map(clampToOne);
     return this.currentWavePosition;
 };
 
