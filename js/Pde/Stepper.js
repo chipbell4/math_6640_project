@@ -36,7 +36,7 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     if(mouseClickLocation === undefined) {
         return this.zeroVector();
     }
-    return new FMatrixCalculator(this.geometry, 0.01).buildMatrix(mouseClickLocation); 
+    return new FMatrixCalculator(this.geometry, 1).buildMatrix(mouseClickLocation); 
 };
 
 Stepper.prototype.currentWaveTerm = function(deltaT) {
@@ -49,13 +49,9 @@ Stepper.prototype.currentDiffusionTerm = function(deltaT) {
     var sparseCurrentPosition = N.ccsSparseVector(this.currentWavePosition);
     var rhs = N.ccsScale(
         N.ccsDot(this.stiffnessMatrix, sparseCurrentPosition),
-        - 2 * this.waveSpeed * this.waveSpeed / (2 + this.dampingCoefficient * deltaT)
+         -2 * this.waveSpeed * this.waveSpeed / (2 + this.dampingCoefficient * deltaT)
     );
     var rhsFull = N.ccsFullVector(rhs);
-
-    if(N.norminf(rhsFull) < 0.00001) {
-        return N.ccsSparseVector(this.zeroVector());
-    }
 
     var fullResult = N.ccsLUPSolve(this.massLUP, N.ccsFullVector(rhs));
     return N.ccsSparseVector(fullResult);
@@ -80,10 +76,19 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
 
     // now solve for the next timestep
-    var nextWavePosition = N.ccsadd(currentWaveTerm, currentDiffusionTerm);
-    nextWavePosition = N.ccsadd(nextWavePosition, previousTerm);
-    nextWavePosition = N.ccsadd(nextWavePosition, fTerm);
-    nextWavePosition = N.ccsFullVector(nextWavePosition);
+    currentWaveTerm = N.ccsFullVector(currentWaveTerm);
+    currentDiffusionTerm = N.ccsFullVector(currentDiffusionTerm);
+    previousTerm = N.ccsFullVector(previousTerm);
+    fTerm = N.ccsFullVector(fTerm);
+    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+
+    console.log(currentWaveTerm);
+    console.log(currentDiffusionTerm);
+    console.log(previousTerm);
+    console.log(fTerm);
+    console.log('RESULT');
+    console.log(nextWavePosition);
+    console.log('');
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;

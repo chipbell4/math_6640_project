@@ -78,7 +78,7 @@ describe('Stepper', function() {
     });
 
     it('does not blow up with a normal mesh', function() {
-        var many = 200;
+        var many = 5;
         var points = [
             new THREE.Vector3(0, 0, 0),
             new THREE.Vector3(0, 1, 0),
@@ -102,10 +102,9 @@ describe('Stepper', function() {
         }
 
         for(var i = 0; i < many; i++) {
-            stepper.step(0.01);
+            stepper.step(0.001);
         }
 
-        console.log(numeric.norminf(stepper.currentWavePosition));
         expect(numeric.norminf(stepper.currentWavePosition)).to.be.lessThan(100);
     });
 });
