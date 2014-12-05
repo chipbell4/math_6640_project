@@ -88,7 +88,13 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper(femGeometry, 0, 1, 100, 10000);
+    this.stepper = new Stepper(femGeometry, 0, 0.1, 1000, 1000);
+    this.stepper.currentWavePosition[0] = 0.1;
+    /**
+    this.stepper.currentWavePosition = this.stepper.currentWavePosition.map(function() {
+        return 0.1;
+    });
+    */
 };
 
 module.exports = FemDrawingState;

@@ -86,7 +86,6 @@ describe('Stepper', function() {
             stepper.step(0.01);
         }
 
-        console.log(stepper.currentWavePosition);
         expect(stepper.currentWavePosition[0]).to.be.lessThan(100);
         expect(stepper.currentWavePosition[1]).to.be.lessThan(100);
     });
