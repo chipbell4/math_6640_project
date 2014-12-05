@@ -12,12 +12,12 @@ var Stepper = require('./Pde/Stepper.js');
  * A class representing a drawing state of the simulated FEM
  */
 var FemDrawingState = function() {
-    this.cameraDistance = 1;
+    this.cameraDistance = 2.5;
     this.elevation = 0;
     this.azimuth = 0;
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-1.5, 1.5, -1.5, 1.5, 0.01, 10000);
+    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 10000);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.positionCamera();
 };
