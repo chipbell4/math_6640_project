@@ -68,11 +68,23 @@ Lastly, we can rearrange and solve for $c^{n+1}$
 \begin{equation} \label{eq:finite_diff_solution}
 c^{n+1} = \step{+}^{-1} M^{-1}
 \left(
-\left( \left(\frac{2}{\delta t^2} + \alpha\right) M - \beta^2 A \right) c^n
+\left( \left(\frac{2}{\delta t^2} - \alpha\right) M - \beta^2 A \right) c^n
 -
 \step{-} M c^{n-1}
 +
 \vec{F}
+\right)
+\end{equation}
+
+We can simplify this expression, mainly in the interest of making the computation faster and more stable. Note
+that $\step{+}^{-1} = \frac{2\delta t^2}{2 + \gamma\delta t}$. Expanding out the terms and simplifying gives us
+\begin{equation}
+c^{n+1}
+=
+\frac{1}{2 + \gamma\delta t} \left(
+(4 - 2\alpha\delta t^2)c^n  - 2\beta^2\delta t^2M^{-1}Ac^n
+- (2 - \gamma\delta t)c^{n-1}
++ 2\delta t^2 F
 \right)
 \end{equation}
 
