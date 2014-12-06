@@ -38,12 +38,12 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     return new FMatrixCalculator(this.geometry, this.clickWeight, this.clickTightness).buildMatrix(mouseClickLocation); 
 };
 
-Stepper.prototype.currentWaveTerm = function(deltaT) {
+Stepper.prototype.currentWaveTerm = function() {
     return N.scale(this.currentWavePosition, 4);
 };
 
 Stepper.prototype.currentDiffusionTerm = function(deltaT) {
-    var scaledStiffness = N.scale(this.stiffnessMatrix, -4 * this.waveSpeed * this.waveSpeed);
+    var scaledStiffness = N.scale(this.stiffnessMatrix, -2 * this.waveSpeed * this.waveSpeed);
     var solved = N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
     return N.scale(solved, deltaT * deltaT);
 };
