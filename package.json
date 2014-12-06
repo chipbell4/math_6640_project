@@ -16,6 +16,7 @@
     "delaunay-triangulate": "^1.1.6",
     "numeric": "^1.2.6",
     "range-function": "^0.1.1",
-    "three": "^0.68.0"
+    "three": "^0.68.0",
+    "underscore": "^1.7.0"
   }
 }
