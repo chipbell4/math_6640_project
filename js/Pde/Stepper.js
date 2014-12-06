@@ -8,6 +8,7 @@ var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, 
     this.geometry = femGeometry;
     this.massMatrix = new MassMatrixCalculator(femGeometry).buildMatrix();
     this.stiffnessMatrix = new StiffnessMatrixCalculator(femGeometry).buildMatrix();
+
     this.dampingCoefficient = dampingCoefficient;
     this.waveSpeed = waveSpeed;
     this.clickWeight = clickWeight;
@@ -59,15 +60,20 @@ Stepper.prototype.fTerm = function(deltaT, F) {
     return N.scale(F, 2 * deltaT * deltaT);
 };
 
-Math.sign = Math.sign || function(x) {
-    if(x < 0) {
-        return -1;
+function clamp(x, a, b) {
+    if(x < a) {
+        x = a;
     }
-    return 1;
-};
+    if(x > b) {
+        x = b;
+    }
+    return x;
+}
 
-function clampToOne(x) {
-    return Math.sign(x) * Math.min(Math.abs(x), 1);
+function clamper(a, b) {
+    return function(x) {
+        return clamp(x, a, b);
+    }
 }
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
@@ -80,10 +86,8 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
     nextWavePosition = N.scale(nextWavePosition, 1 / (2 + this.dampingCoefficient * deltaT));
 
-    console.log(N.norminf(nextWavePosition));
-
     this.previousWavePosition = this.currentWavePosition;
-    this.currentWavePosition = nextWavePosition;//.map(clampToOne);
+    this.currentWavePosition = nextWavePosition.map(clamper(-0.1, 0.1));
     return this.currentWavePosition;
 };
 
