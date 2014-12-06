@@ -88,7 +88,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper({ geometry: femGeometry, elasticity: 80, dampingCoefficient: 5, waveSpeed: 3 });
+    this.stepper = new Stepper({ geometry: femGeometry, elasticity: 0.01, dampingCoefficient: 2, waveSpeed: 2 });
 };
 
 module.exports = FemDrawingState;
