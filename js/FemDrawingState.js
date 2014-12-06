@@ -7,6 +7,7 @@ var FemGeometry = require('./Fem/FemGeometry.js');
 var MouseProjector = require('./Ui/MouseProjector.js');
 var range = require('range-function');
 var Stepper = require('./Pde/Stepper.js');
+var DAT = require('dat-gui');
 
 /**
  * A class representing a drawing state of the simulated FEM
@@ -66,6 +67,15 @@ FemDrawingState.prototype.update = function() {
 	this.scene.children[0].geometry.computeBoundingSphere();
 };
 
+/**
+ * Callback builder for dat-gui when a field is updated
+ */
+FemDrawingState.prototype.datGuiListenerFactory = function(fieldName) {
+    var that = this;
+    return function(newValue) {
+        that.stepper[fieldName] = newValue;
+    }
+};
 
 /**
  * Sets the current polygon on the fem drawing side
@@ -88,7 +98,23 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     this.scene.add(mesh);
 
     // setup the Fem Model
-    this.stepper = new Stepper({ geometry: femGeometry, elasticity: 0.01, dampingCoefficient: 2, waveSpeed: 2 });
+    this.stepper = new Stepper({
+        geometry: femGeometry,
+        elasticity: 0.01,
+        dampingCoefficient: 2,
+        waveSpeed: 2
+    });
+
+    // setup dat-gui
+    var gui = new DAT.GUI();
+    var that = this;
+    gui.add(this.stepper, 'waveSpeed').min(0.1).max(2.5).step(0.2).onChange(function() {
+        console.log(that.stepper.waveSpeed);
+        console.log(that.stepper.dampingCoefficient);
+        console.log(that.stepper.elasticity);
+    });
+    gui.add(this.stepper, 'elasticity').min(0).max(0.1);
+    gui.add(this.stepper, 'dampingCoefficient').min(0).max(20);
 };
 
 module.exports = FemDrawingState;
