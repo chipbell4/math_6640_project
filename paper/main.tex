@@ -33,9 +33,9 @@
 For my project I'll be modeling a modified form of the wave equation that encorporates damping, elasticity, and
 forcing. I'll solve the equation over a domain $\Omega$ in 2 dimensions with a Dirichlet boundary $\Gamma$. 
 \begin{equation} \label{eq:main_pde}
-\secondpartial{u}{t} + \gamma \firstpartial{u}{t}
+\secondpartial{u}{t} + \gamma \firstpartial{u}{t} + \alpha u
 =
-\beta^2 \laplacian{u} - \alpha u + F(x,y,t)
+\beta^2 \laplacian{u} + F(x,y,t)
 \end{equation}
 where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma \ge 0$ is a damping factor for the wave,
 $\beta$ is the wave speed, $\alpha$ is an elasticity term and $F$ is a forcing function on the wave. This equation
