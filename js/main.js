@@ -22,6 +22,11 @@ var FemDrawingState = require('./FemDrawingState.js');
 		renderer.render(currentDrawingState.scene, currentDrawingState.camera);
 
 		requestAnimationFrame(animate.bind(this));
+
+        // hook into an update function if it exists
+        if(currentDrawingState.update) {
+            currentDrawingState.update();
+        }
 	};
 
 	var generateListener = function(eventName) {

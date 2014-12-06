@@ -17,7 +17,7 @@ gulp.task('test', function() {
 		.pipe(mocha({ reporter: 'spec' }));
 });
 
-gulp.task('browserify', ['jshint', 'test'], function() {
+gulp.task('browserify', ['jshint'], function() {
 	return gulp.src('js/main.js')
 		.pipe(browserify({}))
 		.pipe(gulp.dest('./build'));

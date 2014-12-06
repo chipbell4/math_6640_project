@@ -1,7 +1,8 @@
 
-var FMatrixCalculator = function(femGeometry, weight) {
+var FMatrixCalculator = function(femGeometry, weight, tightness) {
     this.geometry = femGeometry;
     this.weight = weight;
+    this.tightness = tightness;
 };
 
 FMatrixCalculator.prototype.weightForClickAtNode = function(clickLocation, node) {
@@ -10,7 +11,7 @@ FMatrixCalculator.prototype.weightForClickAtNode = function(clickLocation, node)
     }
 
     node = this.geometry.threeGeometry.vertices[node];
-    return this.weight / (node.distanceToSquared(clickLocation) + 1);
+    return this.weight / (this.tightness * node.distanceToSquared(clickLocation) + 1);
 };
 
 FMatrixCalculator.prototype.buildMatrix = function(clickLocation) {
