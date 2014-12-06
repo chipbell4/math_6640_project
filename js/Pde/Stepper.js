@@ -38,25 +38,25 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 };
 
 Stepper.prototype.currentWaveTerm = function(deltaT) {
-    var scaleFactor = 4 / (2 + this.dampingCoefficient * deltaT);
-    return N.scale(this.currentWavePosition, scaleFactor);
+    return N.scale(this.currentWavePosition, 4);
 };
 
 Stepper.prototype.currentDiffusionTerm = function(deltaT) {
-    var solved = N.LUsolve(this.massLU, N.dot(this.stiffnessMatrix, this.currentWavePosition));
-
-    return N.scale(solved, -2 * this.waveSpeed * this.waveSpeed * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
+    var scaledStiffness = N.scale(this.stiffnessMatrix, -4 * this.waveSpeed * this.waveSpeed);
+    var solved = N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
+    return N.scale(solved, deltaT * deltaT);
+    return solved;
 };
 
 Stepper.prototype.previousTerm = function(deltaT) {
     return N.scale(
         this.previousWavePosition,
-        -(2 - this.dampingCoefficient * deltaT) / (2 + this.dampingCoefficient * deltaT)
+        this.dampingCoefficient * deltaT - 2
     );
 };
 
 Stepper.prototype.fTerm = function(deltaT, F) {
-    return N.scale(F, 2 * deltaT * deltaT / (2 + this.dampingCoefficient * deltaT));
+    return N.scale(F, 2 * deltaT * deltaT);
 };
 
 Math.sign = Math.sign || function(x) {
@@ -78,6 +78,9 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
 
     // now solve for the next timestep
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+    nextWavePosition = N.scale(nextWavePosition, 1 / (2 + this.dampingCoefficient * deltaT));
+
+    console.log(N.norminf(nextWavePosition));
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition;//.map(clampToOne);
