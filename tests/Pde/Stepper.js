@@ -30,7 +30,13 @@ describe('Stepper', function() {
 
     var stepper;
     beforeEach(function() {
-        stepper = new Stepper(femGeometry, 1, 0.1, 1, 1);
+        stepper = new Stepper({
+            geometry: femGeometry,
+            dampingCoefficient: 1,
+            waveSpeed: 0.1,
+            clickWeight: 1,
+            clickTightness: 1
+        });
     });
 
     it('should not blow up after many empty steps', function() {
@@ -107,7 +113,13 @@ describe('Stepper', function() {
         var threeGeometry = new GeometryBuilder(points).buildGeometry();
         var femGeometry = new FemGeometry(threeGeometry, boundaryNodes) 
 
-        var stepper = new Stepper(femGeometry, 1, 0.1, 1, 1);
+        var stepper = new Stepper({
+            geometry: femGeometry,
+            dampingCoefficient: 1,
+            waveSpeed: 0.1,
+            clickWeight: 1,
+            clickTightness: 1
+        });
 
         // add energy to the system
         for(var i = 0; i < 1; i++) {

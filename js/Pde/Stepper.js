@@ -4,15 +4,24 @@ var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
 
-var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, clickTightness) {
-    this.geometry = femGeometry;
-    this.massMatrix = new MassMatrixCalculator(femGeometry).buildMatrix();
-    this.stiffnessMatrix = new StiffnessMatrixCalculator(femGeometry).buildMatrix();
+/**
+ * Class implementing a stepper for a wave PDE
+ *
+ * Required Options:
+ *     geometry: a FemGeometry instance
+ * Optional options:
+ *     waveSpeed, dampingCoefficient, clickWeight, clickTightness
+ */
+var Stepper = function(options) {
+    this.geometry = options.geometry;
+    this.massMatrix = new MassMatrixCalculator(options.geometry).buildMatrix();
+    this.stiffnessMatrix = new StiffnessMatrixCalculator(options.geometry).buildMatrix();
 
-    this.dampingCoefficient = dampingCoefficient;
-    this.waveSpeed = waveSpeed;
-    this.clickWeight = clickWeight;
-    this.clickTightness = clickTightness;
+    this.elasticity = options.elasticity || 0;
+    this.dampingCoefficient = options.dampingCoefficient || 0;
+    this.waveSpeed = options.waveSpeed || 0.3;
+    this.clickWeight = options.clickWeight || 2000;
+    this.clickTightness = options.clickTightness || 5000;
     this.currentWavePosition = this.zeroVector();
     this.previousWavePosition = this.zeroVector();
 
@@ -39,24 +48,23 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
 };
 
 Stepper.prototype.currentWaveTerm = function(deltaT) {
-    return N.scale(this.currentWavePosition, 4);
+    return N.scale(this.currentWavePosition, 2/deltaT - this.elasticity);
 };
 
 Stepper.prototype.currentDiffusionTerm = function(deltaT) {
-    var scaledStiffness = N.scale(this.stiffnessMatrix, -4 * this.waveSpeed * this.waveSpeed);
-    var solved = N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
-    return N.scale(solved, deltaT * deltaT);
+    var scaledStiffness = N.scale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
+    return N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
 };
 
 Stepper.prototype.previousTerm = function(deltaT) {
     return N.scale(
         this.previousWavePosition,
-        this.dampingCoefficient * deltaT - 2
+        this.dampingCoefficient / (2 * deltaT) - 1 / (deltaT * deltaT)
     );
 };
 
 Stepper.prototype.fTerm = function(deltaT, F) {
-    return N.scale(F, 2 * deltaT * deltaT);
+    return N.LUsolve(this.massLU, F);
 };
 
 function clamp(x, a, b) {
@@ -83,7 +91,8 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
 
     // now solve for the next timestep
     var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
-    nextWavePosition = N.scale(nextWavePosition, 1 / (2 + this.dampingCoefficient * deltaT));
+    var scale = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
+    nextWavePosition = N.scale(nextWavePosition, 1 / scale);
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition.map(clamper(-0.1, 0.1));
