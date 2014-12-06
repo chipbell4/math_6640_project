@@ -68,16 +68,6 @@ FemDrawingState.prototype.update = function() {
 };
 
 /**
- * Callback builder for dat-gui when a field is updated
- */
-FemDrawingState.prototype.datGuiListenerFactory = function(fieldName) {
-    var that = this;
-    return function(newValue) {
-        that.stepper[fieldName] = newValue;
-    }
-};
-
-/**
  * Sets the current polygon on the fem drawing side
  */
 FemDrawingState.prototype.setCurrentPolygon = function(points) {
