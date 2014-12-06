@@ -17,6 +17,7 @@ var Stepper = function(options) {
     this.massMatrix = new MassMatrixCalculator(options.geometry).buildMatrix();
     this.stiffnessMatrix = new StiffnessMatrixCalculator(options.geometry).buildMatrix();
 
+    this.elasticity = options.elasticity || 0;
     this.dampingCoefficient = options.dampingCoefficient || 0;
     this.waveSpeed = options.waveSpeed || 0.3;
     this.clickWeight = options.clickWeight || 2000;
@@ -56,6 +57,10 @@ Stepper.prototype.currentDiffusionTerm = function(deltaT) {
     return N.scale(solved, deltaT * deltaT);
 };
 
+Stepper.prototype.elasticityTerm = function(deltaT) {
+    return N.scale(this.currentWavePosition, -2 * this.elasticity * deltaT * deltaT);
+};
+
 Stepper.prototype.previousTerm = function(deltaT) {
     return N.scale(
         this.previousWavePosition,
@@ -86,11 +91,12 @@ function clamper(a, b) {
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
+    var elasticityTerm = this.elasticityTerm(deltaT);
     var previousTerm = this.previousTerm(deltaT);
     var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
 
     // now solve for the next timestep
-    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(elasticityTerm, N.add(previousTerm, fTerm))));
     nextWavePosition = N.scale(nextWavePosition, 1 / (2 + this.dampingCoefficient * deltaT));
 
     this.previousWavePosition = this.currentWavePosition;
