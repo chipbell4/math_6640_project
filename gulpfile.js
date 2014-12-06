@@ -23,7 +23,7 @@ gulp.task('browserify', ['jshint', 'test'], function() {
 		.pipe(gulp.dest('./build'));
 });
 
-gulp.task('paper', function(cb) {
+gulp.task('paper', ['clean'], function(cb) {
     var latex = 'latex -halt-on-error main';
     var bibtex = 'bibtex main';
     var dvipdf = 'dvipdf main.dvi main.pdf';

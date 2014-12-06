@@ -1,6 +1,6 @@
 \documentclass[a4paper,12pt]{article}
 
-\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsmath, amsthm, amssymb, url, hyperref}
 
 \begin{document}
 
@@ -30,16 +30,19 @@
 \input{abstract/abstract}
 
 \section{The main PDE}
-The partial differential equation models a damped membrane over a region $\Omega$ bounded by a closed curve $\Gamma$.
+For my project I'll be modeling a modified form of the wave equation that encorporates damping, elasticity, and
+forcing. I'll solve the equation over a domain $\Omega$ in 2 dimensions with a Dirichlet boundary $\Gamma$. 
 \begin{equation} \label{eq:main_pde}
-\secondpartial{u}{t} + \gamma \firstpartial{u}{t}
+\secondpartial{u}{t} + \gamma \firstpartial{u}{t} + \alpha u
 =
 \beta^2 \laplacian{u} + F(x,y,t)
 \end{equation}
-
 where $u$ is the wave height at some point $(x,y)$ at some time $t$, $\gamma \ge 0$ is a damping factor for the wave,
-$\beta$ is the wave speed, and $F$ is a forcing function on the wave. Because this a drum head, (or ``membrane''), we choose
-$u$ along $\Gamma$ to be 0, giving us a Dirichet boundary condition.
+$\beta$ is the wave speed, $\alpha$ is an elasticity term and $F$ is a forcing function on the wave. This equation
+will model a taunt drum head over the domain $\Omega$, our intended purpose but is also known as the
+\emph{Telegraph Equation} and has analytic solutions \cite{pde_solution}. Most derivations I have found approach
+the problem from a electric circuit standpoint. One such derivation for the one dimensional case can be found in
+\cite{pde_derivation}.
 
 \input{fem/fem}
 

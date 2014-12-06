@@ -7,3 +7,4 @@ paper/*.pdf
 paper/*.bbl
 paper/*.blg
 paper/*.dvi
+paper/*.out

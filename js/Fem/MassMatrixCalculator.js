@@ -25,7 +25,7 @@ MassMatrixCalculator.prototype.innerProductTriviallyZero = function(i, j) {
  */
 MassMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j) {
     return this.geometry.sharedTriangles(i, j).reduce(function(carry, triangle) {
-        return carry + TMC.singleTriangleInnerProduct(triangle, [0, 1]);
+        return carry + TMC.twoNodeInnerProduct(triangle);
     }, 0);
 };
 
@@ -34,7 +34,7 @@ MassMatrixCalculator.prototype.massBetweenDifferentAdjacentNodes = function(i, j
  */
 MassMatrixCalculator.prototype.squaredMassForNode = function(i) {
     return this.geometry.trianglesAttachedToNode(i).reduce(function(carry, triangle) {
-        return carry + TMC.singleTriangleInnerProduct(triangle, [0, 0]);
+        return carry + TMC.oneNodeInnerProduct(triangle);
     }, 0);
 };
 
