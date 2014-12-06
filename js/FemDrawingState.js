@@ -107,14 +107,10 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
 
     // setup dat-gui
     var gui = new DAT.GUI();
-    var that = this;
-    gui.add(this.stepper, 'waveSpeed').min(0.1).max(2.5).step(0.2).onChange(function() {
-        console.log(that.stepper.waveSpeed);
-        console.log(that.stepper.dampingCoefficient);
-        console.log(that.stepper.elasticity);
-    });
     gui.add(this.stepper, 'elasticity').min(0).max(0.1);
     gui.add(this.stepper, 'dampingCoefficient').min(0).max(20);
+    gui.add(this.stepper, 'clickWeight').min(100).max(10000);
+    gui.add(this.stepper, 'clickTightness').min(10).max(10000);
 };
 
 module.exports = FemDrawingState;
