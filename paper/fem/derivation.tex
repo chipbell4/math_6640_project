@@ -55,6 +55,9 @@ and the following (second order) expansion for the first derivative
 \begin{equation} \label{eq:first_derivative_finite_difference}
 \firstderivative{c}{t} \approx \firstfinitediff{c}
 \end{equation}
+these are of course well known, but they can be found in most numerical methods textbooks \cite{difference_formulas}.
+It's worth noting that the centered difference was chosen for the first derivative to keep the numerical solution second
+order in time.
 
 Substituting into (\ref{eq:u_h_matrix}) gives us
 \begin{equation} \label{eq:finite_diff_weak_form}
@@ -75,4 +78,3 @@ c^{n+1} = \step{+}^{-1} M^{-1}
 
 Given this formulation, the only remaining challege is the numerical calculation of $M$, $A$ and potentially
 $M^{-1}$ (unless it is implicitly calculated every step via a banded matrix solver).
-\cite{greenwade93}
