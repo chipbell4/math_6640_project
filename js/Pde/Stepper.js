@@ -46,7 +46,6 @@ Stepper.prototype.currentDiffusionTerm = function(deltaT) {
     var scaledStiffness = N.scale(this.stiffnessMatrix, -4 * this.waveSpeed * this.waveSpeed);
     var solved = N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
     return N.scale(solved, deltaT * deltaT);
-    return solved;
 };
 
 Stepper.prototype.previousTerm = function(deltaT) {
@@ -73,7 +72,7 @@ function clamp(x, a, b) {
 function clamper(a, b) {
     return function(x) {
         return clamp(x, a, b);
-    }
+    };
 }
 
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
