@@ -4,15 +4,23 @@ var FMatrixCalculator = require('../Fem/FMatrixCalculator.js');
 var StiffnessMatrixCalculator = require('../Fem/StiffnessMatrixCalculator.js');
 var MassMatrixCalculator = require('../Fem/MassMatrixCalculator.js');
 
-var Stepper = function(femGeometry, dampingCoefficient, waveSpeed, clickWeight, clickTightness) {
-    this.geometry = femGeometry;
-    this.massMatrix = new MassMatrixCalculator(femGeometry).buildMatrix();
-    this.stiffnessMatrix = new StiffnessMatrixCalculator(femGeometry).buildMatrix();
+/**
+ * Class implementing a stepper for a wave PDE
+ *
+ * Required Options:
+ *     geometry: a FemGeometry instance
+ * Optional options:
+ *     waveSpeed, dampingCoefficient, clickWeight, clickTightness
+ */
+var Stepper = function(options) {
+    this.geometry = options.geometry;
+    this.massMatrix = new MassMatrixCalculator(options.geometry).buildMatrix();
+    this.stiffnessMatrix = new StiffnessMatrixCalculator(options.geometry).buildMatrix();
 
-    this.dampingCoefficient = dampingCoefficient;
-    this.waveSpeed = waveSpeed;
-    this.clickWeight = clickWeight;
-    this.clickTightness = clickTightness;
+    this.dampingCoefficient = options.dampingCoefficient || 0;
+    this.waveSpeed = options.waveSpeed || 0.3;
+    this.clickWeight = options.clickWeight || 2000;
+    this.clickTightness = options.clickTightness || 5000;
     this.currentWavePosition = this.zeroVector();
     this.previousWavePosition = this.zeroVector();
 
