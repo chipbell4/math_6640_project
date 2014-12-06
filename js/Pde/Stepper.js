@@ -47,29 +47,24 @@ Stepper.prototype.resolveF = function(mouseClickLocation) {
     return new FMatrixCalculator(this.geometry, this.clickWeight, this.clickTightness).buildMatrix(mouseClickLocation); 
 };
 
-Stepper.prototype.currentWaveTerm = function() {
-    return N.scale(this.currentWavePosition, 4);
+Stepper.prototype.currentWaveTerm = function(deltaT) {
+    return N.scale(this.currentWavePosition, 2/deltaT - this.elasticity);
 };
 
 Stepper.prototype.currentDiffusionTerm = function(deltaT) {
-    var scaledStiffness = N.scale(this.stiffnessMatrix, -2 * this.waveSpeed * this.waveSpeed);
-    var solved = N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
-    return N.scale(solved, deltaT * deltaT);
-};
-
-Stepper.prototype.elasticityTerm = function(deltaT) {
-    return N.scale(this.currentWavePosition, -2 * this.elasticity * deltaT * deltaT);
+    var scaledStiffness = N.scale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
+    return N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
 };
 
 Stepper.prototype.previousTerm = function(deltaT) {
     return N.scale(
         this.previousWavePosition,
-        this.dampingCoefficient * deltaT - 2
+        this.dampingCoefficient / (2 * deltaT) - 1 / (deltaT * deltaT)
     );
 };
 
 Stepper.prototype.fTerm = function(deltaT, F) {
-    return N.scale(F, 2 * deltaT * deltaT);
+    return N.LUsolve(this.massLU, F);
 };
 
 function clamp(x, a, b) {
@@ -91,13 +86,13 @@ function clamper(a, b) {
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
-    var elasticityTerm = this.elasticityTerm(deltaT);
     var previousTerm = this.previousTerm(deltaT);
     var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
 
     // now solve for the next timestep
-    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(elasticityTerm, N.add(previousTerm, fTerm))));
-    nextWavePosition = N.scale(nextWavePosition, 1 / (2 + this.dampingCoefficient * deltaT));
+    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+    var scale = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
+    nextWavePosition = N.scale(nextWavePosition, 1 / scale);
 
     this.previousWavePosition = this.currentWavePosition;
     this.currentWavePosition = nextWavePosition.map(clamper(-0.1, 0.1));
