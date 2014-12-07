@@ -27,7 +27,7 @@ MouseProjector.prototype.projectClick = function(screenCoordinate) {
 
     var intersections = raycaster.intersectObject(this.bigPlane);
 
-    if(intersections.length == 0) {
+    if(intersections.length === 0) {
         return;
     }
 
