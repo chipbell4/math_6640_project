@@ -54,7 +54,9 @@ FemDrawingState.prototype.mouseup = function() {
 };
 
 FemDrawingState.prototype.update = function() {
-    this.stepper.step(0.01, this.currentClick);
+    var deltaT = this.stepper.calculatePreferredTimeStep();
+    deltaT = Math.max(deltaT, 0.01);
+    this.stepper.step(deltaT, this.currentClick);
 
     // set the z position of each internal node
     var that = this;
