@@ -93,7 +93,7 @@ FemDrawingState.prototype.setupDataGui = function() {
 FemDrawingState.prototype.setCurrentPolygon = function(points) {
     var filteredPoints = Polygon.factory(points).mappedPoints();
     var containmentChecker = new PolygonPointContainmentChecker(filteredPoints);    
-    var pointSetBuilder = new MeshPointSetBuilder(0.1, 0.1, containmentChecker);
+    var pointSetBuilder = new MeshPointSetBuilder(0.05, 0.05, containmentChecker);
     
     var meshPoints = pointSetBuilder.calculateMeshPoints();
     var boundaryNodes = range(filteredPoints.length, 'inclusive');
@@ -112,7 +112,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
         geometry: femGeometry,
         elasticity: 0.01,
         dampingCoefficient: 2,
-        waveSpeed: 2
+        waveSpeed: 0.5
     });
 
     // setup dat-gui
