@@ -1,10 +1,13 @@
 var expect = require('chai').expect;
 var numeric = require('numeric');
 var THREE = require('three');
-var FemGeometry = require('../../js/Fem/FemGeometry.js');
+var Polygon = require('../../js/PolygonUtils/Polygon.js');
 var PolygonPointContainmentChecker = require('../../js/PolygonUtils/PolygonPointContainmentChecker.js');
 var MeshPointSetBuilder = require('../../js/PolygonUtils/MeshPointSetBuilder.js');
 var GeometryBuilder = require('../../js/GeometryBuilder.js');
+var FemGeometry = require('../../js/Fem/FemGeometry.js');
+var MouseProjector = require('../../js/Ui/MouseProjector.js');
+var range = require('range-function');
 var Stepper = require('../../js/Pde/Stepper.js');
 
 describe('Stepper', function() {
@@ -97,7 +100,7 @@ describe('Stepper', function() {
     });
 
     it('does not blow up with a normal mesh', function() {
-        var many = 5;
+        var many = 50000;
         var points = [
             new THREE.Vector3(0, 0, 0),
             new THREE.Vector3(0, 1, 0),
@@ -132,4 +135,42 @@ describe('Stepper', function() {
 
         expect(numeric.norminf(stepper.currentWavePosition)).to.be.lessThan(100);
     });
+
+    it('should not blow up with a generated mesh', function() {
+        var points = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(1, 1, 0),
+            new THREE.Vector3(0, 1, 0),
+        ];
+        var filteredPoints = Polygon.factory(points).mappedPoints();
+        var containmentChecker = new PolygonPointContainmentChecker(filteredPoints);    
+        var pointSetBuilder = new MeshPointSetBuilder(0.09, 0.09, containmentChecker);
+        
+        var meshPoints = pointSetBuilder.calculateMeshPoints();
+        var boundaryNodes = range(filteredPoints.length, 'inclusive');
+
+        // create the Fem geometry
+        var threeGeometry = new GeometryBuilder(meshPoints).buildGeometry();
+        var femGeometry = new FemGeometry(threeGeometry, boundaryNodes);
+
+        // setup the Fem Model
+        var stepper = new Stepper({
+            geometry: femGeometry,
+            elasticity: 0.01,
+            dampingCoefficient: 20,
+            waveSpeed: 0.5
+        });
+
+        // add a click
+        stepper.step(0.01, new THREE.Vector3(0.5, 0.5));
+        console.log(stepper.currentWavePosition);
+
+        range(1000).forEach(function() {
+            stepper.step(0.01);
+        });
+
+        expect(numeric.norminf(stepper.currentWavePosition)).to.be.lessThan(0.1);
+    });
+
 });
