@@ -12,3 +12,14 @@ all major desktop browsers, and even some mobile browsers \cite{caniuse_webgl}.
 As powerful as the OpenGL standard is, a library certainly can eliminate a good chunk of boilerplate. Three.js
 \cite{threejs} is \emph{by far} the most powerful library for this, and provides a wide array of tools for 3D
 graphics work, including cameras, meshes, materials, and basic linear algebra operations like cross and dot products.
+
+DAT-GUI \cite{datgui} was used for providing real-time parameter adjustment.
+
+From math side of things, numeric.js \cite{numericjs} was invaluable for providing most of the linear algebra routines
+used, such as LU factorization, and matrix-vector products. Unfortunately, the library is not actively developed, but is
+still very useful, in that it provides most of the useful linear algebra routines needed by most applications, such as
+SVD, and even sparse matrix representations as well.
+
+For triangulation the Delaunay triangulation algorithm \cite{triangulation} was used. An implementation by Mikola
+Lysenko existed already \cite{delaunay}, so I used that one. To build the mesh, points were sampled in the domain,
+and filtered by polygon containment. The reduced point set was then triangulated via the algorithm.
