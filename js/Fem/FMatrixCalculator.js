@@ -28,7 +28,7 @@ FMatrixCalculator.prototype.buildMatrix = function(clickLocation) {
     var N = this.geometry.internalNodes.length;
 
     var F = [];
-    var nearestNodes = this.nearestNodes(clickLocation, 3);
+    var nearestNodes = this.nearestNodes(clickLocation, Math.round(N / 10));
     for(var i = 0; i < N; i++) {
         if(nearestNodes.indexOf(i) < 0) {
             F.push(0);
