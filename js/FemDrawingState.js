@@ -54,17 +54,37 @@ FemDrawingState.prototype.mouseup = function() {
 };
 
 FemDrawingState.prototype.update = function() {
-    this.stepper.step(0.001, this.currentClick);
+    this.stepper.step(0.01, this.currentClick);
 
     // set the z position of each internal node
     var that = this;
     this.stepper.geometry.internalNodes.forEach(function(nodeIndex, arrayIndex) {
-        that.scene.children[0].geometry.vertices[nodeIndex].z = that.stepper.currentWavePosition[arrayIndex];
+        that.scene.children[0].geometry.vertices[nodeIndex].z = 10 * that.stepper.currentWavePosition[arrayIndex];
     });
 	
     this.scene.children[0].geometry.verticesNeedUpdate = true;
 	this.scene.children[0].geometry.elementsNeedUpdate = true;
 	this.scene.children[0].geometry.computeBoundingSphere();
+};
+
+/**
+ * Setup the parameter gui
+ */
+FemDrawingState.prototype.setupDataGui = function() {
+    if(!this.stepper) {
+        return;
+    }
+
+    if(this.gui) {
+        document.getElementsByClassName(DAT.GUI.CLASS_AUTO_PLACE)[0].remove();
+    }
+    
+    this.gui = new DAT.GUI();
+    this.gui.add(this.stepper, 'waveSpeed').min(0.01).max(0.5);
+    this.gui.add(this.stepper, 'elasticity').min(0).max(0.1);
+    this.gui.add(this.stepper, 'dampingCoefficient').min(0).max(20);
+    this.gui.add(this.stepper, 'clickWeight').min(100).max(10000);
+    this.gui.add(this.stepper, 'clickTightness').min(10).max(10000);
 };
 
 /**
@@ -96,12 +116,7 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     });
 
     // setup dat-gui
-    var gui = new DAT.GUI();
-    gui.add(this.stepper, 'waveSpeed').min(0.1).max(2.5).step(0.2);
-    gui.add(this.stepper, 'elasticity').min(0).max(0.1);
-    gui.add(this.stepper, 'dampingCoefficient').min(0).max(20);
-    gui.add(this.stepper, 'clickWeight').min(100).max(10000);
-    gui.add(this.stepper, 'clickTightness').min(10).max(10000);
+    this.setupDataGui();
 };
 
 module.exports = FemDrawingState;
