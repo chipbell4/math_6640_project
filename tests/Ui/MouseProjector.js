@@ -16,7 +16,7 @@ describe('MouseProjector', function() {
         projector.camera.position.x = 1;
         projector.camera.position.y = 1;
         projector.camera.position.z = 1;
-        projector.camera.lookAt(origin);
+        projector.camera.lookAt(new THREE.Vector3(0.5, 0.5, 0));
         var result = projector.projectClick(new THREE.Vector3(5,5))
         
         expect(result.x).to.be.closeTo(0.5, 0.001);

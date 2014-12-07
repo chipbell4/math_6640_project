@@ -27,7 +27,7 @@ var FemDrawingState = function() {
         elasticity: [0, 1],
         dampingCoefficient: [0, 10],
         waveSpeed: [0.1, 0.5],
-        clickWeight: [1000, 10000],
+        clickWeight: [100, 500],
         clickTightness: [10, 1000]
     };
 };
