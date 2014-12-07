@@ -17,10 +17,16 @@ FMatrixCalculator.prototype.weightForClickAtNode = function(clickLocation, node)
 
 FMatrixCalculator.prototype.nearestNodes = function(clickLocation, nodeCount) {
     var vertices = this.geometry.threeGeometry.vertices;
+    var internalNodes = this.geometry.internalNodes;
     return range(this.geometry.internalNodes.length).sort(function(a, b) {
-        var nodeA = vertices[a];
-        var nodeB = vertices[b];
-        return nodeA.distanceTo(clickLocation) - nodeB.distanceTo(clickLocation);
+        var nodeA = internalNodes[a];
+        var nodeB = internalNodes[b];
+        var nodeADistance = vertices[nodeA].distanceTo(clickLocation);
+        var nodeBDistance = vertices[nodeB].distanceTo(clickLocation);
+        if(nodeADistance < nodeBDistance) {
+            return -1;
+        }
+        return 1;
     }).slice(0, nodeCount);
 };
 
