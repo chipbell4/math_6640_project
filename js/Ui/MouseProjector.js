@@ -4,24 +4,34 @@ var MouseProjector = function(camera, screenWidth, screenHeight) {
     this.camera = camera;
     this.screenWidth = screenWidth;
     this.screenHeight = screenHeight;
+    this.bigPlane = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial());
 };
 
 MouseProjector.prototype.projectClick = function(screenCoordinate) {
-    // convert the screen coordinate to a world coordinate, relative to the camera
-    var clickProjection = screenCoordinate.clone();
-    clickProjection.x /= this.screenHeight; 
-    clickProjection.x = 1 - clickProjection.x;
-    clickProjection.y /= this.screenHeight;
 
-    // first center around (0.5, 0.5)
-    clickProjection.add(new THREE.Vector3(-0.5, -0.5, 0));
+    // the tilt axis and angle
+    var tiltAxis = new THREE.Vector3(0, 0, 1).cross(this.camera.position).normalize();
+    var tiltAngle = Math.PI / 5 * ( (this.screenHeight / 2) - screenCoordinate.y) / this.screenHeight;
 
-    // rotate the start point based on camera rotation
-    var azimuth = Math.atan2(this.camera.position.y, this.camera.position.x);
-    clickProjection.applyAxisAngle(new THREE.Vector3(0, 0, 1), azimuth);
+    // the pan axis
+    var panAxis = this.camera.position.clone().cross(tiltAxis).normalize();
+    var panAngle = Math.PI / 5 * ( screenCoordinate.x - this.screenWidth / 2) / this.screenHeight;
 
-    // translate back
-    return clickProjection.add(new THREE.Vector3(0.5, 0.5, 0));
+    // the actual look direction (from http://stackoverflow.com/a/15697227)
+    var direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+    // tilt and pan
+    direction.applyAxisAngle(tiltAxis, tiltAngle).applyAxisAngle(panAxis, panAngle);
+
+    // create a ray caster from the direction vector
+    var raycaster = new THREE.Raycaster(this.camera.position, direction);
+
+    var intersections = raycaster.intersectObject(this.bigPlane);
+
+    if(intersections.length == 0) {
+        return;
+    }
+
+    return intersections[0].point;
 };
 
 module.exports = MouseProjector;
