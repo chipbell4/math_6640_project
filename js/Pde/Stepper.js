@@ -67,22 +67,6 @@ Stepper.prototype.fTerm = function(deltaT, F) {
     return N.LUsolve(this.massLU, F);
 };
 
-function clamp(x, a, b) {
-    if(x < a) {
-        x = a;
-    }
-    if(x > b) {
-        x = b;
-    }
-    return x;
-}
-
-function clamper(a, b) {
-    return function(x) {
-        return clamp(x, a, b);
-    };
-}
-
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
@@ -95,7 +79,7 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     nextWavePosition = N.scale(nextWavePosition, 1 / scale);
 
     this.previousWavePosition = this.currentWavePosition;
-    this.currentWavePosition = nextWavePosition.map(clamper(-0.1, 0.1));
+    this.currentWavePosition = nextWavePosition;
     return this.currentWavePosition;
 };
 
