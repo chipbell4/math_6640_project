@@ -63,18 +63,14 @@ Stepper.prototype.previousTerm = function(deltaT) {
     );
 };
 
-Stepper.prototype.fTerm = function(deltaT, F) {
-    return N.LUsolve(this.massLU, F);
-};
-
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
     var previousTerm = this.previousTerm(deltaT);
-    var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
+    var F = this.resolveF(mouseClickLocation);
 
     // now solve for the next timestep
-    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, F)));
     var scale = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
     nextWavePosition = N.scale(nextWavePosition, 1 / scale);
 
