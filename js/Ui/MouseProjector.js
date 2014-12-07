@@ -11,11 +11,11 @@ MouseProjector.prototype.projectClick = function(screenCoordinate) {
 
     // the tilt axis and angle
     var tiltAxis = new THREE.Vector3(0, 0, 1).cross(this.camera.position).normalize();
-    var tiltAngle = Math.PI / 5 * ( (this.screenHeight / 2) - screenCoordinate.y) / this.screenHeight;
+    var tiltAngle = Math.PI / 4 * ( (this.screenHeight / 2) - screenCoordinate.y) / this.screenHeight;
 
     // the pan axis
     var panAxis = this.camera.position.clone().cross(tiltAxis).normalize();
-    var panAngle = Math.PI / 5 * ( screenCoordinate.x - this.screenWidth / 2) / this.screenHeight;
+    var panAngle = Math.PI / 4 * ( screenCoordinate.x - this.screenWidth / 2) / this.screenHeight;
 
     // the actual look direction (from http://stackoverflow.com/a/15697227)
     var direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
