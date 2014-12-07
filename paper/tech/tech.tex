@@ -1,0 +1,33 @@
+\section{Technology}
+
+As much as the mathematics behind this project is interesting, so are the technologies involved. And, as much as the
+labor of mathematicians before myself should be cited, the same can be said for developers who have innovated
+technologies used in this paper. Most of the resources I've used are open-source, and freely available to use and
+modify.
+
+One of the main driving technologies for this is project is WebGL \cite{webgl}, which is an OpenGL ES 2.0 specification
+for web browsers. A fairly new technology, the support is quickly growing and is supported in the latest version of
+all major desktop browsers, and even some mobile browsers \cite{caniuse_webgl}.
+
+As powerful as the OpenGL standard is, a library certainly can eliminate a good chunk of boilerplate. Three.js
+\cite{threejs} is \emph{by far} the most powerful library for this, and provides a wide array of tools for 3D
+graphics work, including cameras, meshes, materials, and basic linear algebra operations like cross and dot products.
+
+DAT-GUI \cite{datgui} was used for providing real-time parameter adjustment.
+
+From math side of things, numeric.js \cite{numericjs} was invaluable for providing most of the linear algebra routines
+used, such as LU factorization, and matrix-vector products. Unfortunately, the library is not actively developed, but is
+still very useful, in that it provides most of the useful linear algebra routines needed by most applications, such as
+SVD, and even sparse matrix representations as well.
+
+For triangulation the Delaunay triangulation algorithm \cite{triangulation} was used. An implementation by Mikola
+Lysenko existed already \cite{delaunay}, so I used that one. To build the mesh, points were sampled in the domain,
+and filtered by polygon containment. The reduced point set was then triangulated via the algorithm.
+
+In an effort to keep code quality in check, a mocha \cite{mocha} was used as the testing framework, with chai
+\cite{chai} as the assertion library. Code linting was performed via jshint \cite{jshint}. Package bundling was
+performed via browserify \cite{browserify} to keep code organized. Lastly, gulp \cite{gulp} was used a task runner
+and build tool.
+
+Lastly, all of the packages are developmented and maintained via Node.js \cite{node} a JavaScript runtime for the server,
+and NPM \cite{npm}, the de facto package manager for Node.
