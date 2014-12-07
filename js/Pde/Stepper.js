@@ -51,7 +51,7 @@ Stepper.prototype.currentWaveTerm = function(deltaT) {
     return N.scale(this.currentWavePosition, 2/deltaT - this.elasticity);
 };
 
-Stepper.prototype.currentDiffusionTerm = function(deltaT) {
+Stepper.prototype.currentDiffusionTerm = function() {
     var scaledStiffness = N.scale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
     return N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
 };
