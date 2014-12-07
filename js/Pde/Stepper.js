@@ -83,4 +83,16 @@ Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     return this.currentWavePosition;
 };
 
+Stepper.prototype.calculatePreferredTimeStep = function() {
+    var mInvNorm = 1 / N.norm2(this.massMatrix);
+    var aNorm = N.norm2(this.stiffnessMatrix);
+
+    var a = this.elasticity + this.waveSpeed * this.waveSpeed * mInvNorm * aNorm;
+    var b = this.dampingCoefficient;
+    var c = -2;
+
+    // solve and scale up a tad, so we're above the limit
+    return (-b + Math.sqrt(b*b - 4 * a * c)) / (2 * a) * 1.1;
+};
+
 module.exports = Stepper;
