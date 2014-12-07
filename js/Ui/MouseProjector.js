@@ -15,7 +15,7 @@ MouseProjector.prototype.projectClick = function(screenCoordinate) {
 
     // the pan axis
     var panAxis = this.camera.position.clone().cross(tiltAxis).normalize();
-    var panAngle = Math.PI / 4 * ( screenCoordinate.x - this.screenWidth / 2) / this.screenHeight;
+/bin/bash: :WQ: command not found
 
     // the actual look direction (from http://stackoverflow.com/a/15697227)
     var direction = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
