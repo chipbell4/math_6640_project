@@ -3,34 +3,56 @@ It is certainly useful to know the stability of the scheme chosen in \label{eq:f
 choose appropriate time step values to prevent numerical instability. We'll first consider apply some algebra to
 \label{eq:finite_diff_solution}, which gives us a somewhat simpler form
 \begin{equation}
-c^{n+1} = \left(
-    \frac{4}{2 + \gamma\delta t} - \frac{2\beta^2\delta t^2}{2 + \gamma\delta t}
-\right) c^n
--
-\frac{2 - \gamma\delta t}{2 + \gamma\delta t}c^{n-1}
-+
-\frac{2\delta t^2}{2 + \gamma\delta t}\vec{F}
+c^{n+1} = 
+\frac{1}{2 + \gamma\delta t}
+\left(
+    \left( 4I - 2\alpha\delta t^2I - 2\beta\delta t^2M^{-1}A \right) c^n
+    +
+    \left( 2 - \gamma\delta t \right) c^{n-1}
+\right)
 \end{equation}
 
 For the purposes of our error analysis, we'll assume that no force is being applied, since in our simulation it's
-assumed the user won't provide force the entire time. We'll let $r = \frac{1}{2 + \gamma\delta t}$. Considering the
-error $\epsilon^{n+1}$, we have
+assumed the user won't provide force the entire time. Furthermore, we couldn't enforce stability if the system is
+constantly having energy added to it. So, considering the error at time step $n+1$ and applying the triangle
+inequality, we have
 \begin{equation}
-|\epsilon^{n+1}| = |4rI - 2\beta^2\delta t^2rM^{-1}A||\epsilon^n| + (2 - \gamma\delta t)r|\epsilon^{n-1}|
+|\epsilon^{n+1}|
+\le
+\frac{1}{2 + \gamma\delta t}
+\left(
+    |4I - 2\alpha\delta t^2I - 2\beta^2\delta t^2M^{-1}A| |\epsilon^n|
+    +
+    |2 - \gamma\delta t| |\epsilon^{n-1}| 
+\right)
 \end{equation}
-Worst case, the error did not decrease, meaning $|\epsilon^{n}| = |\epsilon^{n-1}|$, which allows to to consider the
-scaling of the scheme
+In the worst case, the error is not decreasing, which gives us $|\epsilon^{n-1}| = |\epsilon^n|$, which allows us to
+combine terms, which gives us the following
 \begin{equation}
-\frac{|\epsilon^{n+1}|}{|\epsilon^{n}|}
-\le
-\frac{4 - 2\beta^2\delta t^2|M^{-1}||A| - 2 + \gamma\delta t}{2 + \gamma\delta t}
-\le
-1
+\frac{|\epsilon^{n+1}|}{|\epsilon^n|}
+=
+\frac{1}{2 + \gamma\delta t} \left(
+|4I - 2\alpha\delta t^2I - 2\beta^2\delta t^2M^{-1}A| + |2 - \gamma\delta t|
+\right)
 \end{equation}
 
-After some cleanup, we have
+This value must be less than or equal to $1$ in order for the scheme to be stable. Using the reverse triangle
+inequality \cite{reverse_triangle_inequality}, we can expand each term to give us
 \begin{equation}
-\frac{-2\beta^2\delta t^2|M^{-1}||A|}{2 + \gamma\delta t} \le 0
+\frac{6 - 2\alpha\delta t^2 - 2\beta^2 \delta t^2 |M^{-1}| |A| - \gamma\delta t}{2 + \gamma\delta t} \le 1
 \end{equation}
 
-Since all of the terms are positive, then our scheme is unconditionally stable
+We can omit some absolute values provided $\alpha$ and $\beta^2$ are not on the order of $\frac{1}{\delta t^2}$ and
+$\gamma$ is not on the order of $\frac{1}{\delta t}$. We will assume this is true. We can rearrange to give a
+quadratic inequality
+\begin{equation}
+0 \le \left(\alpha + \beta^2|M^{-1}| |A|\right)\delta t^2 + \gamma\delta t - 2
+\end{equation}
+
+Applying the quadratic equation gives us a lower bound for $\delta t$:
+\begin{equation}
+\delta t \ge \frac{-\gamma + \sqrt{\gamma^2 + 8(\alpha + \beta^2|M^{-1}| |A|)}}{2\alpha + 2\beta^2|M^{-1}| |A|}
+\end{equation}
+
+This result is surprising, but understandable. All terms in the scheme that contain $\delta t$ are negative, so we must
+enforce that $\delta t$ is large enough to keep the total scale from growing too quickly.
