@@ -43,8 +43,8 @@ describe('FMatrixCalculator', function() {
             expect(F.length).to.equal(3);
 
             expect(F[0]).to.be.closeTo(1, 0.001);
-            expect(F[1]).to.be.closeTo(0.5, 0.001);
-            expect(F[2]).to.be.closeTo(0.5, 0.001);
+            expect(F[1]).to.be.closeTo(0, 0.001);
+            expect(F[2]).to.be.closeTo(0, 0.001);
         });
 
         it('should only include internal nodes', function() {
@@ -53,7 +53,7 @@ describe('FMatrixCalculator', function() {
             expect(F.length).to.equal(2);
 
             expect(F[0]).to.be.closeTo(1, 0.001);
-            expect(F[1]).to.be.closeTo(0.5, 0.001);
+            expect(F[1]).to.be.closeTo(0, 0.001);
         });
     });
 });

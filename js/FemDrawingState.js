@@ -21,7 +21,21 @@ var FemDrawingState = function() {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 10000);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.positionCamera();
+
+    // set the numeric options for the system
+    this.options = {
+        elasticity: [0, 1],
+        dampingCoefficient: [0, 10],
+        waveSpeed: [0.1, 0.5],
+        clickWeight: [1000, 10000],
+        clickTightness: [10, 1000]
+    };
 };
+
+FemDrawingState.prototype.resolveDefaultValue = function(optionName) {
+    return 0.5 * (this.options[optionName][0] + this.options[optionName][1]);
+};
+
 
 /**
  * Repositions the camera according to the current look angle
@@ -54,7 +68,9 @@ FemDrawingState.prototype.mouseup = function() {
 };
 
 FemDrawingState.prototype.update = function() {
-    this.stepper.step(0.01, this.currentClick);
+    var deltaT = this.stepper.calculatePreferredTimeStep();
+    deltaT = Math.max(deltaT, 0.01);
+    this.stepper.step(deltaT, this.currentClick);
 
     // set the z position of each internal node
     var that = this;
@@ -80,11 +96,9 @@ FemDrawingState.prototype.setupDataGui = function() {
     }
     
     this.gui = new DAT.GUI();
-    this.gui.add(this.stepper, 'waveSpeed').min(0.01).max(0.5);
-    this.gui.add(this.stepper, 'elasticity').min(0).max(0.1);
-    this.gui.add(this.stepper, 'dampingCoefficient').min(0).max(20);
-    this.gui.add(this.stepper, 'clickWeight').min(100).max(10000);
-    this.gui.add(this.stepper, 'clickTightness').min(10).max(10000);
+    for (var option in this.options) {
+        this.gui.add(this.stepper, option).min(this.options[option][0]).max(this.options[option][1]);
+    }
 };
 
 /**
@@ -93,7 +107,7 @@ FemDrawingState.prototype.setupDataGui = function() {
 FemDrawingState.prototype.setCurrentPolygon = function(points) {
     var filteredPoints = Polygon.factory(points).mappedPoints();
     var containmentChecker = new PolygonPointContainmentChecker(filteredPoints);    
-    var pointSetBuilder = new MeshPointSetBuilder(0.05, 0.05, containmentChecker);
+    var pointSetBuilder = new MeshPointSetBuilder(0.1, 0.1, containmentChecker);
     
     var meshPoints = pointSetBuilder.calculateMeshPoints();
     var boundaryNodes = range(filteredPoints.length, 'inclusive');
@@ -110,9 +124,11 @@ FemDrawingState.prototype.setCurrentPolygon = function(points) {
     // setup the Fem Model
     this.stepper = new Stepper({
         geometry: femGeometry,
-        elasticity: 0.01,
-        dampingCoefficient: 2,
-        waveSpeed: 0.5
+        elasticity: this.resolveDefaultValue('elasticity'),
+        dampingCoefficient: this.resolveDefaultValue('dampingCoefficient'),
+        waveSpeed: this.resolveDefaultValue('waveSpeed'),
+        clickWeight: this.resolveDefaultValue('clickWeight'),
+        clickTightness: this.resolveDefaultValue('clickTightness')
     });
 
     // setup dat-gui

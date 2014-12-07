@@ -51,7 +51,7 @@ Stepper.prototype.currentWaveTerm = function(deltaT) {
     return N.scale(this.currentWavePosition, 2/deltaT - this.elasticity);
 };
 
-Stepper.prototype.currentDiffusionTerm = function(deltaT) {
+Stepper.prototype.currentDiffusionTerm = function() {
     var scaledStiffness = N.scale(this.stiffnessMatrix, -this.waveSpeed * this.waveSpeed);
     return N.LUsolve(this.massLU, N.dot(scaledStiffness, this.currentWavePosition));
 };
@@ -63,40 +63,32 @@ Stepper.prototype.previousTerm = function(deltaT) {
     );
 };
 
-Stepper.prototype.fTerm = function(deltaT, F) {
-    return N.LUsolve(this.massLU, F);
-};
-
-function clamp(x, a, b) {
-    if(x < a) {
-        x = a;
-    }
-    if(x > b) {
-        x = b;
-    }
-    return x;
-}
-
-function clamper(a, b) {
-    return function(x) {
-        return clamp(x, a, b);
-    };
-}
-
 Stepper.prototype.step = function(deltaT, mouseClickLocation) {
     var currentWaveTerm = this.currentWaveTerm(deltaT);
     var currentDiffusionTerm = this.currentDiffusionTerm(deltaT);
     var previousTerm = this.previousTerm(deltaT);
-    var fTerm = this.fTerm(deltaT, this.resolveF(mouseClickLocation));
+    var F = this.resolveF(mouseClickLocation);
 
     // now solve for the next timestep
-    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, fTerm)));
+    var nextWavePosition = N.add(currentWaveTerm, N.add(currentDiffusionTerm, N.add(previousTerm, F)));
     var scale = (1 / deltaT / deltaT) + (this.dampingCoefficient / 2 / deltaT);
     nextWavePosition = N.scale(nextWavePosition, 1 / scale);
 
     this.previousWavePosition = this.currentWavePosition;
-    this.currentWavePosition = nextWavePosition.map(clamper(-0.1, 0.1));
+    this.currentWavePosition = nextWavePosition;
     return this.currentWavePosition;
+};
+
+Stepper.prototype.calculatePreferredTimeStep = function() {
+    var mInvNorm = 1 / N.norm2(this.massMatrix);
+    var aNorm = N.norm2(this.stiffnessMatrix);
+
+    var a = this.elasticity + this.waveSpeed * this.waveSpeed * mInvNorm * aNorm;
+    var b = this.dampingCoefficient;
+    var c = -2;
+
+    // solve and scale up a tad, so we're above the limit
+    return (-b + Math.sqrt(b*b - 4 * a * c)) / (2 * a) * 1.1;
 };
 
 module.exports = Stepper;
