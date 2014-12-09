@@ -1,7 +1,7 @@
 \subsection{Formation of $A$}
 The formula for each element of $A$ is given by (\ref{eq:a_definition}). This formulation requires the calculation
 of both $\nabla \phi_i$ and $\nabla \phi_j$. However, since every $\phi$ is piece-wise linear, the gradient
-is constant (and in most places zero). Within a particular triangle $T_{kji}$, applying the results from
+is constant over a single triangular region (and in most places zero). Within a particular triangle $T_{kji}$, applying the results from
 (\ref{eq:plane_solution}) gives
 \begin{equation} \label{eq:grad_phi_definition}
 \nabla \phi_k = \mat{a_{kji} \\ b_{kji}}
@@ -15,7 +15,7 @@ nodes that are adjacent on the mesh. Because they are adjacent, in the two share
 gradients will be non-zero. Furthermore, if $\nabla \phi_k = \mat{a_k \\ b_k}$ and $\nabla \phi_j = \mat{a_j \\ b_j}$
 inside of some triangle $T$, we have
 \begin{equation}
-\int\limits_T \nabla \phi_k \nabla \phi_j
+\int\limits_T \nabla \phi_j \cdot \nabla \phi_k dT
 =
 \left( a_k a_j + b_k b_j \right) \mathop{Area}(T)
 \end{equation}
