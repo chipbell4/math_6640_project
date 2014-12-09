@@ -1,5 +1,11 @@
+var range = require('range-function');
+
 var PolygonPointContainmentChecker = function(points) {
 	this.points = points;
+};
+
+PolygonPointContainmentChecker.prototype.pointAt = function(i) {
+    return this.points[ (i + this.points.length) % this.points.length ];
 };
 
 /**
@@ -43,7 +49,22 @@ PolygonPointContainmentChecker.prototype.containsPoint = function(point) {
 		winding += this.calculateWindingForPointAtIndex(point, i);
 	}
 
-	return winding == N;
+    if(winding != N) {
+        return false;
+    }
+
+    
+    var that = this;
+    var pointCloseToEdge = range(this.points.length).some(function(index) {
+        var start = that.pointAt(index), end = that.pointAt(index + 1);
+        var direction = end.clone().sub(start);
+        var lengthSquared = direction.lengthSq();
+        var t = direction.dot(point.clone().sub(start)) / lengthSquared;
+        var nearestPoint = start.clone().add(direction.clone().multiplyScalar(t));
+        return t >= 0 && t <= 1 && nearestPoint.distanceTo(point) < 0.05;
+    });
+
+    return !pointCloseToEdge;
 };
 
 module.exports = PolygonPointContainmentChecker;

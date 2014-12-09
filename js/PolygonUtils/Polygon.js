@@ -3,6 +3,7 @@ var PointSetDensifier = require('./PointSetDensifier.js');
 var PolygonRescaler = require('./PolygonRescaler.js');
 var PolygonWindingFixer = require('./PolygonWindingFixer.js');
 var Smoother = require('./Smoother.js');
+var Concaver = require('./Concaver.js');
 
 var Polygon = function(vertices) {
     this.vertices = vertices;
@@ -36,6 +37,7 @@ Polygon.factory = function(vertices) {
     polygon
         .addMap(CollinearityFilter(0.001))
         .addMap(Smoother(0))
+        .addMap(Concaver())
         .addMap(CollinearityFilter(0.001))
         .addMap(PointSetDensifier(0.1))
         .addMap(PolygonWindingFixer())
