@@ -1,10 +1,10 @@
 \subsection{Defining $\phi_k$}
 Since $\phi_k \in H^1$, we know that it is piecewise linear. We will choose $\phi_k$ to be zero at all nodes
-$N_1, N_2, \ldots$ but be 1 at $N_k$. This will cause $\phi_k$ to be tent-shaped. Because $\phi_k$ is piece-wise linear,
-in order to find a closed form we need only consider each "piece", which is this case a triangular region.
+$N_1, N_2, \ldots$ but be 1 at $N_k$. Because $\phi_k$ is piece-wise linear,
+in order to find a closed form we need only consider each ``piece'' of its domain one-by-one, which is a triangular region.
 
 Consider a single triangle with nodes at $N_k$, $N_j$, and $N_i$. Given our definition of $\phi_k$, we know $\phi_k(N_k) = 1$,
-but 0 for any other node. So in the region defined by our triangle (we'll call it $T_{kji}$), $\phi_k$ is non-zero. Because
+but 0 for any other node. So in the region defined by our triangle (we'll call it $T_{kji}$), $\phi_k$ is non-zero. Also, since
 $\phi_k$ is piece-wise linear, that means $\phi_k$ is planar on the region, and that the plane passes through these three points:
 $(x_k, y_k, 1)$, $(x_j, y_j, 0)$, $(x_i, y_i, 0)$. Considering a plane in three dimensions can be written as
 \begin{equation} \label{eq:plane}

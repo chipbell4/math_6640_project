@@ -5,4 +5,9 @@ $F(x,y,t)$ altogether and simply consider $\vec{F}$.
 
 In fact, given a mouse click at $(x,y)$ at time $t$, we'll choose the nearest $n$ nodes to $(x,y)$ and subdivide some 
 weight $W$ to those nodes proportional to their distance from $(x,y)$. This would mean $n$ of the entries of $\vec{F}$
-are non-zero but the rest are zero. Also, $\sum\limits_i\vec{F}_i = W$.
+are non-zero but the rest are zero. In fact, a parameterized form of this weighting can be written as follows
+\begin{equation}
+w(N_k) = \frac{W}{T|N_k - C| + 1}
+\end{equation}
+where $N_k$ is some node point, $W > 0$ is some weighting factor, $T > 0$ is a ``tightening term'' and $C$ is the center
+point of force application. Note that 1 is added to prevent the denominator from being 0.
