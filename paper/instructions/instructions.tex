@@ -1,5 +1,6 @@
 \section{Instructions}
-Follows is a basic set of instructions and description of how the application works.
+The project is hosted on my personal website \cite{hosted_site}. The source control for the project is hosted on Github
+\cite{github}. Follows is a basic set of instructions and description of how the application works.
 
 The first screen allows the user to draw a polygon (defaulting to a square). When a user presses the key the polygon is
 triangulated and the simulation begins. Triangulation is accomplished by first converting the polygon to a convex form,
@@ -24,4 +25,4 @@ then shoots off to infinity.
 
 I'm currently still resolving this issue as of the time of writing. My solution will essentially be to remove interior
 points that would cause small triangles, i.e. points that are very close (within some tolerance) of the border of
-polygon.
+polygon. Currently, the best solution is to simply refresh the page.
