@@ -5,6 +5,7 @@ var mocha = require('gulp-mocha');
 var exec = require('child_process').exec;
 var del = require('del');
 var async = require('async');
+var uglify = require('gulp-uglify');
 
 gulp.task('jshint', function() {
 	return gulp.src('js/**/*.js')
@@ -20,6 +21,7 @@ gulp.task('test', function() {
 gulp.task('browserify', ['jshint'], function() {
 	return gulp.src('js/main.js')
 		.pipe(browserify({}))
+        .pipe(uglify())
 		.pipe(gulp.dest('./build'));
 });
 
