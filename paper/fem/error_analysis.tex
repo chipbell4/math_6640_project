@@ -1,7 +1,7 @@
 \subsection{Error Analysis}
 It is certainly useful to know the stability of the scheme chosen in \label{eq:finite_diff_solution}, so that we can
-choose appropriate time step values to prevent numerical instability. We'll first consider apply some algebra to
-\label{eq:finite_diff_solution}, which gives us a somewhat simpler form
+choose appropriate time step values to prevent numerical instability. We'll consider the error for 
+(\ref{eq:cleaner_finite_diff_solution})
 \begin{equation}
 c^{n+1} = 
 \frac{1}{2 + \gamma\delta t}
@@ -11,6 +11,7 @@ c^{n+1} =
     \left( 2 - \gamma\delta t \right) c^{n-1}
 \right)
 \end{equation}
+Note that $I$ is the identity matrix of appropriate size here.
 
 For the purposes of our error analysis, we'll assume that no force is being applied, since in our simulation it's
 assumed the user won't provide force the entire time. Furthermore, we couldn't enforce stability if the system is
