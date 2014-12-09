@@ -129,7 +129,7 @@ PolygonDrawingState.prototype.mousemove = function(evt) {
 	}
 
 	// scale screen coordinates to world
-	var screenCoordinates = new THREE.Vector3(evt.offsetX, window.innerHeight - evt.offsetY, 0);
+	var screenCoordinates = new THREE.Vector3(evt.clientX, window.innerHeight - evt.clientY, 0);
 	var worldCoordinates = screenCoordinates.clone();
 	worldCoordinates.y /= window.innerHeight;
     
