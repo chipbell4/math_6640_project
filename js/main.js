@@ -6,13 +6,7 @@ var FemDrawingState = require('./FemDrawingState.js');
 	var polygonDrawingState = new PolygonDrawingState();
     var femDrawingState = new FemDrawingState();
 
-    // test code
-    var geometry = new THREE.PlaneGeometry( 1, 1, 2, 2);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-    var plane = new THREE.Mesh( geometry, material );
-    femDrawingState.scene.add(plane);
-	
-    var currentDrawingState = polygonDrawingState;
+    var currentDrawingState = femDrawingState;
 
 	var renderer;
 
@@ -66,6 +60,13 @@ var FemDrawingState = require('./FemDrawingState.js');
 			document.addEventListener(eventName, generateListener(eventName));
 		}
         document.addEventListener('keydown', toggleDrawingState);
+    
+        femDrawingState.setCurrentPolygon([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(1, 1, 0),
+            new THREE.Vector3(0, 1, 0),
+        ]);
 
 		animate();
 	};
