@@ -1,14 +1,15 @@
 \subsection{Derivation of the Finite Element Solution}
 We first consider the weak form of (\ref{eq:main_pde}) by approximating $u$ as $u_h \in H^1(\Omega)$. Assuming we have
 a triangulation of $\Omega$, consisting of $N$ triangles, we can choose 
-$\phi_1(x,y), \phi_2(x,y), \ldots, \phi_N(x,y)$ as basis functions for $H^1(\Omega)$, we can write $u_h$ as linear
+a set of piecewise-linear tent functions $\phi_1(x,y), \phi_2(x,y), \ldots, \phi_N(x,y)$ centerd at each node as basis
+functions for the triangulated $H^1(\Omega)$, we can write $u_h$ as linear
 combination of those basis elements:
 \begin{equation} \label{eq:u_h}
 u_h(x,y,t) = \sum\limits_{k=1}^N c_k(t) \phi_k(x,y)
 \end{equation}
 Note that at a particular time $t$, $c_k(t)$ will give the height of a wave at node $k$. So, by solving each of the values
-of $c_k(t)$ over time, we will obtain the values of $u_h$ at time $t$. Also, we'll choose to write our forcing function in
-the same basis:
+of $c_k(t)$ over time, we will obtain the values of $u_h$ at time $t$ and as a result, an estimate of the true value of $u$.
+Also, we'll choose to write our forcing function in the same basis:
 \begin{equation}
 F_h(x,y,t) = \sum\limits_{k=1}^N f_k(t) \phi_k(x,y)
 \end{equation}
@@ -20,8 +21,8 @@ The weak form of $u_h$ is given by taking the inner product
 - \beta^2 \innerproductdot{u}{v}
 + \innerproduct{F}{v}
 \end{equation}
-for any $v \in H^1(\Omega)$. Since this works for any $v$, we can choose $v$ to be any of the basis functions $\phi$
-we chose for $H^1(\Omega)$. So, for any basis $\phi_j$, we can expand $u_h$ using (\ref{eq:u_h}) to obtain a new form:
+for any $v \in H^1(\Omega)$. Since this works for any $v \in H^1(\Omega)$, we can choose $v$ to be any of the basis functions $\phi$
+we chose for $H^1(\Omega)$. So, for any basis function $\phi_j$, we can expand $u_h$ using (\ref{eq:u_h}) to obtain a new form:
 \begin{equation} \label{eq:u_h_weak_form_expanded}
 \sum\limits_{k=1}^N \left( \secondderivative{c_k}{t} + \gamma\firstderivative{c_k}{t} + \alpha u \right) \innerproduct{\phi_k}{\phi_j}
 =
@@ -51,7 +52,7 @@ We can now rewrite (\ref{eq:u_h_weak_form_expanded}) as
 M\left( \secondderivative{\vec{c}}{t} + \gamma\firstderivative{\vec{c}}{t} + \alpha \vec{c} \right) = - \beta^2 A \vec{c} + M\vec{f}
 \end{equation}
 
-We now can build a finite difference scheme for $\vec{c}$ by using the following expansion for the second derivative:
+We now build a finite difference scheme for $\vec{c}$ by using the following expansion for the second derivative:
 \begin{equation} \label{eq:second_derivative_finite_difference}
 \secondderivative{c}{t} \approx \secondfinitediff{c}
 \end{equation}
@@ -92,5 +93,4 @@ c^{n+1}
 \right)
 \end{equation}
 
-Given this formulation, the only remaining challege is the numerical calculation of $M$, $A$ and potentially
-$M^{-1}$ (unless it is implicitly calculated every step via a banded matrix solver).
+Given this formulation, the only remaining challege is the numerical calculation of $M$, and $A$
