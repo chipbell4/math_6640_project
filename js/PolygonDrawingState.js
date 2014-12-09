@@ -97,6 +97,15 @@ PolygonDrawingState.prototype.showLine = function() {
 PolygonDrawingState.prototype.mouseup = function() {
 	this.showPolygon();
 	this.editingPolygon = false;
+
+    // If the polygon is of zero length, reset back to a plane so it doesn't break
+    if(this.buffer.length <= 2) {
+        this.buffer.addPoint(new THREE.Vector3(0, 0, 0));
+        this.buffer.addPoint(new THREE.Vector3(1, 0, 0));
+        this.buffer.addPoint(new THREE.Vector3(1, 1, 0));
+        this.buffer.addPoint(new THREE.Vector3(0, 1, 0));
+        this.refreshGeometries();
+    }
 };
 
 // Handler for mouse down
