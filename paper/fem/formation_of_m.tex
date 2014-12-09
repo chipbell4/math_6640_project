@@ -1,13 +1,14 @@
 \subsection{Formation of $M$}
 To calculate the elements of $M$, the inner product of corresponding basis functions of $\Omega$ must be calculated
 (see (\ref{eq:m_definition})). Since the basis functions are 0 for most of the domain, and most nodes are not
-connected, we expect $M$ to be very sparse. So given a triangular mesh, we need only consider two cases: The inner
+connected, we expect $M$ to be sparse in general. So given a triangular mesh, we need only consider two cases: The inner
 product of two adjacent interior node basis function (since exterior nodes are 0), or the inner product of an interior
 node basis function with itself.
 
-As mentioned before, two adjacent interior node basis functions $\phi_k$ and $\phi_j$ will always share two triangular
-regions of $\Omega$ in which they are both non-zero. Considering just one of these triangles $T$, we can find a solution method for a
-single region and simply extrapolate up to using two regions. For just the single triangle $T$ defined by the points
+Two adjacent interior node basis functions $\phi_k$ and $\phi_j$ will only share two triangular
+regions of $\Omega$ in which they are both non-zero since they can only share a single edge. Considering just one of these
+triangles $T$, we can find a solution method for a
+single region and simply replicate the process for the second region. For just the single triangle $T$ defined by the points
 $N_k$, $N_j$, and $N_i$, we are wanting to calculate
 \begin{equation}
 \iint\limits_T \phi_k \phi_j dT
@@ -41,7 +42,7 @@ S = \mat{
 }
 \end{equation}
 
-Finally, $|S|$ is easily calculated, and as note is equal to the twice the area of
+Finally, $|S|$ is easily calculated, and as a note is equal to the twice the area of
 the triangle $T$.
 
 In order to fully calculate the inner product of all of $\phi_k$ and $\phi_j$, we simply need to repeat the process
