@@ -16,13 +16,4 @@ square relationship to the click center, and adjusting the click weight and tigh
 and spread of force respectively. Also, other parameters of the system are adjustable, including wave speed,
 elasticity, and damping.
 
-\subsection{Current Standing Issues}
-No software is perfect, and the same can be said for this application. Currently, some polygons after being triangulated
-simply blow up when force is applied. I'm almost positive that this is caused by triangles that are too small, which
-causes the mass matrix entries to be small. This, in turn, causes any LU solving with the mass matrix to have very large
-numbers, which essentially ``ghosts'' a very large first derivative into the system due to numerical round-off. The wave
-then shoots off to infinity.
-
-I'm currently still resolving this issue as of the time of writing. My solution will essentially be to remove interior
-points that would cause small triangles, i.e. points that are very close (within some tolerance) of the border of
-polygon. Currently, the best solution is to simply refresh the page.
+As a note, sometimes an error will occur. Simply refresh the page if that occurs
